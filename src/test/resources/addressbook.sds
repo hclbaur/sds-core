@@ -1,0 +1,10 @@
+schema {
+	node {
+		name "addressbook"
+		node {
+			name "contact" multiplicity "0..*"
+			node { name "firstname" type "string" }
+			node { name "phonenumber" type "string" }
+		}
+	}
+}
