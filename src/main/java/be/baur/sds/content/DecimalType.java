@@ -13,8 +13,7 @@ public class DecimalType extends RangedType<Double> {
 		super(name);
 	}
 	
-	@Override
-	public String getType() { 
-		return Content.DECIMAL.type; 
+	public Content getContentType() { 
+		return Content.DECIMAL; 
 	}
 }

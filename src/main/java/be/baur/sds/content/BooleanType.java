@@ -9,14 +9,15 @@ import be.baur.sds.common.Content;
  */
 public class BooleanType extends SimpleType {
 
+	public static final String TRUE = "true";
+	public static final String FALSE = "false";
 
 	/** Create a boolean type. */
 	public BooleanType(String name) {
 		super(name);
 	}
 
-	@Override
-	public String getType() {
-		return Content.BOOLEAN.type;
+	public Content getContentType() {
+		return Content.BOOLEAN;
 	}
 }

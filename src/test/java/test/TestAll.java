@@ -4,15 +4,6 @@ public final class TestAll {
 
 	public static void main(String[] args) throws Exception {
 
-		System.out.print("\nSchema      : ");
-		test.TestSchema.main(args);
-		
-		System.out.print("\nType        : ");
-		test.TestType.main(args);
-		
-		System.out.print("\nSimpleType  : ");
-		test.TestSimpleType.main(args);
-
 		System.out.print("\nNaturalIV   : ");
 		test.TestNaturalInterval.main(args);
 		
@@ -27,5 +18,14 @@ public final class TestAll {
 		
 		System.out.print("\nDateIV      : ");
 		test.TestIntervalDate.main(args);
+		
+		System.out.print("\nSchema      : ");
+		test.TestSchema.main(args);
+		
+		System.out.print("\nValidation1 : ");
+		test.TestValidation1.main(args);
+		
+		System.out.print("\nValidation2 : ");
+		test.TestValidation2.main(args);
 	}
 }

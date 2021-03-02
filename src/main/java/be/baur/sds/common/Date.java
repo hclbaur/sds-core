@@ -8,12 +8,10 @@ import java.time.format.DateTimeFormatter;
  * {@link Interval}. The wrapper is needed because a <code>LocalDate</code> has
  * no constructor that accepts a string in ISO 8601 format.
  */
-@SuppressWarnings("rawtypes")
-public class Date implements Comparable {
+public class Date implements Comparable<Object> {
 
 	public final LocalDate value;
 	private static DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
-
 	
 	public Date(String s) {
 		value = LocalDate.parse(s, formatter);

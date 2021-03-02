@@ -8,8 +8,7 @@ import java.time.format.DateTimeFormatter;
  * in {@link Interval}. The wrapper is needed because a <code>ZonedDateTime</code> 
  * (or <code>Date</code>) has no constructor accepting a string in ISO 8601 format.
  */
-@SuppressWarnings("rawtypes")
-public class DateTime implements Comparable {
+public class DateTime implements Comparable<Object> {
 
 	public final ZonedDateTime value;
 	private static DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;

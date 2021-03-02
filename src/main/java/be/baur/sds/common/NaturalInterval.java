@@ -8,7 +8,7 @@ package be.baur.sds.common;
  * 
  * <pre>
  * a..b	: where both a and b are non-negative integers and a <= b
- * a..*	: "unbounded", but equivalent to [a..MAX_INT] in practice
+ * a..*	: "unbounded", but equivalent to a..MAX_INT in practice
  * a	: fixed value, equivalent to "a..a"	(degenerate interval)
  * </pre>
  */
@@ -69,9 +69,19 @@ public class NaturalInterval {
 		return new NaturalInterval(lower, upper);	
 
 	}
+	
+
+	/**
+	 * This method returns 0 if the supplied value lies within the interval, and -1
+	 * (value below interval limit) or 1 (value beyond interval limit) otherwise.
+	 */
+	public int contains(int value) {
+
+		return (value < lower) ? -1 : ((value > upper) ? 1 : 0);
+	}
 
 	
-	/** Returns the instance in interval notation. */
+	/** Returns this instance in interval notation. */
 	public String toString() {
 		return (lower == upper) ? "" + lower
 			: lower + ".." + ((upper == Integer.MAX_VALUE) ? "*" : "" + upper);

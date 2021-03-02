@@ -13,8 +13,7 @@ public class IntegerType extends RangedType<Integer> {
 		super(name);
 	}
 	
-	@Override
-	public String getType() { 
-		return Content.INTEGER.type; 
+	public Content getContentType() { 
+		return Content.INTEGER; 
 	}
 }

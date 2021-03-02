@@ -1,17 +1,23 @@
 package test;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /** A convenience class with testing methods that accept Lamba expressions */
 public class Test {
 
 	Function<String, String> function;
+	BiFunction<String, String, String> bifunction;
 	
 	Test(Function<String, String> function) {
 		this.function = function;
 	}
 	
-	public void test(String scenario, String input, String expected) {
+	Test(BiFunction<String, String, String> bifunction) {
+		this.bifunction = bifunction;
+	}
+	
+	public void t1(String scenario, String input, String expected) {
 		
 		String result = function.apply(input);
 
@@ -25,7 +31,7 @@ public class Test {
 		}
 	}
 	
-	public void testError(String scenario, String input, String expected) {
+	public void t1Error(String scenario, String input, String expected) {
 		
 		try { 
 			function.apply(input);
@@ -42,4 +48,19 @@ public class Test {
 		}
 		System.out.println(scenario + " FAILED - exception expected");
 	}
+	
+	public void t2(String scenario, String input1, String input2, String expected) {
+		
+		String result = bifunction.apply(input1, input2);
+
+		if (expected == null) expected = input1;
+		if (result.equals(expected)) 
+			System.out.print(scenario + " ");
+		else {
+			System.out.println("\n" + scenario + " FAILED!");
+			System.out.println("    EXPECTED: " + expected);
+			System.out.println("    RETURNED: " + result);
+		}
+	}
+	
 }

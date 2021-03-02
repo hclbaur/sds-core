@@ -4,8 +4,9 @@ import be.baur.sds.common.Content;
 
 /**
  * A <code>BinaryType</code> is a string type representing an SDA node with
- * binary content, in MIME base64 encoding. It has a minimum and/or maximum
- * length counted in number of bytes (rather than characters).
+ * binary content, in MIME base64 encoding. Like the {@link StringType} it
+ * extends, it has a minimum and/or maximum length, but counted in number of
+ * bytes rather than characters.
  */
 public class BinaryType extends StringType {
 
@@ -15,8 +16,7 @@ public class BinaryType extends StringType {
 		super(name);
 	}
 	
-	@Override
-	public String getType() { 
-		return Content.BINARY.type; 
+	public Content getContentType() { 
+		return Content.BINARY; 
 	}
 }

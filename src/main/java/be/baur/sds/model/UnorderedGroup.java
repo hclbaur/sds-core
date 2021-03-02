@@ -3,6 +3,7 @@
  */
 package be.baur.sds.model;
 
+import be.baur.sds.ModelGroup;
 import be.baur.sds.common.Component;
 
 /**

@@ -1,24 +1,24 @@
-package be.baur.sds;
+package be.baur.sds.serialization;
 
 import be.baur.sda.Node;
 
 /**
- * A <code>SchemaException</code> if the SDS syntax is violated. The SDA node
- * that caused the exception can be accessed from <code>getErrorNode()</code>.
+ * A <code>SchemaException</code> is thrown if the SDS syntax is violated. The
+ * node that caused the exception can be accessed from <code>getNode()</code>.
  */
 @SuppressWarnings("serial")
 public final class SchemaException extends Exception {
 
-	private Node errorNode;
+	private Node node;
 
 	public SchemaException(Node node, String format, Object... args) {
 		super("SDS syntax violation at " + node.path() + ": " + String.format(format, args));
-		errorNode = node;
+		this.node = node;
 	}
 
 	/** Returns the node that caused the exception. */
-	public Node getErrorNode() {
-		return errorNode;
+	public Node getNode() {
+		return node;
 	}
 
 	// format strings

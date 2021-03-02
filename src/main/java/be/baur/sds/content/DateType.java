@@ -15,8 +15,7 @@ public class DateType extends RangedType<Date> {
 		super(name);
 	}
 	
-	@Override
-	public String getType() { 
-		return Content.DATE.type; 
+	public Content getContentType() { 
+		return Content.DATE; 
 	}
 }

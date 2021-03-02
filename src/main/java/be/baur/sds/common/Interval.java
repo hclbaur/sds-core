@@ -1,6 +1,5 @@
 package be.baur.sds.common;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +36,7 @@ public class Interval <T extends Comparable> {
 	public final static int RIGHT_OPEN 	= 	0b01;
 	public final static int OPEN 		= 	0b11;
 	
-	// Precompiled pattern that matches an interval notation
+	// Pre-compiled pattern that matches an interval notation
 	private static final String LB="\\[\\(";
 	private static final String RB="\\)\\]";
 	private static final Pattern PATTERN = 
@@ -72,16 +71,11 @@ public class Interval <T extends Comparable> {
 	 * Factory method to create a an <code>Interval</code> from a string in interval
 	 * notation, or a fixed value.
 	 * 
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
 	 * @throws IllegalArgumentException
 	 */
 	public static <T extends Comparable> Interval<T> from(String interval, Class<T> cls) throws Exception {
 		
-		T lower = null, upper = null;
+		T lower = null, upper = null; // null means unbounded, or * in interval notation
 		
 		interval = (interval == null) ? "" : interval.trim();
 		if (interval.isEmpty())
@@ -124,6 +118,27 @@ public class Interval <T extends Comparable> {
 		return new Interval<T>(lower, upper, type);
 	}
 
+	
+	/**
+	 * This method returns 0 if the supplied value lies within the interval, and -1
+	 * (value below interval limit) or 1 (value beyond interval limit) otherwise.
+	 * The supplied value must never be <code>null</code>.
+	 */
+	@SuppressWarnings({ "unchecked", "hiding" })
+	public <T extends Comparable> int contains(T value) {
+		
+		int comp;
+		if (lower != null) {
+			comp = value.compareTo(lower);
+			if (comp < 0 || comp == 0 && (type & LEFT_OPEN) > 0) return -1;
+		}
+		if (upper != null) {
+			comp = value.compareTo(upper);
+			if (comp > 0 || comp == 0 && (type & RIGHT_OPEN) > 0) return 1;
+		}
+		return 0;
+	}
+	
 	
 	/** Returns the interval as a string in interval notation. */
 	public String toString() {

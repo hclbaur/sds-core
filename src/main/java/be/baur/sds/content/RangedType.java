@@ -6,13 +6,11 @@ import be.baur.sds.common.Interval;
 /**
  * A <code>RangedType</code> is an abstract simple type representing a SDA node
  * with a value that lies within a particular {@link Interval}, like an integer,
- * a double, a date, or basically any {@link Comparable}.
+ * a double, a date, or in theory any {@link Comparable}.
  */
-@SuppressWarnings("rawtypes")
-public abstract class RangedType <T extends Comparable> extends SimpleType {
+public abstract class RangedType <T extends Comparable<?>> extends SimpleType {
 
-	private Interval<T> range = null; // Range null means: any value of <T> is allowed.
-	
+	private Interval<?> range = null; // Range null means: any value is allowed.
 	
 	/** Create a ranged type. */
 	public RangedType(String name) {
@@ -20,12 +18,12 @@ public abstract class RangedType <T extends Comparable> extends SimpleType {
 	}
 	
 	/** Get the range interval. Default value is <code>null</code>. */
-	public Interval<T> getRange() {
+	public Interval<?> getRange() {
 		return range;
 	}
 
 	/** Set the range interval. */
-	public void setRange(Interval<T> range) {
+	public void setRange(Interval<?> range) {
 		this.range = range;
 	}
 }

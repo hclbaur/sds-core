@@ -19,9 +19,8 @@ public class StringType extends SimpleType {
 		super(name); setNullable(true);
 	}
 	
-	@Override
-	public String getType() { 
-		return Content.STRING.type; 
+	public Content getContentType() { 
+		return Content.STRING; 
 	}
 
 	/** Get the length interval. Default value is <code>null</code>. */
