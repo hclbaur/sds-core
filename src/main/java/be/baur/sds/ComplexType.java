@@ -19,8 +19,8 @@ public class ComplexType extends ComplexNode implements ComponentType {
 		super(name);
 	}
 	
-	
-	private String globaltype = null; 	// Set when constructed from a reference.
+	// Set when constructed from a reference.
+	private String globaltype = null;
 	
 	public String getGlobalType() {
 		return globaltype;
@@ -44,27 +44,27 @@ public class ComplexType extends ComplexNode implements ComponentType {
 	
 	public ComplexNode toNode() {
 		
-		ComplexNode node;
+		ComplexNode node; // resulting node, returned at the end of this method
 		
-		// name attribute is omitted for a model group, and for a type
+		// the name attribute is omitted for a model group, and for a type
 		// reference with the same name as the global type it refers to
 		if (! (this instanceof ModelGroup) ) {
 			node = new ComplexNode(Component.NODE.tag);
-			if (getGlobalType() == null || ! name.equals(getGlobalType()))
-				node.add(new SimpleNode(Attribute.NAME.tag, name));
+			if (getGlobalType() == null || ! getName().equals(getGlobalType()))
+				node.nodes.add(new SimpleNode(Attribute.NAME.tag, getName()));
 		}
-		else node = new ComplexNode(this.name);
+		else node = new ComplexNode(getName());
 		
 		// Render the type attribute if we have one (Schema or type reference)
 		if (getGlobalType() != null) 
-			node.add(new SimpleNode(Attribute.TYPE.tag, getGlobalType()));
+			node.nodes.add(new SimpleNode(Attribute.TYPE.tag, getGlobalType()));
 		
 		if (minOccurs() != 1 || maxOccurs() != 1)
-			node.add(new SimpleNode(Attribute.MULTIPLICITY.tag, multiplicity.toString()));
+			node.nodes.add(new SimpleNode(Attribute.MULTIPLICITY.tag, multiplicity.toString()));
 		
 		// Render children, unless we are a global type reference (but not a Schema)
 		if (this instanceof Schema || getGlobalType() == null)
-			for (Node child : this.get()) node.add(((ComponentType) child).toNode());
+			for (Node child : nodes) node.nodes.add(((ComponentType) child).toNode());
 
 		return node;
 	}

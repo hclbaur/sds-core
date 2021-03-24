@@ -1,9 +1,4 @@
-/**
- * 
- */
 package be.baur.sds;
-
-import be.baur.sds.model.UnorderedGroup;
 
 /**
  * An abstract class that all model groups extend: {@link Schema},
@@ -15,7 +10,4 @@ public abstract class ModelGroup extends ComplexType {
 		super(name);
 	}
 
-//	String[] getNames() {
-//		return this.get().stream().map(n -> n.getName()).collect(null);
-//	}
 }

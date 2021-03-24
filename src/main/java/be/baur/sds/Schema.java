@@ -10,19 +10,6 @@ import be.baur.sds.common.Component;
  */
 public class Schema extends ModelGroup {
 	
-//	MOVED TO COMPONENT_TYPE
-//	private String globaltype = null;
-//	
-//	/** Get the name of the designated root type. */
-//	public String getGlobalType() {
-//		return globaltype;
-//	}
-//
-//	/** Set the name of the designated root type. */
-//	public void setGlobalType(String type) {
-//		this.globaltype = type;
-//	}
-
 	public Schema() {
 		super(Component.SCHEMA.tag);
 	}

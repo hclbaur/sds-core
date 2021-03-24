@@ -3,9 +3,11 @@ package be.baur.sds.validation;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import be.baur.sda.ComplexNode;
 import be.baur.sda.Node;
+import be.baur.sda.NodeSet;
 import be.baur.sda.SimpleNode;
 import be.baur.sds.ComplexType;
 import be.baur.sds.ComponentType;
@@ -51,14 +53,14 @@ public class Validator {
 		String type = schema.getGlobalType();
 
 		if (type != null) {
-			component = (ComponentType) schema.get(type).get(1);
+			component = (ComponentType) schema.nodes.get(type).get(1);
 			if (component == null)  // should never happen for a proper schema
 				throw new SchemaException(schema, SchemaException.AttributeInvalid, 
 					Attribute.TYPE.tag, type, "no such global type");
 		} else {
-			component = (ComponentType) schema.get(document.name).get(1);
+			component = (ComponentType) schema.nodes.get(document.getName()).get(1);
 			if (component == null) {
-				errors.add(new Error(document, Error.GLOBAL_TYPE_NOT_FOUND, document.name));
+				errors.add(new Error(document, Error.GLOBAL_TYPE_NOT_FOUND, document.getName()));
 				return errors; // no point in further validation
 			}
 		}
@@ -79,8 +81,8 @@ public class Validator {
 	 */
 	private static boolean matchNode(Node node, ComponentType component, ErrorList errors) {
 		
-		String compname = component.getName();
-		boolean namesmatch = node.name.equals(compname); // does the node match the expected component?
+		String nodename = node.getName();
+		boolean namesmatch = nodename.equals(component.getName());
 		
 		if (component instanceof AnyType) {
 			// if the name is no match for an explicitly named "any" type, we return false
@@ -92,7 +94,7 @@ public class Validator {
 		if (node instanceof SimpleNode) {
 			
 			if (! (component instanceof SimpleType)) {  //  we were expecting complex content
-				errors.add(new Error(node, Error.EXPECTING_NODE_TYPE, compname, "complex"));
+				errors.add(new Error(node, Error.EXPECTING_NODE_OF_TYPE, nodename, "complex"));
 				return true;
 			}
 			errors.add(validateSimpleNode((SimpleNode) node, (SimpleType) component));
@@ -100,7 +102,7 @@ public class Validator {
 		}
 		
 		if (! (component instanceof ComplexType)) {  // we were expecting simple content
-			errors.add(new Error(node, Error.EXPECTING_NODE_TYPE, compname, "simple"));
+			errors.add(new Error(node, Error.EXPECTING_NODE_OF_TYPE, nodename, "simple"));
 			return true;
 		}
 		errors.add(validateComplexNode((ComplexNode) node, (ComplexType) component, errors));
@@ -116,8 +118,8 @@ public class Validator {
 	private static Error validateSimpleNode(SimpleNode node, SimpleType component) {
 		
 		// empty values are allowed only for nullable types.
-		if (node.value.isEmpty() && ! component.isNullable())
-			return new Error(node, Error.EMPTY_VALUE_NOT_ALLOWED, node.name);
+		if (node.getValue().isEmpty() && ! component.isNullable())
+			return new Error(node, Error.EMPTY_VALUE_NOT_ALLOWED, node.getName());
 		
 		if (component instanceof StringType) {
 			Error error = validateStringValue(node, (StringType) component);
@@ -130,13 +132,13 @@ public class Validator {
 		}
 		
 		if (component instanceof BooleanType) {
-			if (! (node.value.equals(BooleanType.TRUE) || node.value.equals(BooleanType.FALSE)) )
-				return new Error(node, Error.INVALID_BOOLEAN_VALUE, node.value);
+			if (! (node.getValue().equals(BooleanType.TRUE) || node.getValue().equals(BooleanType.FALSE)) )
+				return new Error(node, Error.INVALID_BOOLEAN_VALUE, node.getValue());
 		}
 			
 		Pattern pattern = component.getPattern();
-		if (pattern != null && ! pattern.matcher(node.value).matches())
-			return new Error(node, Error.VALUE_DOES_NOT_MATCH, node.value, component.getPatternExpr());
+		if (pattern != null && ! pattern.matcher(node.getValue()).matches())
+			return new Error(node, Error.VALUE_DOES_NOT_MATCH, node.getValue(), component.getPatternExpr());
 		
 		return null;
 	}
@@ -154,18 +156,18 @@ public class Validator {
 		// is to decode it, and we need to determine its length anyway.
 		if (component instanceof BinaryType) {
 			try {
-				length = Base64.getDecoder().decode(node.value).length;
+				length = Base64.getDecoder().decode(node.getValue()).length;
 			} catch (IllegalArgumentException e) {
-				return new Error(node, Error.INVALID_BINARY_VALUE, node.name, e.getMessage());
+				return new Error(node, Error.INVALID_BINARY_VALUE, node.getName(), e.getMessage());
 			}
 		}
-		else length = node.value.length();   // otherwise it is a regular string
+		else length = node.getValue().length();   // otherwise it is a regular string
 		
 		// Check if the length is within the acceptable range.
 		NaturalInterval range = component.getLength();
 		if (range != null) {
 			int contains = range.contains(length);
-			String val = node.value.length() > 32 ? node.value.substring(0,32) + "..." : node.value;
+			String val = node.getValue().length() > 32 ? node.getValue().substring(0,32) + "..." : node.getValue();
 			if (contains < 0) 
 				return new Error(node, Error.LENGTH_SUBCEEDS_MIN, val, length, range.lower);
 			if (contains > 0) 
@@ -183,15 +185,15 @@ public class Validator {
 		Comparable<?> value = null;
 		try {
 			switch (component.getContentType()) {
-				case INTEGER  : value = new Integer(node.value); break;
-				case DECIMAL  : value = new Double(node.value); break;
-				case DATETIME : value = new DateTime(node.value); break;
-				case DATE     : value = new Date(node.value); break;
+				case INTEGER  : value = new Integer(node.getValue()); break;
+				case DECIMAL  : value = new Double(node.getValue()); break;
+				case DATETIME : value = new DateTime(node.getValue()); break;
+				case DATE     : value = new Date(node.getValue()); break;
 				default: // we will never get here, unless we forgot to implement something
 					throw new RuntimeException("validation of '" + component.getContentType() + "' not implemented!");
 			}
 		} catch (Exception e) {
-			return new Error(node, Error.INVALID_VALUE_FOR_TYPE, node.value, component.getContentType(), e.getMessage());
+			return new Error(node, Error.INVALID_VALUE_FOR_TYPE, node.getValue(), component.getContentType(), e.getMessage());
 		}
 		
 		Interval<?> range = component.getRange(); 
@@ -227,11 +229,11 @@ public class Validator {
 	 */
 	private static Error validateComplexNode(ComplexNode node, ComplexType component, ErrorList errors) {
 		
-		Iterator<Node> inode = node.get().iterator(); // iterator for child nodes
+		Iterator<Node> inode = node.nodes.iterator(); // iterator for child nodes
 		Node childnode = inode.hasNext() ? inode.next() : null; // first child node (or none)
 		
 		//System.out.println("validateComplexNode: matching children of " + node.getName());
-		Iterator<Node> icomp = component.get().iterator();
+		Iterator<Node> icomp = component.nodes.iterator();
 		while (icomp.hasNext()) {
 			
 			ComponentType childcomp = (ComponentType) icomp.next(); 
@@ -243,12 +245,10 @@ public class Validator {
 			
 				if (childnode == null) { // oops, we have run out of nodes
 					
-					if (curmatches < childcomp.minOccurs())  // but we expect at least one (more) node
-						if (! (childcomp instanceof ModelGroup || childcomp instanceof AnyType) )
-							return new Error(node, Error.MANDATORY_NODE_EXPECTED, childcomp.getName(), node.name);
-						else return new Error(node, Error.CONTENT_MISSING_AT_END, node.name);
+					if (curmatches < childcomp.minOccurs()) // but if we expect another node
+						return missingNodeError(node, childcomp); // an error is returned
 
-					break; // or if it is optional, we break out and match the next child component
+					break; // otherwise we break out and match the next child component
 				}
 
 				boolean match;
@@ -263,22 +263,23 @@ public class Validator {
 					++curmatches; continue;
 				}
 				
-				// The node is no match - if it is mandatory, we return an error
-				if (curmatches < childcomp.minOccurs()) {
-					if (! (childcomp instanceof ModelGroup || childcomp instanceof AnyType) )
-						return new Error(childnode, Error.EXPECTING_NODE_BUT_GOT, childcomp.getName(), childnode.name);
-					return new Error(childnode, Error.CONTENT_MISSING_BEFORE, childnode.name);
-				}
-				break; // and if it is optional, we match the next component to this node (if any)
+				// The child node is no match - so if the child component is mandatory
+				if (curmatches < childcomp.minOccurs()) // return an error
+					return unexpectedNodeError(childnode, childcomp);
+
+				break; // otherwise, we match the next component to this node (if any)
 			}	
 		}
 
 		//System.out.println("Matched all child components of " + component.getName());
 		if (childnode != null) // if we have an unmatched node, that is a validation error
-			errors.add(new Error(childnode, Error.NODE_NOT_EXPECTED_IN, childnode.getName(), childnode.getParent().name));
+			errors.add(new Error(childnode, 
+				Error.NODE_NOT_EXPECTED_IN, childnode.getName(), childnode.getParent().getName()));
 		
 		// and each remaining node is also a validation error
-		inode.forEachRemaining( n -> { errors.add(new Error(n, Error.NODE_NOT_EXPECTED_IN, n.getName(), n.getParent().name)); });
+		inode.forEachRemaining( n -> { 
+			errors.add(new Error(n, Error.NODE_NOT_EXPECTED_IN, n.getName(), n.getParent().getName())); 
+		});
 		
 		return null;
 	}
@@ -311,7 +312,7 @@ public class Validator {
 	 */
 	private static boolean matchChoiceGroup(Iterator<Node> inode, Node node, ChoiceGroup choice, ErrorList errors) {
 
-		for (Node child : choice.get()) {
+		for (Node child : choice.nodes) {
 			
 			ComponentType childcomp = (ComponentType) child; boolean match;
 			//System.out.println("matchChoice: matching " + ((node instanceof SimpleNode) ? node : node.name + "{}") + " to " + childcomp.getName());
@@ -347,7 +348,7 @@ public class Validator {
 		boolean groupmatch = false; // overall match for this group, initially false
 		Node parent = node.getParent(); // save the parent of the node(s)
 		
-		Iterator<Node> icomp = group.get().iterator();
+		Iterator<Node> icomp = group.nodes.iterator();
 		while (icomp.hasNext()) {
 			
 			ComponentType childcomp = (ComponentType) icomp.next();
@@ -359,16 +360,13 @@ public class Validator {
 			
 				if (node == null) {  // oops, we have run out of nodes
 					
-					if (curmatches < childcomp.minOccurs()) { // but we expect at least one (more) node
-						if (groupmatch) {
-							// if the group was invoked; a missing node implies a validation error
-							if (! (childcomp instanceof ModelGroup) )
-								errors.add(new Error(parent, Error.MANDATORY_NODE_EXPECTED, childcomp.getName(), parent.name));
-							else errors.add(new Error(parent, Error.CONTENT_MISSING_AT_END, parent.name));
-						}
+					if (curmatches < childcomp.minOccurs()) { // but if we expect another node
+						
+						if (groupmatch) // and the group was invoked, we add a validation error
+							errors.add(missingNodeError(parent, childcomp));
 						return groupmatch; // in either case we return (true or false)
 					}
-					break; // or if it is optional, we break out and match the next child component
+					break; // otherwise we break out and match the next child component
 				}
 				
 				boolean match;
@@ -383,17 +381,14 @@ public class Validator {
 					groupmatch = true; ++curmatches; continue;
 				}
 				
-				// The node is no match - if it is mandatory and the group is already invoked, 
-				// add an error and return an overall match. Otherwise, return an overall no-match.
+				// The child node is no match - so if the child component is mandatory
 				if (curmatches < childcomp.minOccurs()) {
-					if (groupmatch) {
-						if (! (childcomp instanceof ModelGroup) )
-							errors.add(new Error(node, Error.EXPECTING_NODE_BUT_GOT, childcomp.getName(), node.name));
-						else errors.add(new Error(node, Error.CONTENT_MISSING_BEFORE, node.name));
-					}
+					
+					if (groupmatch) // and the group was invoked, add a validation error
+						errors.add(unexpectedNodeError(node, childcomp));
 					return groupmatch; // in either case we return (true or false)
 				}
-				break; // and if it is optional, we match the next component to this node (if any)
+				break; // otherwise, we match the next component to this node (if any)
 			}	
 		}
 		
@@ -402,4 +397,77 @@ public class Validator {
 		return groupmatch;
 	}
 	
+	
+	//
+	// Convenience methods below this line.
+	//
+	
+	/** This returns an error specifying a missing node at the end of a context node. */
+	private static Error missingNodeError(Node context, ComponentType comp) {
+		if (comp instanceof ModelGroup)
+			return new Error(context, Error.CONTENT_MISSING_AT_END, context.getName(), quoteNames(expectedNodes(comp)));
+		else return new Error(context, Error.CONTENT_MISSING_AT_END, context.getName(), quoteName((Node)comp));
+	}
+	
+	
+	/** This returns an error specifying an unexpected node. */
+	private static Error unexpectedNodeError(Node node, ComponentType comp) {
+		if (comp instanceof ModelGroup)
+			return new Error(node, Error.GOT_NODE_BUT_EXPECTED, node.getName(), quoteNames(expectedNodes(comp)));
+		else return new Error(node, Error.GOT_NODE_BUT_EXPECTED, node.getName(), quoteName((Node) comp));
+	}
+	
+	
+	/**
+	 * When we expect content to match a complex or simple component, it is obvious
+	 * what node is expected. But if the component is a <em>model group<em>, things
+	 * are a bit more complicated, depending on the group type, and the level of
+	 * nesting (model groups within model groups). This recursive method returns a
+	 * set of component types that may match the current content.
+	 */
+	private static NodeSet expectedNodes(ComponentType comp) {
+		
+		// if not a group, just return the component itself, ending the recursion
+		if (! (comp instanceof ModelGroup)) return NodeSet.from((Node)comp);
+
+		ModelGroup group = (ModelGroup) comp;
+		
+		// for a choice, we return all possible components, recursively flat-mapped
+		if (group instanceof ChoiceGroup) {
+			NodeSet result = group.nodes.stream()
+				.flatMap(n -> expectedNodes((ComponentType)n).stream()).collect(Collectors.toCollection(NodeSet::new));
+			return result;
+		}
+		
+		// for a group, we return all child components up to and including the first mandatory one
+		if (group instanceof Group) {
+			NodeSet result = new NodeSet();
+			for (Node n : group.nodes) {
+				for (Node e : expectedNodes((ComponentType)n)) result.add(e); // is this is correct?
+				if (((ComponentType) n).minOccurs() > 0) break;
+			}
+			return result;
+		}
+		
+		 // should never reach this, unless we forgot a model group (like the unordered group...)
+		throw new RuntimeException("'" + group.getName() + "' not implemented!");
+	}
+	
+	
+	/** Returns list of quoted node names in the format: 'a', .. 'b' or 'c'. */
+	private static String quoteNames(NodeSet set) {
+		
+		String result = set.stream()
+			.map(n -> quoteName(n)).collect(Collectors.joining(","));
+		int i = result.lastIndexOf(','); 
+		return (i == -1) ? result : result.substring(0, i) + " or " + result.substring(i+1);	
+	}
+	
+	
+	/** Returns the node name in single quotes, or "any node" for an unnamed {@link AnyType}. */
+	private static String quoteName(Node node) {
+		
+		return (node instanceof AnyType && !((AnyType) node).isNamed()) 
+			? "any node" : "'" + node.getName() + "'";
+	}
 }

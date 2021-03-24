@@ -1,35 +1,41 @@
 package test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
 import be.baur.sda.ComplexNode;
 import be.baur.sda.Node;
-import be.baur.sda.parse.SyntaxException;
+import be.baur.sda.SDA;
 import be.baur.sds.Schema;
 import be.baur.sds.serialization.Parser;
 import be.baur.sds.serialization.SchemaException;
 
 public final class TestSchema 
 {
-	private static be.baur.sda.parse.Parser parser = new be.baur.sda.parse.Parser();
+	private static be.baur.sda.serialization.Parser parser = SDA.parser();
 	
 	public static void main(String[] args) throws Exception {
 		
 		Test t = new Test(s -> {
 			try {
 				return Parser.parse( (ComplexNode) parser.parse(new StringReader(s)) ).toString();
-			} catch (SyntaxException | SchemaException | IOException e) {
+			} catch (Exception e) {
 				return e.getMessage();
 			}
 		});
 		
 		/* test parsing SDS from file and formatting back to SDA */
-		InputStream input = TestSchema.class.getResourceAsStream("/addressbook.sds");
+		InputStream input = TestSchema.class.getResourceAsStream("/contacts.sds");
 		Node sds = parser.parse(new InputStreamReader(input,"UTF-8"));
 		Schema schema = Parser.parse(sds);
+		if (! sds.toString().equals(schema.toString())) {
+			System.out.println("\nEXPECTED: " + sds);
+			System.out.println("RETURNED: " + schema);
+		}
+		input = TestSchema.class.getResourceAsStream("/addressbook.sds");
+		sds = parser.parse(new InputStreamReader(input,"UTF-8"));
+		schema = Parser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);
 			System.out.println("RETURNED: " + schema);

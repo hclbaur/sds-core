@@ -25,8 +25,8 @@ public abstract class SimpleType extends SimpleNode implements ComponentType {
 		super(name, null); // the value field is currently not used
 	}
 	
-
-	private String globaltype = null; 				// Set when constructed from a reference.
+	// Set when constructed from a reference.
+	private String globaltype = null;
 	
 	public String getGlobalType() {
 		return globaltype;
@@ -42,7 +42,7 @@ public abstract class SimpleType extends SimpleNode implements ComponentType {
 	private NaturalInterval multiplicity = null;	// Multiplicity null means: exactly once.
 	private String pattexp = null;  				// Regular expression defining the pattern.
 	private Pattern pattern = null;					// Pre-compiled pattern (from expression).
-	private Boolean nullable = false;				// Default null-ability is false.
+	private boolean nullable = false;				// Default null-ability is false.
 	
 	public NaturalInterval getMultiplicity() {
 		return multiplicity;
@@ -77,13 +77,13 @@ public abstract class SimpleType extends SimpleNode implements ComponentType {
 	}
 
 	/** Returns the null-ability (if that is even a word). */
-	public Boolean isNullable() {
+	public boolean isNullable() {
 		return nullable;
 	}
 
 	/** Sets the null-ability (if not equal to <code>null</null>). */
-	public void setNullable(Boolean nullable) {
-		if (nullable != null) this.nullable = nullable;
+	public void setNullable(boolean nullable) {
+		this.nullable = nullable;
 	}
 
 	
@@ -93,36 +93,36 @@ public abstract class SimpleType extends SimpleNode implements ComponentType {
 		
 		// name attribute is omitted for an unnamed any type, and for a type
 		// reference that has the same name as the global type it refers to
-		if (! (( getGlobalType() != null && name.equals(getGlobalType()) )
+		if (! (( getGlobalType() != null && getName().equals(getGlobalType()) )
 			|| ( this instanceof AnyType && !((AnyType) this).isNamed() )) ) {
-			node.add(new SimpleNode(Attribute.NAME.tag, name));
+			node.nodes.add(new SimpleNode(Attribute.NAME.tag, getName()));
 		}
 		
 		// set the content type - or in case of a reference - the global type
-		node.add(new SimpleNode(Attribute.TYPE.tag,
+		node.nodes.add(new SimpleNode(Attribute.TYPE.tag,
 			getGlobalType() == null ? getContentType().type : getGlobalType()));
 		
 		if (minOccurs() != 1 || maxOccurs() != 1)
-			node.add(new SimpleNode(Attribute.MULTIPLICITY.tag, multiplicity.toString()));
+			node.nodes.add(new SimpleNode(Attribute.MULTIPLICITY.tag, multiplicity.toString()));
 		
 		boolean stringType = (this instanceof StringType);
 		if (stringType) {
 			StringType t = (StringType) this;
 			if (t.minLength() != 0 || t.maxLength() != Integer.MAX_VALUE)
-				node.add(new SimpleNode(Attribute.LENGTH.tag, t.getLength().toString()));
+				node.nodes.add(new SimpleNode(Attribute.LENGTH.tag, t.getLength().toString()));
 		}
 
 		if (this instanceof RangedType) {
 			RangedType<?> t = (RangedType<?>) this;
 			if (t.getRange() != null)
-				node.add(new SimpleNode(Attribute.VALUE.tag, t.getRange().toString()));
+				node.nodes.add(new SimpleNode(Attribute.VALUE.tag, t.getRange().toString()));
 		}
 		
 		if (pattern != null)
-			node.add(new SimpleNode(Attribute.PATTERN.tag, pattexp));
+			node.nodes.add(new SimpleNode(Attribute.PATTERN.tag, pattexp));
 		
 		if (stringType == !nullable)
-			node.add(new SimpleNode(Attribute.NULLABLE.tag, nullable.toString()));
+			node.nodes.add(new SimpleNode(Attribute.NULLABLE.tag, String.valueOf(nullable)));
 		
 		return node;
 	}

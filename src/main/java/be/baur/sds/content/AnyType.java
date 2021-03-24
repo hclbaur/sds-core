@@ -10,20 +10,21 @@ import be.baur.sds.common.Content;
  * <br>
  * <code>node{ name "stuff" type "any" }</code> (explicitly named, only 'stuff' is accepted)<br>
  * <br>
- * <code>node{ type "any" }</code> (unnamed, any valid name will be allowed)
+ * <code>node{ type "any" }</code> (not explicitly named, any valid name will be allowed)
  */
 public class AnyType extends SimpleType {
 
-	private final boolean isnamed;	// if true, the type was explicitly named
+	private final boolean named;	// true if the any type is explicitly named
 	
-	/** Create any type. The name may be null or empty to create an unnamed type. */
+	/** Create any type. The name can be null or empty to create an unnamed type. */
 	public AnyType(String name) {
-		super(name); isnamed = !(name == null || name.isEmpty());
+		super("any"); named = !(name == null || name.isEmpty()); 
+		if (named) setName(name);
 	}
 
 	/** Returns true if the type was explicitly named. */
 	public boolean isNamed() {
-		return isnamed;
+		return named;
 	}
 	
 	public Content getContentType() {

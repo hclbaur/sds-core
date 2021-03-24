@@ -29,17 +29,15 @@ public class Error {
 
 	// format strings
 	public static final String GLOBAL_TYPE_NOT_FOUND = "global type '%s' not found";
-	public static final String EXPECTING_NODE_TYPE = "expecting node '%s' to be a %s type";
-	public static final String MANDATORY_NODE_EXPECTED = "mandatory node '%s' expected in '%s'";
-	public static final String CONTENT_MISSING_AT_END = "mandatory content missing at end of '%s'";
-	public static final String CONTENT_MISSING_BEFORE = "mandatory content missing before '%s'";
-	public static final String EXPECTING_NODE_BUT_GOT = "expecting node '%s', but got '%s' instead";
-	public static final String NODE_NOT_EXPECTED_IN = "node '%s' not expected in '%s'";
+	public static final String EXPECTING_NODE_OF_TYPE = "expecting '%s' to be a %s type";
+	public static final String CONTENT_MISSING_AT_END = "content missing at end of '%s'; expecting %s";
+	public static final String GOT_NODE_BUT_EXPECTED = "got '%s', but expected %s instead";
+	public static final String NODE_NOT_EXPECTED_IN = "'%s' not expected in '%s'";
 	
 	public static final String INVALID_VALUE_FOR_TYPE = "value '%s' is invalid for type %s: %s";
-	public static final String EMPTY_VALUE_NOT_ALLOWED = "empty value not allowed; node '%s' is not nullable";
+	public static final String EMPTY_VALUE_NOT_ALLOWED = "empty value not allowed; '%s' is not nullable";
 	public static final String VALUE_DOES_NOT_MATCH= "value '%s' does not match pattern '%s'";
-	public static final String INVALID_BINARY_VALUE = "node '%s' has an invalid binary value: %s";
+	public static final String INVALID_BINARY_VALUE = "'%s' has an invalid binary value: %s";
 	public static final String INVALID_BOOLEAN_VALUE = "value '%s' is not a valid boolean";
 	public static final String LENGTH_SUBCEEDS_MIN = "value '%s' has length %d but %d is the minimum";
 	public static final String LENGTH_EXCEEDS_MAX = "value '%s' has length %d but %d is the maximum";

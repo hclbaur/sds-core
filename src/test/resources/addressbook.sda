@@ -51,5 +51,9 @@ addressbook {
 	}
 	contact { id "6"
 		person { firstname "Ferdy" }
+		address { 
+			type "home" streetname "Lichtstraat" housenumber "6" 
+			city "EINDHOVEN"
+		}
 	}
 }
