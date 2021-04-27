@@ -14,15 +14,17 @@ public enum Content {
 		this.type = type;
 	}
 	
+	
+	/** Returns the SDS name of this content type. */
 	public String toString() { 
 		return type; 
 	}
-	
+
+
 	/** Return an instance by its type or <code>null</code> if not found. */
 	public static Content get(String type) {
 		for (Content c : values()) 
 			if (c.type.equals(type)) return c;
 		return null;
 	}
-
 }

@@ -22,5 +22,7 @@ contacts {
 	contact { id "21" name "Otto" birthdate "1870-02-28" }
 	contact { id "22" name "Paula" star "yes" }
 	contact { id "23" name "Q" icon "*" }
+	contact { id "0" name "First" }
+	contact { id "24" name "Last" }
 	compact { }
 }

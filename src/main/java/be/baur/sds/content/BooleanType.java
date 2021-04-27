@@ -7,16 +7,18 @@ import be.baur.sds.common.Content;
  * A <code>BooleanType</code> is a simple type representing an SDA node with
  * boolean content, e.g. "true" or "false". No other values are allowed.
  */
-public class BooleanType extends SimpleType {
+public final class BooleanType extends SimpleType {
 
 	public static final String TRUE = "true";
 	public static final String FALSE = "false";
 
-	/** Create a boolean type. */
+	
+	/** Creates a boolean type with the supplied <code>name</code>. */
 	public BooleanType(String name) {
 		super(name);
 	}
 
+	
 	public Content getContentType() {
 		return Content.BOOLEAN;
 	}

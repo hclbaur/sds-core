@@ -19,13 +19,19 @@ public final class TestAll {
 		System.out.print("\nDateIV      : ");
 		test.TestIntervalDate.main(args);
 		
-		System.out.print("\nSchema      : ");
-		test.TestSchema.main(args);
+		System.out.print("\nSDSParser   : ");
+		test.TestSDSParser.main(args);
 		
-		System.out.print("\nValidation1 : ");
-		test.TestValidation1.main(args);
+		System.out.print("\nValContacts : ");
+		test.TestValContacts.main(args);
 		
-		System.out.print("\nValidation2 : ");
-		test.TestValidation2.main(args);
+		System.out.print("\nValAddress  : ");
+		test.TestValAddress.main(args);
+		
+		System.out.print("\nValMChoice  : ");
+		test.TestValMChoice.main(args);
+		
+		System.out.print("\nValMGroup   : ");
+		test.TestValMGroup.main(args);
 	}
 }

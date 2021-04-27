@@ -5,7 +5,7 @@ package be.baur.sds.common;
  */
 public enum Component {
 
-	NODE("node"), CHOICE("choice"), GROUP("group"), UNORDERED("unordered"), SCHEMA("schema");
+	NODE("node"), CHOICE("choice"), GROUP("group"), UNORDERED("unordered");
 
 	public final String tag;
 	
@@ -13,15 +13,17 @@ public enum Component {
 		this.tag = tag;
 	}
 	
+	
+	/** Returns the tag of this component. */
 	public String toString() { 
 		return tag; 
 	}
-	
-	/** Return an instance by its tag or <code>null</code> if not found. */
+
+
+	/** Returns an instance by its tag or <code>null</code> if not found. */
 	public static Component get(String tag) {
 		for (Component m : values()) 
 			if (m.tag.equals(tag)) return m;
 		return null;
 	}
-
 }

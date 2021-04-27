@@ -21,12 +21,12 @@ import java.util.regex.Pattern;
  * </pre>
  */
 @SuppressWarnings("rawtypes")
-public class Interval <T extends Comparable> {
+public final class Interval <T extends Comparable> {
 
 	/** Lower limit */
-	public final T lower;
+	public final T min;
 	/** Upper limit */
-	public final T upper;
+	public final T max;
 	/** Interval type */
 	public final int type;
 
@@ -44,38 +44,38 @@ public class Interval <T extends Comparable> {
 
 	
 	/**
-	 * Construct an <code>Interval</code> from lower and upper limit points and a
-	 * type. The <code>lower</code> limit can never exceed the <code>upper</code>
-	 * upper. A <code>null</code> value for a limit point means that the interval
-	 * is unbounded (and by definition open) on that side.
+	 * Creates an <code>Interval</code> from its limit points and a type. The
+	 * minimum value can never exceed the maximum value. A <code>null</code> value
+	 * for a limit point means that the interval is unbounded (and by definition
+	 * open) on that side.
 	 * 
 	 * @throws IllegalArgumentException
 	 */
 	@SuppressWarnings("unchecked")
-	public Interval(T lower, T upper, int type) {
+	public Interval(T min, T max, int type) {
 
-		this.lower = lower; this.upper = upper;
+		this.min = min; this.max = max;
 
-		if (lower == null) type |= LEFT_OPEN;
-		if (upper == null) type |= RIGHT_OPEN;
+		if (min == null) type |= LEFT_OPEN;
+		if (max == null) type |= RIGHT_OPEN;
 		this.type = type;
 
-		if (lower == null || upper == null) return;
+		if (min == null || max == null) return;
 
-		if (lower.compareTo(upper) > 0)
+		if (min.compareTo(max) > 0)
 			throw new IllegalArgumentException("lower limit exceeds upper limit");
 	}
 
 	
 	/**
-	 * Factory method to create a an <code>Interval</code> from a string in interval
-	 * notation, or a fixed value.
+	 * Creates a an <code>Interval</code> from a string in interval notation, or a
+	 * fixed value.
 	 * 
 	 * @throws IllegalArgumentException
 	 */
-	public static <T extends Comparable> Interval<T> from(String interval, Class<T> cls) throws Exception {
+	public static <T extends Comparable> Interval<T> from(String interval, Class<T> cls) {
 		
-		T lower = null, upper = null; // null means unbounded, or * in interval notation
+		T min = null, max = null; // null means unbounded, or * in interval notation
 		
 		interval = (interval == null) ? "" : interval.trim();
 		if (interval.isEmpty())
@@ -88,11 +88,11 @@ public class Interval <T extends Comparable> {
 			if (interval.contains(".."))
 				throw new IllegalArgumentException("invalid interval notation");
 			try {
-				lower = cls.getConstructor(String.class).newInstance(interval);
+				min = cls.getConstructor(String.class).newInstance(interval);
 			} catch (Exception e) {
 				throw new IllegalArgumentException("invalid limiting value", e);
 			}
-			return new Interval<T>(lower, lower, CLOSED);
+			return new Interval<T>(min, min, CLOSED);
 		}
 
 		int type = CLOSED;
@@ -102,7 +102,7 @@ public class Interval <T extends Comparable> {
 		String lowerlimit = matcher.group(1).trim();
 		try {
 			if (! lowerlimit.equals("*")) 
-				lower = cls.getConstructor(String.class).newInstance(lowerlimit);
+				min = cls.getConstructor(String.class).newInstance(lowerlimit);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("invalid lower limit", e);
 		}
@@ -110,30 +110,30 @@ public class Interval <T extends Comparable> {
 		String upperlimit = matcher.group(2).trim();
 		try {
 			if (! upperlimit.equals("*")) 
-				upper = cls.getConstructor(String.class).newInstance(upperlimit);
+				max = cls.getConstructor(String.class).newInstance(upperlimit);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("invalid upper limit", e);
 		}
 			
-		return new Interval<T>(lower, upper, type);
+		return new Interval<T>(min, max, type);
 	}
 
 	
 	/**
-	 * This method returns 0 if the supplied value lies within the interval, and -1
-	 * (value below interval limit) or 1 (value beyond interval limit) otherwise.
-	 * The supplied value must never be <code>null</code>.
+	 * Returns 0 if the supplied value lies within the interval, -1 if it subceeds
+	 * the lower interval limit, and 1 if it exceeds the upper limit. The value must
+	 * never be <code>null</code>.
 	 */
 	@SuppressWarnings({ "unchecked", "hiding" })
 	public <T extends Comparable> int contains(T value) {
 		
 		int comp;
-		if (lower != null) {
-			comp = value.compareTo(lower);
+		if (min != null) {
+			comp = value.compareTo(min);
 			if (comp < 0 || comp == 0 && (type & LEFT_OPEN) > 0) return -1;
 		}
-		if (upper != null) {
-			comp = value.compareTo(upper);
+		if (max != null) {
+			comp = value.compareTo(max);
 			if (comp > 0 || comp == 0 && (type & RIGHT_OPEN) > 0) return 1;
 		}
 		return 0;
@@ -143,10 +143,9 @@ public class Interval <T extends Comparable> {
 	/** Returns the interval as a string in interval notation. */
 	public String toString() {
 		
-		if (lower == upper && lower != null) return lower.toString(); // fixed value
+		if (min == max && min != null) return min.toString(); // fixed value
 		
-		return ((type & LEFT_OPEN) > 0 ? "(" : "[") + (lower == null ? "*" : lower)
-			+ ".." + (upper == null ? "*" : upper) + ((type & RIGHT_OPEN) > 0 ? ")" : "]");
+		return ((type & LEFT_OPEN) > 0 ? "(" : "[") + (min == null ? "*" : min)
+			+ ".." + (max == null ? "*" : max) + ((type & RIGHT_OPEN) > 0 ? ")" : "]");
 	}
-
 }

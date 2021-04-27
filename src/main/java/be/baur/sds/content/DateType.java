@@ -4,16 +4,17 @@ import be.baur.sds.common.Content;
 import be.baur.sds.common.Date;
 
 /**
- * A <code>DateType</code> is a {@link RangedType} representing a SDA node with
+ * A <code>DateType</code> is a {@link RangedType} representing an SDA node with
  * temporal content (a date without time or time zone).
  */
-public class DateType extends RangedType<Date> {
+public final class DateType extends RangedType<Date> {
 
 
-	/** Create a date type. */
+	/** Creates a date type with the supplied <code>name</code>. */
 	public DateType(String name) {
 		super(name);
 	}
+	
 	
 	public Content getContentType() { 
 		return Content.DATE; 

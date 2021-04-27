@@ -8,10 +8,15 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 public final class ErrorList extends ArrayList<Error> {
 
-	/** Safe add method that prevents adding null references. */
+	/** Safe add method (prevents adding null references). */
+	@Override
 	public boolean add(Error error) {
-
 		if (error == null) return false;
 		return super.add(error);
 	}
+	
+//	public boolean add(Node node, String format, Object... args) {
+//		if (node == null) return false;
+//		return add(new Error(node, format, args));
+//	}
 }

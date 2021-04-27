@@ -2,14 +2,14 @@ schema {
 	node {
 		name "contacts"
 		node {
-			name "contact"  multiplicity "0..*"
-			node { name "id" type "integer" value "(0..*)" }
+			name "contact"  occurs "0..*"
+			node { name "id" type "integer" value "(0..24)" }
 			node { name "name" type "string" nullable "false" }
-			node { name "phone" type "string" multiplicity "0..1" length "11" pattern "\\d{2,4}-\\d{6,8}" }
-			node { name "birthdate" type "date" multiplicity "0..1" value "[1900-01-01..*)" }
-			node { name "star" type "boolean" multiplicity "0..1" }
-			node { name "icon" type "binary" multiplicity "0..1" }
-			node { name "about" type "any" multiplicity "0..1" }
+			node { name "phone" type "string" occurs "0..1" length "11" pattern "\\d{2,4}-\\d{6,8}" }
+			node { name "birthdate" type "date" occurs "0..1" value "[1900-01-01..*)" }
+			node { name "star" type "boolean" occurs "0..1" }
+			node { name "icon" type "binary" occurs "0..1" }
+			node { name "about" type "any" occurs "0..1" }
 		}
 	}
 }

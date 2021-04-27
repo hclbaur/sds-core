@@ -9,48 +9,51 @@ import be.baur.sds.common.Attribute;
 import be.baur.sds.common.Component;
 import be.baur.sds.common.Content;
 import be.baur.sds.common.NaturalInterval;
+import be.baur.sds.content.AbstractStringType;
 import be.baur.sds.content.AnyType;
 import be.baur.sds.content.RangedType;
-import be.baur.sds.content.StringType;
 
 /**
- * A <code>SimpleType</code> defines a simple SDA node, with a content type like
- * a string, integer, date, etc. As it does not need to contain other components
- * it extends {@link SimpleNode}.
+ * A <code>SimpleType</code> represents an SDS definition of a simple SDA node,
+ * with a simple content type like a string, integer, date, etc.
  */
 public abstract class SimpleType extends SimpleNode implements ComponentType {
 
-	/** Construct a simple type with default multiplicity (mandatory and singular). */
+	private String globaltype = null; // the global type this component refers to.
+	private NaturalInterval multiplicity = null; // the default multiplicity: mandatory and singular.
+	private String pattexp = null; // the regular expression defining the pattern.
+	private Pattern pattern = null;	// the pre-compiled pattern (from expression).
+	private boolean nullable = false; // the default null-ability (if that is a word).	
+	
+	/** Creates a simple type with the specified <code>name</code>.*/
 	public SimpleType(String name) {
 		super(name, null); // the value field is currently not used
 	}
-	
-	// Set when constructed from a reference.
-	private String globaltype = null;
+
 	
 	public String getGlobalType() {
 		return globaltype;
 	}
 
+	
 	public void setGlobalType(String type) {
 		this.globaltype = type;
 	}
 	
+	
 	/** Returns the content type. */
 	public abstract Content getContentType();
-	
-	private NaturalInterval multiplicity = null;	// Multiplicity null means: exactly once.
-	private String pattexp = null;  				// Regular expression defining the pattern.
-	private Pattern pattern = null;					// Pre-compiled pattern (from expression).
-	private boolean nullable = false;				// Default null-ability is false.
+
 	
 	public NaturalInterval getMultiplicity() {
 		return multiplicity;
 	}
 
+	
 	public void setMultiplicity(NaturalInterval multiplicity) {
 		this.multiplicity = multiplicity;
 	}
+	
 	
 	/** Returns the (pre-compiled) pattern for this type. */
 	public Pattern getPattern() {
@@ -61,6 +64,7 @@ public abstract class SimpleType extends SimpleNode implements ComponentType {
 	public String getPatternExpr() {
 		return pattexp;
 	}
+
 
 	/**
 	 * Sets the pattern for this type from a regular expression.
@@ -76,18 +80,20 @@ public abstract class SimpleType extends SimpleNode implements ComponentType {
 		}
 	}
 
-	/** Returns the null-ability (if that is even a word). */
+	
+	/** Returns whether this type is null-able. */
 	public boolean isNullable() {
 		return nullable;
 	}
 
-	/** Sets the null-ability (if not equal to <code>null</null>). */
+	
+	/** Sets whether this type is null-able. */
 	public void setNullable(boolean nullable) {
 		this.nullable = nullable;
 	}
 
 	
-	public ComplexNode toNode() {
+	public final ComplexNode toNode() {
 		
 		ComplexNode node = new ComplexNode(Component.NODE.tag);
 		
@@ -102,12 +108,13 @@ public abstract class SimpleType extends SimpleNode implements ComponentType {
 		node.nodes.add(new SimpleNode(Attribute.TYPE.tag,
 			getGlobalType() == null ? getContentType().type : getGlobalType()));
 		
-		if (minOccurs() != 1 || maxOccurs() != 1)
-			node.nodes.add(new SimpleNode(Attribute.MULTIPLICITY.tag, multiplicity.toString()));
+		// Render the multiplicity if not default.
+		if (multiplicity != null && (multiplicity.min != 1 || multiplicity.max != 1)) 
+			node.nodes.add(new SimpleNode(Attribute.OCCURS.tag, multiplicity.toString()));
 		
-		boolean stringType = (this instanceof StringType);
+		boolean stringType = (this instanceof AbstractStringType);
 		if (stringType) {
-			StringType t = (StringType) this;
+			AbstractStringType t = (AbstractStringType) this;
 			if (t.minLength() != 0 || t.maxLength() != Integer.MAX_VALUE)
 				node.nodes.add(new SimpleNode(Attribute.LENGTH.tag, t.getLength().toString()));
 		}
@@ -129,7 +136,7 @@ public abstract class SimpleType extends SimpleNode implements ComponentType {
 
 	
 	@Override
-	public String toString() {
+	public final String toString() {
 		return toNode().toString();
 	}
 }

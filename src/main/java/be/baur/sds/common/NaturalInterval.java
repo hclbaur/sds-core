@@ -1,10 +1,10 @@
 package be.baur.sds.common;
 
 /**
- * This class models an interval, with a lower and an upper limit point that is
- * a natural number (e.g. non-negative integer). It is used for attributes like
- * multiplicity and length. The limits are inclusive, so the interval is closed
- * by definition. The notation is as follows:
+ * This class models an interval, with limits that are natural numbers (e.g.
+ * non-negative integers). It is used for multiplicity and length. The limits
+ * are inclusive, so the interval is closed by definition. The notation is as
+ * follows:
  * 
  * <pre>
  * a..b	: where both a and b are non-negative integers and a <= b
@@ -12,34 +12,33 @@ package be.baur.sds.common;
  * a	: fixed value, equivalent to "a..a"	(degenerate interval)
  * </pre>
  */
-
-public class NaturalInterval {
+public final class NaturalInterval {
 
 	/** Lower limit */
-	public final int lower;
+	public final int min;
 	/** Upper limit */
-	public final int upper;
+	public final int max;
 
 	
 	/**
-	 * Construct the interval from a lower and upper limit.
+	 * Creates the interval from a lower and upper limit.
 	 * 
 	 * @throws IllegalArgumentException
 	 */
-	public NaturalInterval(int lower, int upper) {
+	public NaturalInterval(int min, int max) {
 
-		if (lower < 0 || upper < 0)
+		if (min < 0 || max < 0)
 			throw new IllegalArgumentException("negative values are not allowed");
-		else if (lower > upper)
+		else if (min > max)
 			throw new IllegalArgumentException("lower limit exceeds upper limit");
 
-		this.lower = lower;
-		this.upper = upper;
+		this.min = min;
+		this.max = max;
 	}
 	
 	
 	/**
-	 * Factory method to create an interval from a string in interval notation.
+	 * Creates an interval from a string in interval notation.
 	 * 
 	 * @throws IllegalArgumentException
 	 */
@@ -49,53 +48,41 @@ public class NaturalInterval {
 		if (interval.isEmpty())
 			throw new IllegalArgumentException("no interval specified");
 		
-		int lower, upper, dots = interval.indexOf("..");
+		int min, max, dots = interval.indexOf("..");
 
 		try {
 			if (dots < 0) { // no dots; parse a single integer
-				lower = Integer.parseInt(interval);
-				upper = lower;
-			} else { // otherwise, look for lower before the dots
-				lower = Integer.parseInt(interval.substring(0, dots).trim());
+				min = Integer.parseInt(interval);
+				max = min;
+			} else { // otherwise, look for lower limit before the dots
+				min = Integer.parseInt(interval.substring(0, dots).trim());
 
-				// and for upper or an * after the dots
+				// and for an upper limit or an * after the dots
 				String s = interval.substring(dots + 2).trim();
-				upper = s.equals("*") ? Integer.MAX_VALUE : Integer.parseInt(s);
+				max = s.equals("*") ? Integer.MAX_VALUE : Integer.parseInt(s);
 			}
 		} catch (Exception e) {
 			throw new IllegalArgumentException("missing or non-integer value(s)", e);
 		}
 
-		return new NaturalInterval(lower, upper);	
+		return new NaturalInterval(min, max);	
 
 	}
 	
 
 	/**
-	 * This method returns 0 if the supplied value lies within the interval, and -1
-	 * (value below interval limit) or 1 (value beyond interval limit) otherwise.
+	 * Returns 0 if the supplied value lies within the interval, -1 if it subceeds
+	 * the lower interval limit, and 1 if it exceeds the upper limit.
 	 */
 	public int contains(int value) {
 
-		return (value < lower) ? -1 : ((value > upper) ? 1 : 0);
+		return (value < min) ? -1 : ((value > max) ? 1 : 0);
 	}
 
 	
-	/** Returns this instance in interval notation. */
+	/** Returns the interval as a string in interval notation. */
 	public String toString() {
-		return (lower == upper) ? "" + lower
-			: lower + ".." + ((upper == Integer.MAX_VALUE) ? "*" : "" + upper);
+		return (min == max) ? "" + min
+			: min + ".." + ((max == Integer.MAX_VALUE) ? "*" : "" + max);
 	}
-
-//	public static void main (String[] args) {
-//		
-//		int i = 100000000;
-//		long start = new Date().getTime();
-//		while (i>0) {
-//			NaturalInterval.from("0..*");
-//			--i;
-//		}
-//		System.out.println(new Date().getTime() - start);
-//	}
-	
 }

@@ -3,11 +3,11 @@ schema {
 	node {
 		name "person"
 		node { name "firstname" type "string" }
-		node { name "lastname" type "string" multiplicity "0..1" }
-		node { name "birthdate" type "date" multiplicity "0..1" }
+		node { name "lastname" type "string" occurs "0..1" }
+		node { name "birthdate" type "date" occurs "0..1" }
 		node {
-			name "about" multiplicity "0..1"
-			node { type "any" multiplicity "1..*" }
+			name "about" occurs "0..1"
+			node { type "any" occurs "1..*" }
 		}
 	}
 	node {
@@ -18,10 +18,10 @@ schema {
 			node { name "postalcode" type "string" pattern "\\d{4} [A-Z]{2}" }
 		}
 		node { name "housenumber" type "integer" value "[1..*)" }
-		node { name "sub" type "string" multiplicity "0..1" }
+		node { name "sub" type "string" occurs "0..1" }
 		node { name "city" type "string" }
 		group {
-			multiplicity "0..1"
+			occurs "0..1"
 			node { name "latitude" type "decimal" }
 			node { name "longitude" type "decimal" }
 		}
@@ -30,9 +30,9 @@ schema {
 		name "contact"
 		node { name "id" type "integer" value "[0..*)" }
 		node { type "person" }
-		node { type "address" multiplicity "0..2" }
+		node { type "address" occurs "0..2" }
 		choice {
-			multiplicity "1..4"
+			occurs "1..4"
 			node { name "phone" type "string" length "11" pattern "\\d{2,4}-\\d{6,8}" }
 			node { name "email" type "string" }
 		}
@@ -40,6 +40,6 @@ schema {
 	node {
 		name "addressbook"
 		node { name "owner" type "contact" }
-		node { type "contact" multiplicity "0..*" }
+		node { type "contact" occurs "0..*" }
 	}
 }

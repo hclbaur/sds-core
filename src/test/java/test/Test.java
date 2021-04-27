@@ -17,7 +17,7 @@ public class Test {
 		this.bifunction = bifunction;
 	}
 	
-	public void t1(String scenario, String input, String expected) {
+	public void ts1(String scenario, String input, String expected) {
 		
 		String result = function.apply(input);
 
@@ -31,7 +31,7 @@ public class Test {
 		}
 	}
 	
-	public void t1Error(String scenario, String input, String expected) {
+	public void ts1Error(String scenario, String input, String expected) {
 		
 		try { 
 			function.apply(input);
@@ -49,7 +49,7 @@ public class Test {
 		System.out.println(scenario + " FAILED - exception expected");
 	}
 	
-	public void t2(String scenario, String input1, String input2, String expected) {
+	public void ts2(String scenario, String input1, String input2, String expected) {
 		
 		String result = bifunction.apply(input1, input2);
 
