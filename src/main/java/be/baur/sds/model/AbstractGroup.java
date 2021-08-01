@@ -18,10 +18,10 @@ public abstract class AbstractGroup extends ComplexType {
 
 	
 	/**
-	 * This method overrides the default, to return the effective minimum number of
-	 * times that a group must occur within its context. Even if the formal
-	 * multiplicity states that it is mandatory, empty content is valid if all of
-	 * the alternatives are optional. For example, given a schema like
+	 * This method overrides the super method, to return the effective minimum
+	 * number of times that a group must occur within its context. Even when the
+	 * formal multiplicity states that it is mandatory, empty content is valid if
+	 * all of the alternatives are optional. For example, given a schema like
 	 * 
 	 * <pre>
 	 * node {
@@ -42,7 +42,7 @@ public abstract class AbstractGroup extends ComplexType {
 	@Override
 	public int minOccurs() {
 		
-		Optional<Node> man = this.nodes.stream()
+		Optional<Node> man = this.getNodes().stream()
 			.filter(n -> (n instanceof ComponentType) && ((ComponentType) n).minOccurs() > 0)
 			.findFirst(); // if a group contains no mandatory components, it is optional.
 		if (man.isPresent()) return super.minOccurs();

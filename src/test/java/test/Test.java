@@ -3,13 +3,13 @@ package test;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/** A convenience class with testing methods that accept Lamba expressions */
+/** A convenience class with testing methods that accept Lambda expressions */
 public class Test {
 
 	Function<String, String> function;
 	BiFunction<String, String, String> bifunction;
 	
-	Test(Function<String, String> function) {
+	public Test(Function<String, String> function) {
 		this.function = function;
 	}
 	

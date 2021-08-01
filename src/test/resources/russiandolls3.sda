@@ -1,0 +1,26 @@
+russian_dolls {
+	male_doll {
+		id "peter"
+		female_doll {
+			id "mary"
+			male_doll {
+				id "paul"
+				female_doll {
+					id "paula"
+				}
+			}
+		}
+	}
+	female_doll {
+		id "mary"
+		female_doll {
+			id "paula"
+			male_doll {
+				id "peter"
+				male_doll {
+					id "paul"
+				}
+			}
+		}
+	}
+}

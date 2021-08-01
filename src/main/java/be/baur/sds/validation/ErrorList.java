@@ -14,9 +14,5 @@ public final class ErrorList extends ArrayList<Error> {
 		if (error == null) return false;
 		return super.add(error);
 	}
-	
-//	public boolean add(Node node, String format, Object... args) {
-//		if (node == null) return false;
-//		return add(new Error(node, format, args));
-//	}
+
 }

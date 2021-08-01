@@ -22,16 +22,22 @@ public final class TestAll {
 		System.out.print("\nSDSParser   : ");
 		test.TestSDSParser.main(args);
 		
-		System.out.print("\nValContacts : ");
-		test.TestValContacts.main(args);
+		System.out.print("\nContacts    : ");
+		test.validation.Contacts.main(args);
 		
-		System.out.print("\nValAddress  : ");
-		test.TestValAddress.main(args);
+		System.out.print("\nAddressbook : ");
+		test.validation.Addressbook.main(args);
 		
-		System.out.print("\nValMChoice  : ");
-		test.TestValMChoice.main(args);
+		System.out.print("\nChoices     : ");
+		test.validation.Choices.main(args);
 		
-		System.out.print("\nValMGroup   : ");
-		test.TestValMGroup.main(args);
+		System.out.print("\nGroups      : ");
+		test.validation.Groups.main(args);
+		
+		System.out.print("\nRussianDoll : ");
+		test.validation.RussianDolls.main(args);
+		
+		System.out.print("\nCartesian   : ");
+		test.validation.Cartesian.main(args);
 	}
 }

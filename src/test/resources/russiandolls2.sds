@@ -1,0 +1,18 @@
+schema {
+	type "russian_dolls"
+	node {
+			name "male_doll"
+			node { name "id" type "string" }
+			node { type "female_doll" occurs "0..1" }
+	}
+	node {
+			name "female_doll"
+			node { name "id" type "string" }
+			node { type "male_doll" occurs "0..1" }
+	}
+	node {
+		name "russian_dolls"
+		node { type "male_doll" }
+		node { type "female_doll" }
+	}
+}

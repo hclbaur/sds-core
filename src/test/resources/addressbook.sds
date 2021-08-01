@@ -24,6 +24,7 @@ schema {
 			occurs "0..1"
 			node { name "latitude" type "decimal" }
 			node { name "longitude" type "decimal" }
+			node { name "altitude" type "decimal" occurs "0..1" }
 		}
 	}
 	node {

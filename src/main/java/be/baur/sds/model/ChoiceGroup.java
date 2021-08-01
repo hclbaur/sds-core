@@ -28,10 +28,11 @@ public final class ChoiceGroup extends AbstractGroup {
 	
 	
 	/**
-	 * This method overrides the default, to return the effective minimum number of
-	 * times that a choice group must occur within its context. Even if the formal
-	 * multiplicity states that it is mandatory, empty content is valid if at least
-	 * one of the alternatives is optional. For example, given a schema like
+	 * This method overrides the super method, to return the effective minimum
+	 * number of times that a choice group must occur within its context. Even when
+	 * the formal multiplicity states that it is mandatory, empty content is valid
+	 * if at least one of the alternatives is optional. For example, given a schema
+	 * like
 	 * 
 	 * <pre>
 	 * node {
@@ -53,7 +54,7 @@ public final class ChoiceGroup extends AbstractGroup {
 	@Override
 	public int minOccurs() {
 		
-		Optional<Node> opt = this.nodes.stream()
+		Optional<Node> opt = this.getNodes().stream()
 			.filter(n -> (n instanceof ComponentType) && ((ComponentType) n).minOccurs() == 0)
 			.findFirst(); // if a choice contains at least one optional component, it is optional.
 		if (opt.isPresent()) return 0;

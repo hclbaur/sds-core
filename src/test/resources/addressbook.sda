@@ -6,7 +6,7 @@ addressbook {
 		}
 		address { 
 			type "home" postalcode "5611 XG" housenumber "261" 
-			city "EINDHOVEN" latitude "51.4385834" longitude "5.4706297" 
+			city "EINDHOVEN" latitude "51.430" longitude "5.470" altitude "4"
 		}
 		phone "06-11111111" email "harold@home"
 	}
@@ -14,7 +14,7 @@ addressbook {
 		person { firstname "Alice" about "" }
 		address { 
 			type "home" housenumber "1" sub "A" 
-			city "EINDHOVEN" latitude "51.4385834" longitude "5.4706297"
+			city "EINDHOVEN" latitude "51.431" longitude "5.471"
 		}
 		email "alice@home" 	phone "06-22222222" email "alice2@home" phone "06-33333333"
 		email "alice3@home"
@@ -23,7 +23,7 @@ addressbook {
 		person { firstname "Bob" about {} }
 		address { 
 			type "home" streetname "Lichtstraat" housenumber "2" 
-			city "EINDHOVEN" latitude "51.4385834" longitude "5.4706297" altitude "5"
+			city "EINDHOVEN" latitude "51.432" longitude "5.472" height "5"
 		}
 		twitter "@bob" email "bob@home"
 	}
@@ -31,7 +31,7 @@ addressbook {
 		person { firstname "Charlene" }
 		address { 
 			type "work" streetname "Lichtstraat" housenumber "3" 
-			city "EINDHOVEN" longitude "5.4706297" latitude "51.4385834"
+			city "EINDHOVEN" longitude "5.473" latitude "51.433"
 		}
 		email "charlene@work" twitter "@charlene" 
 	}
@@ -39,14 +39,14 @@ addressbook {
 		person { firstname "Dennis" }
 		address { 
 			type "home" streetname "Lichtstraat" housenumber "4" 
-			city "EINDHOVEN" longitude "5.4706297"
+			city "EINDHOVEN" longitude "5.474"
 		}
 	}
 	contact { id "5"
 		person { firstname "Edward" }
 		address { 
 			type "home" streetname "Lichtstraat" housenumber "5" 
-			city "EINDHOVEN" latitude "51.4385834"
+			city "EINDHOVEN" latitude "51.434"
 		}
 	}
 	contact { id "6"

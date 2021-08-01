@@ -1,0 +1,17 @@
+cartesian {
+	line { id "1" point { id "1" x "0" y "0" z "0" tag "origin" } point { id "2" x "1" z "1" y "1" } }
+	line { id "2" point { id "1" y "0" x "0" z "0" } point { id "2" y "1" z "1" x "1" } }
+	line { id "3" point { id "1" z "0" x "0" y "0" } point { id "2" z "1" y "1" x "1" tag "zyx" } }
+	line { id "4" point { id "1" x "0" y "0" tag "2dpoint" } point { id "2" y "1" x "1" } }
+	line { id "5" point { id "1" x "0" z "0" } point { id "2" z "1" x "1" } }
+	line { id "6" point { id "1" y "0" z "0" } point { id "2" z "1" y "1" } }
+	line { id "7" point { id "1" x "0" } point { id "2" y "1" } }
+	line { id "8" point { id "1" z "0" } point { id "2" } }
+	line { id "9" point { id "1" tag "unknown" } } 
+	line { id "10" point { } }
+	line { id "11" point { id "1" U "0" x "0" y "0" z "0" } point { id "2" x "1" U "1" y "1" z "1" } }
+	line { id "12" point { id "1" x "0" y "0" U "0" z "0" } point { id "2" x "1" y "1" z "1" U "0" } }
+	line { id "13" point { id "1" U "0" x "0" y "0" } point { id "2" x "1" U "1" y "1" } }
+	line { id "14" point { id "1" x "0" y "0" U "0" } point { id "2" x "1" U "1" } }
+	line { id "15" point { id "1" U "0" x "0" } point { id "2" U "1" } }
+}

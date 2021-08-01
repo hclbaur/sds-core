@@ -101,35 +101,35 @@ public abstract class SimpleType extends SimpleNode implements ComponentType {
 		// reference that has the same name as the global type it refers to
 		if (! (( getGlobalType() != null && getName().equals(getGlobalType()) )
 			|| ( this instanceof AnyType && !((AnyType) this).isNamed() )) ) {
-			node.nodes.add(new SimpleNode(Attribute.NAME.tag, getName()));
+			node.getNodes().add(new SimpleNode(Attribute.NAME.tag, getName()));
 		}
 		
 		// set the content type - or in case of a reference - the global type
-		node.nodes.add(new SimpleNode(Attribute.TYPE.tag,
+		node.getNodes().add(new SimpleNode(Attribute.TYPE.tag,
 			getGlobalType() == null ? getContentType().type : getGlobalType()));
 		
 		// Render the multiplicity if not default.
 		if (multiplicity != null && (multiplicity.min != 1 || multiplicity.max != 1)) 
-			node.nodes.add(new SimpleNode(Attribute.OCCURS.tag, multiplicity.toString()));
+			node.getNodes().add(new SimpleNode(Attribute.OCCURS.tag, multiplicity.toString()));
 		
 		boolean stringType = (this instanceof AbstractStringType);
 		if (stringType) {
 			AbstractStringType t = (AbstractStringType) this;
 			if (t.minLength() != 0 || t.maxLength() != Integer.MAX_VALUE)
-				node.nodes.add(new SimpleNode(Attribute.LENGTH.tag, t.getLength().toString()));
+				node.getNodes().add(new SimpleNode(Attribute.LENGTH.tag, t.getLength().toString()));
 		}
 
 		if (this instanceof RangedType) {
 			RangedType<?> t = (RangedType<?>) this;
 			if (t.getRange() != null)
-				node.nodes.add(new SimpleNode(Attribute.VALUE.tag, t.getRange().toString()));
+				node.getNodes().add(new SimpleNode(Attribute.VALUE.tag, t.getRange().toString()));
 		}
 		
 		if (pattern != null)
-			node.nodes.add(new SimpleNode(Attribute.PATTERN.tag, pattexp));
+			node.getNodes().add(new SimpleNode(Attribute.PATTERN.tag, pattexp));
 		
 		if (stringType == !nullable)
-			node.nodes.add(new SimpleNode(Attribute.NULLABLE.tag, String.valueOf(nullable)));
+			node.getNodes().add(new SimpleNode(Attribute.NULLABLE.tag, String.valueOf(nullable)));
 		
 		return node;
 	}

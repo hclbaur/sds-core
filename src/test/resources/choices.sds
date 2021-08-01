@@ -4,7 +4,7 @@ schema {
 	node {
 		name "choice_tests"
 		node {
-			name "man_man" occurs "1..*"
+			name "man_man_man" occurs "1..*"
 			node { type "id" }
 			choice {
 				node { name "man1" type "string" }
@@ -12,7 +12,7 @@ schema {
 			}
 		}
 		node {
-			name "opt_man" occurs "1..*"
+			name "opt_man_man" occurs "1..*"
 			node { type "id" }
 			choice {
 				occurs "0..1"
@@ -21,7 +21,7 @@ schema {
 			}
 		}
 		node {
-			name "man_opt" occurs "1..*"
+			name "man_opt_opt" occurs "1..*"
 			node { type "id" }
 			choice {
 				node { name "opt1" type "string" occurs "0..1" }
@@ -29,12 +29,20 @@ schema {
 			}
 		}
 		node {
-			name "opt_opt" occurs "1..*"
+			name "opt_opt_opt" occurs "1..*"
 			node { type "id" }
 			choice {
 				occurs "0..1"
 				node { name "opt1" type "string" occurs "0..1" }
 				node { name "opt2" type "string" occurs "0..1" }
+			}
+		}
+		node {
+			name "man_man_opt" occurs "1..*"
+			node { type "id" }
+			choice {
+				node { name "man1" type "string" }
+				node { name "opt1" type "string" occurs "0..1" }
 			}
 		}
 	}

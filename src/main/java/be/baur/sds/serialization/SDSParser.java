@@ -1,6 +1,8 @@
 package be.baur.sds.serialization;
 
 import java.io.Reader;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.PatternSyntaxException;
 
@@ -104,7 +106,7 @@ public final class SDSParser implements Parser {
 			throw new SchemaException(sds, String.format(SCHEMA_NODE_EXPECTED, Schema.TAG));
 		
 		// Schema nodes must not have any attributes, except for an optional type reference.
-		Optional<Node> att = sds.nodes.get(SimpleNode.class).stream()
+		Optional<Node> att = sds.getNodes().get(SimpleNode.class).stream()
 			.filter(n -> ! n.getName().equals(Attribute.TYPE.tag)).findFirst();
 			
 		if (att.isPresent()) { // An unknown or forbidden attribute was found.
@@ -113,13 +115,13 @@ public final class SDSParser implements Parser {
 			throw new SchemaException(att.get(), String.format(ATTRIBUTE_NOT_ALLOWED, att.get().getName()));
 		}
 		
-		if (sds.nodes.isEmpty()) // A schema can never be empty.
+		if (sds.getNodes().isEmpty()) // A schema can never be empty.
 			throw new SchemaException(sds, String.format(SCHEMA_NODE_EMPTY, sds.getName()));
 		
 		Schema schema = new Schema();
 
 		// Parse global types, and add them to the schema (if all is in order).
-		for (Node node : sds.nodes.get(ComplexNode.class)) {
+		for (Node node : sds.getNodes().get(ComplexNode.class)) {
 			
 			if (Component.get(node.getName()) == null) // Component is unknown.
 				throw new SchemaException(node, String.format(COMPONENT_UNKNOWN, node.getName()));
@@ -130,7 +132,7 @@ public final class SDSParser implements Parser {
 			// Global types must not have multiplicity.
 			getAttribute((ComplexNode) node, Attribute.OCCURS, null);
 			
-			schema.nodes.add((Node) parseComponent((ComplexNode) node));
+			schema.getNodes().add((Node) parseComponent((ComplexNode) node, false));
 		}
 
 		// When done, set the designated root type reference (if specified and valid).
@@ -149,11 +151,13 @@ public final class SDSParser implements Parser {
 
 
 	/**
-	 * This parses a node representing an SDS component, and returns a {@link SimpleType} 
-	 * or {@link ComplexType} which in turn may contain other components or model groups.
-	 * This method is called by <code>parse()</code> to parse an entire schema.
+	 * This parses an SDA node representing an SDS component, and returns a
+	 * {@link SimpleType} or {@link ComplexType} which in turn may contain other
+	 * components or model groups. It is called by <code>parse()</code> to parse an
+	 * entire schema. A <code>shallow</code> parse means that no child nodes are
+	 * parsed, which is used in the parsing of type references.
 	 */
-	private static ComponentType parseComponent(ComplexNode sds) throws SchemaException {
+	private static ComponentType parseComponent(ComplexNode sds, boolean shallow) throws SchemaException {
 
 		/*
 		 * Whatever we get must be a valid component, and contain attributes, types
@@ -163,11 +167,11 @@ public final class SDSParser implements Parser {
 		if (Component.get(sds.getName()) == null) // Components must have a valid name.
 			throw new SchemaException(sds, String.format(COMPONENT_UNKNOWN, sds.getName()));
 
-		for (Node node : sds.nodes.get(SimpleNode.class))
+		for (Node node : sds.getNodes().get(SimpleNode.class))
 			if (Attribute.get(node.getName()) == null) // Attributes must have a valid name.
 				throw new SchemaException(node, String.format(ATTRIBUTE_UNKNOWN, node.getName()));
 		
-		if (sds.nodes.isEmpty()) // Components should never be empty.
+		if (sds.getNodes().isEmpty()) // Components should never be empty.
 			throw new SchemaException(sds, String.format(COMPONENT_EMPTY, sds.getName()));
 		
 		/*
@@ -178,7 +182,7 @@ public final class SDSParser implements Parser {
 		 */
 		ComponentType component; // The component to be returned at the end of this method.
 		boolean isNode = sds.getName().equals(Component.NODE.tag); // False for a model group.
-		NodeSet complexChildren = sds.nodes.get(ComplexNode.class); // Empty if simple type or reference.
+		NodeSet complexChildren = sds.getNodes().get(ComplexNode.class); // Empty if simple type or reference.
 		
 		if (isNode && complexChildren.isEmpty()) {
 			
@@ -205,14 +209,16 @@ public final class SDSParser implements Parser {
 				String.format(ATTRIBUTE_INVALID, Attribute.OCCURS.tag, multi.getValue(), e.getMessage()));
 		}
 		
-		// And finally, for a ComplexType, recursively parse and add all child components.
-		if (component instanceof ComplexType) for (Node node : complexChildren)
-			((ComplexType) component).nodes.add((Node) parseComponent((ComplexNode) node));
+		// And finally, for a ComplexType, recursively parse and add all child components,
+		if (component instanceof ComplexType && ! shallow) // unless it's a shallow parse.
+			for (Node node : complexChildren)
+				((ComplexType) component).getNodes().add((Node) parseComponent((ComplexNode) node, false));
 
 		return component;
 	}
 
-	
+
+	static final List<String> REFTAGS = Arrays.asList(Attribute.TYPE.tag, Attribute.NAME.tag, Attribute.OCCURS.tag);
 	/**
 	 * A reference refers to a previously defined global type. If the name is
 	 * omitted, it is assumed to be equal to the name of the referenced type.
@@ -231,9 +237,9 @@ public final class SDSParser implements Parser {
 		/*
 		 * The reference is not a real component, but just a convenient shorthand way to
 		 * refer to a global type in SDS notation. When we encounter one, we create a
-		 * component from the global type it refers to and set its multiplicity and name
-		 * (if explicitly named). In addition, we set the global type on this component,
-		 * so that when rendering back to SDS, we can recreate the correct reference.
+		 * component from the global type it refers to and set its name (if explicitly
+		 * named). We also set the global type on this component, so that when rendering
+		 * back to SDS, we can recreate the correct reference.
 		 * Preconditions: the caller (parseComponentType) has already verified that this
 		 * node has no complex child nodes, and that all simple child nodes have valid
 		 * attribute tags.
@@ -241,10 +247,12 @@ public final class SDSParser implements Parser {
 		 */
 		
 		// References should not have attributes other than type, name and occurs.
-		Optional<Node> attribute = sds.nodes.get(SimpleNode.class).stream()
-			.filter(n -> ! ( n.getName().equals(Attribute.TYPE.tag) 
-				|| n.getName().equals(Attribute.NAME.tag) || n.getName().equals(Attribute.OCCURS.tag)
-			)).findFirst();
+//		Optional<Node> attribute = sds.getNodes().get(SimpleNode.class).stream()
+//			.filter(n -> ! ( n.getName().equals(Attribute.TYPE.tag) 
+//				|| n.getName().equals(Attribute.NAME.tag) || n.getName().equals(Attribute.OCCURS.tag)
+//			)).findFirst();
+		Optional<Node> attribute = sds.getNodes().get(SimpleNode.class).stream()
+			.filter(n -> ! REFTAGS.contains(n.getName())).findFirst();
 		if (attribute.isPresent())
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
 		
@@ -254,8 +262,8 @@ public final class SDSParser implements Parser {
 		
 		// We now search all node declarations in the root for the referenced type.
 		ComplexNode refNode = null;
-		for (Node cnode : root.nodes.get(ComplexNode.class).get(Component.NODE.tag)) {
-			for (Node snode : ((ComplexNode) cnode).nodes.get(SimpleNode.class).get(Attribute.NAME.tag)) {
+		for (Node cnode : root.getNodes().get(ComplexNode.class).get(Component.NODE.tag)) {
+			for (Node snode : ((ComplexNode) cnode).getNodes().get(SimpleNode.class).get(Attribute.NAME.tag)) {
 				if ( ((SimpleNode) snode).getValue().equals(type.getValue()) ) refNode = (ComplexNode) cnode; break;
 			}
 			if (refNode != null) break;
@@ -263,14 +271,21 @@ public final class SDSParser implements Parser {
 		if (refNode == null || refNode.equals(sds)) // if we found nothing or ourself, we raise an error.
 			throw new SchemaException(type, String.format(CONTENT_TYPE_UNKNOWN, type.getValue()));
 		
-		// If we get here, we can parse the referenced node into a new component
-		ComponentType refComp = parseComponent(refNode);
+		/*
+		 * If we get here, we can parse the referenced type into a new component, but
+		 * this poses a problem for self- and circular referencing types. If we keep on
+		 * adding types that reference themselves or each other, we will ultimately run
+		 * into a stack overflow. In order to support recursive references, we do not
+		 * parse any child nodes in the global type, but use a late binding technique to
+		 * return them when referenced. For details see ComplexType.getNodes().
+		 */
+		ComponentType refComp = parseComponent(refNode, true);
 		refComp.setGlobalType(type.getValue());  // set the type we were created from
 		
 		// If a name is specified (different or equal to the type name) we set it
 		SimpleNode name = getAttribute(sds, Attribute.NAME, false);
 		if (name != null) {
-			if (!SDA.isName(name.getValue())) 
+			if (! SDA.isName(name.getValue())) 
 				throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
 			refComp.setName(name.getValue());
 		}
@@ -292,9 +307,9 @@ public final class SDSParser implements Parser {
 		 */
 
 		// Complex types should not have attributes other than name and occurs.
-		Optional<Node> attribute = sds.nodes.get(SimpleNode.class).stream()
+		Optional<Node> attribute = sds.getNodes().get(SimpleNode.class).stream()
 			.filter(n -> ! (n.getName().equals(Attribute.NAME.tag) 
-					|| n.getName().equals(Attribute.OCCURS.tag)) )
+				|| n.getName().equals(Attribute.OCCURS.tag)) )
 			.findFirst();
 		
 		if (attribute.isPresent())
@@ -318,7 +333,7 @@ public final class SDSParser implements Parser {
 		}
 		
 		// Within a model group, we must have at least two components.
-		if (complex instanceof AbstractGroup && sds.nodes.get(ComplexNode.class).size() < 2)
+		if (complex instanceof AbstractGroup && sds.getNodes().get(ComplexNode.class).size() < 2)
 			throw new SchemaException(sds, String.format(COMPONENT_INCOMPLETE, complex.getName()));
 		
 		return complex;
@@ -432,7 +447,7 @@ public final class SDSParser implements Parser {
 	 */
 	private static SimpleNode getAttribute(ComplexNode sds, Attribute att, Boolean req) throws SchemaException {
 
-		NodeSet attributes = sds.nodes.get(SimpleNode.class).get(att.tag);
+		NodeSet attributes = sds.getNodes().get(SimpleNode.class).get(att.tag);
 		int size = attributes.size();
 		if (size == 0) {
 			if (req == null || req == false) return null;

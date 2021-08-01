@@ -1,0 +1,23 @@
+schema {
+	type "cartesian"
+	node { name "id" type "integer" value "(0..*)" }
+	node { 
+		name "point"
+		node { type "id" }
+		unordered {
+			node { name "x" type "decimal" }
+			node { name "y" type "decimal" }
+			node { name "z" type "decimal" occurs "0..1" }
+		} 
+		node { name "tag" type "string"  occurs "0..1" }
+	}
+	node {
+		name "line"
+		node { type "id" }
+		node { type "point" occurs "2" } 
+	}
+	node {
+		name "cartesian"
+		node { type "line" occurs "1..*" } 
+	}
+}

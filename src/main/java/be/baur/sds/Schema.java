@@ -38,7 +38,7 @@ public final class Schema extends ComplexNode {
 	 */
 	public void setRootType(String type) {
  
-		if (type != null && this.nodes.get(type).isEmpty())
+		if (type != null && this.getNodes().get(type).isEmpty())
 			throw new IllegalArgumentException("no such global type (" + type + ")");
 		this.rootType = type; 
 	}
@@ -55,10 +55,10 @@ public final class Schema extends ComplexNode {
 		ComplexNode node = new ComplexNode(TAG);
 		
 		if (rootType != null) // Render the type attribute if we have one.
-			node.nodes.add(new SimpleNode(Attribute.TYPE.tag, rootType));
+			node.getNodes().add(new SimpleNode(Attribute.TYPE.tag, rootType));
 
-		for (Node component : this.nodes) // Render all components.
-			node.nodes.add(((ComponentType) component).toNode());
+		for (Node component : this.getNodes()) // Render all components.
+			node.getNodes().add(((ComponentType) component).toNode());
 
 		return node;
 	}
