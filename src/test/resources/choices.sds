@@ -45,5 +45,31 @@ schema {
 				node { name "opt1" type "string" occurs "0..1" }
 			}
 		}
+		node {
+			name "man_opt_man" occurs "1..*"
+			node { type "id" }
+			choice {
+				node { name "opt1" type "string" occurs "0..1" }
+				node { name "man1" type "string" }
+			}
+		}
+		node {
+			name "opt_man_opt" occurs "1..*"
+			node { type "id" }
+			choice {
+				occurs "0..1"
+				node { name "man1" type "string" }
+				node { name "opt1" type "string" occurs "0..1" }
+			}
+		}
+		node {
+			name "opt_opt_man" occurs "1..*"
+			node { type "id" }
+			choice {
+				occurs "0..1"
+				node { name "opt1" type "string" occurs "0..1" }
+				node { name "man1" type "string" }
+			}
+		}
 	}
 }

@@ -1,4 +1,14 @@
-# SDS Release Notes
+# SDS Core Implementation
+
+The SDA project was conceived in 2008 and aims to produce Java libraries 
+that (ultimately) support parsing, validation and transformation of SDA 
+content. The SDS core library supplies a parser to read SDA schema and a
+validator to validate SDA input against it.
+For more information, refer to /docs.
+
+Author: Harold C.L. Baur
+
+## Release Notes
 
 ISSUES/IDEAS
 - validation of unordered groups with repeating components is not supported yet.

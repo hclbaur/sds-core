@@ -53,4 +53,37 @@ choice_tests {
 	man_man_opt { id "8" err "" opt1 "" }
 	man_man_opt { id "9" man1 "" err "" }
 	man_man_opt { id "10" err "" }
+
+	man_opt_man { id "1" opt1 "" }
+	man_opt_man { id "2" man1 "" }
+	man_opt_man { id "3" opt1 "" man1 "" }
+	man_opt_man { id "4" man1 "" opt1 "" }
+	man_opt_man { id "5" }
+	man_opt_man { id "6" err "" opt1 "" }
+	man_opt_man { id "7" man1 "" err "" }
+	man_opt_man { id "8" err "" man1 "" }
+	man_opt_man { id "9" man1 "" err "" }
+	man_opt_man { id "10" err "" }
+	
+	opt_man_opt { id "1" man1 "" }
+	opt_man_opt { id "2" opt1 "" }
+	opt_man_opt { id "3" man1 "" opt1 "" }
+	opt_man_opt { id "4" opt1 "" man1 "" }
+	opt_man_opt { id "5" }
+	opt_man_opt { id "6" err "" man1 "" }
+	opt_man_opt { id "7" opt1 "" err "" }
+	opt_man_opt { id "8" err "" opt1 "" }
+	opt_man_opt { id "9" man1 "" err "" }
+	opt_man_opt { id "10" err "" }
+	
+	opt_opt_man { id "1" opt1 "" }
+	opt_opt_man { id "2" man1 "" }
+	opt_opt_man { id "3" opt1 "" man1 "" }
+	opt_opt_man { id "4" man1 "" opt1 "" }
+	opt_opt_man { id "5" }
+	opt_opt_man { id "6" err "" opt1 "" }
+	opt_opt_man { id "7" man1 "" err "" }
+	opt_opt_man { id "8" err "" man1 "" }
+	opt_opt_man { id "9" man1 "" err "" }
+	opt_opt_man { id "10" err "" }
 }
