@@ -420,7 +420,7 @@ public final class SDSParser implements Parser {
 					default: // we will never get here, unless we forgot to implement something
 						throw new RuntimeException("SDS type '" + content + "' not implemented!");
 				}
-				((RangedType<T>) simple).setRange((Interval<T>) interval);
+				((RangedType<Comparable<?>>) simple).setRange((Interval<T>) interval);
 			} catch (IllegalArgumentException e) {
 				throw new SchemaException(range, 
 					String.format(ATTRIBUTE_INVALID, Attribute.VALUE.tag, range.getValue(), e.getMessage()));

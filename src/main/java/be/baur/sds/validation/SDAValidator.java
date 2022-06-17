@@ -1,7 +1,6 @@
 package be.baur.sds.validation;
 
 import java.util.Base64;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -514,9 +513,9 @@ public final class SDAValidator implements Validator {
 			if (invoked) {
 				NodeSet required = components.get(n -> ((ComponentType) n).minOccurs() > 0);
 				if (! required.isEmpty()) {
-					@SuppressWarnings("unchecked")
+					//@SuppressWarnings("unchecked")
 					Error error = new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), 
-						quoteNames(expectedTypes( (Collection<? extends ComponentType>) required) ));
+						quoteNames(expectedTypes(required)) );
 					errors.add(error);
 					node = inode.hasNext() ? inode.next() : null; // get the next node
 					continue; // and resume the node loop to process it
@@ -543,9 +542,9 @@ public final class SDAValidator implements Validator {
 		if (invoked) {
 			NodeSet required = components.get(n -> ((ComponentType) n).minOccurs() > 0);
 			if (! required.isEmpty()) {
-				@SuppressWarnings("unchecked")
+				//@SuppressWarnings("unchecked")
 				Error error = new Error(parent, CONTENT_MISSING_AT_END, parent.getName(), 
-					quoteNames(expectedTypes( (Collection<? extends ComponentType>) required) ));
+					quoteNames(expectedTypes(required)) );
 				errors.add(error);
 			}
 		}
@@ -660,7 +659,7 @@ public final class SDAValidator implements Validator {
 	 * Like expectedTypes(ComponentType), this method returns a set of candidate
 	 * component types based on a collection of (equally applicable) types.
 	 */
-	private static NodeSet expectedTypes(Collection<? extends ComponentType> collection) {
+	private static NodeSet expectedTypes(NodeSet collection) {
 		NodeSet result = collection.stream()
 			.flatMap(n -> expectedTypes((ComponentType)n).stream())
 			.collect(Collectors.toCollection(NodeSet::new));

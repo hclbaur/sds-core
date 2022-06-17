@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>be.baur.sds</groupId>
   <artifactId>sds-core</artifactId>
-  <version>1.2.1</version>
+  <version>1.2.2</version>
   <name>sds-core</name>
   <description>SDS Core Implementation</description>
   <properties>
