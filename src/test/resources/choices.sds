@@ -1,40 +1,14 @@
 schema {
-	type "choice_tests"
+	type "test"
 	node { name "id" type "integer" value "[1..*]" }
 	node {
-		name "choice_tests"
+		name "test"
 		node {
 			name "man_man_man" occurs "1..*"
 			node { type "id" }
 			choice {
 				node { name "man1" type "string" }
 				node { name "man2" type "string" }
-			}
-		}
-		node {
-			name "opt_man_man" occurs "1..*"
-			node { type "id" }
-			choice {
-				occurs "0..1"
-				node { name "man1" type "string" }
-				node { name "man2" type "string" }
-			}
-		}
-		node {
-			name "man_opt_opt" occurs "1..*"
-			node { type "id" }
-			choice {
-				node { name "opt1" type "string" occurs "0..1" }
-				node { name "opt2" type "string" occurs "0..1" }
-			}
-		}
-		node {
-			name "opt_opt_opt" occurs "1..*"
-			node { type "id" }
-			choice {
-				occurs "0..1"
-				node { name "opt1" type "string" occurs "0..1" }
-				node { name "opt2" type "string" occurs "0..1" }
 			}
 		}
 		node {
@@ -54,6 +28,23 @@ schema {
 			}
 		}
 		node {
+			name "man_opt_opt" occurs "1..*"
+			node { type "id" }
+			choice {
+				node { name "opt1" type "string" occurs "0..1" }
+				node { name "opt2" type "string" occurs "0..1" }
+			}
+		}
+		node {
+			name "opt_man_man" occurs "1..*"
+			node { type "id" }
+			choice {
+				occurs "0..1"
+				node { name "man1" type "string" }
+				node { name "man2" type "string" }
+			}
+		}
+		node {
 			name "opt_man_opt" occurs "1..*"
 			node { type "id" }
 			choice {
@@ -69,6 +60,15 @@ schema {
 				occurs "0..1"
 				node { name "opt1" type "string" occurs "0..1" }
 				node { name "man1" type "string" }
+			}
+		}
+		node {
+			name "opt_opt_opt" occurs "1..*"
+			node { type "id" }
+			choice {
+				occurs "0..1"
+				node { name "opt1" type "string" occurs "0..1" }
+				node { name "opt2" type "string" occurs "0..1" }
 			}
 		}
 	}

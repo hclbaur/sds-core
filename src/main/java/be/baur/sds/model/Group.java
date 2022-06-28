@@ -6,14 +6,14 @@ package be.baur.sds.model;
 import be.baur.sds.common.Component;
 
 /**
- * A group defines two or more interdependent nodes or content models, for example:
+ * A (sequence) group defines two or more interdependent nodes or content models, for example:
  * <pre>
  * group {
  *     node { name "middlename" type "string" occurs "0..1"}
  *     node { name "lastname" type "string" }
  * }
  * </pre>
- * Which means that a last name is excepted, optionally preceded by a middle name.
+ * Which means that a last name is expected, optionally preceded by a middle name.
  */
 public final class Group extends AbstractGroup {
 

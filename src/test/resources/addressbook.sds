@@ -32,10 +32,9 @@ schema {
 		node { name "id" type "integer" value "[0..*)" }
 		node { type "person" }
 		node { type "address" occurs "0..2" }
-		choice {
-			occurs "1..4"
-			node { name "phone" type "string" length "11" pattern "\\d{2,4}-\\d{6,8}" }
-			node { name "email" type "string" }
+		unordered {
+			node { name "phone" type "string" occurs "1..2" length "11" pattern "\\d{2,4}-\\d{6,8}" }
+			node { name "email" type "string" occurs "0..2" }
 		}
 	}
 	node {

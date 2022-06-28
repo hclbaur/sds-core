@@ -33,6 +33,9 @@ public final class TestAll {
 		
 		System.out.print("\nGroups      : ");
 		test.validation.Groups.main(args);
+
+		System.out.print("\nUnordered   : ");
+		test.validation.Unordered.main(args);
 		
 		System.out.print("\nRussianDoll : ");
 		test.validation.RussianDolls.main(args);

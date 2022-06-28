@@ -772,6 +772,6 @@ missing, but that was the point; to keep things simple and yet powerful.
 
 Some useful features I excluded because I could not make them “fit” right away, or 
 because they would bring up the question of namespace support. On the other hand, 
-some features I included although I wasn't sure they were necessary.
+some features I included though I wasn't sure they would be necessary.
 
 This may or may not be the end of it. Time will tell.

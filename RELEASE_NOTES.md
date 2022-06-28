@@ -1,13 +1,11 @@
 # Release Notes
 
-## [1.2.2] - 2022-06-17
-- `Fixed` some issues with type casting.
-- `Added` demo and documentation in markdown.
-- `Removed` documentation in ODT format.
+## [1.2.3] - 2022-06-28
+- `Fixed` bug in validation of unordered groups.
+- `Added` support for repeating components in unordered groups.
 
 ## Known issues / ideas
 
-- validation of unordered groups with repeating components is not supported yet.
 - option to control verbosity/abundancy of the SDA validator?
 
 ## Compatibility
@@ -16,6 +14,11 @@
 - Backwards compatible down to SDS 1.2.0.
 
 ## Previous releases
+
+### [1.2.2] - 2022-06-17
+- `Fixed` some issues with type casting.
+- `Added` demo and documentation in markdown.
+- `Removed` documentation in ODT format.
 
 ### [1.2.1] - 2021-08-01 (requires SDA v1.6.0)
 - Added support for self-referencing types.
