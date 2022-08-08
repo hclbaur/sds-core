@@ -54,32 +54,32 @@ public final class TestSDSParser
 		sdsparser.verify(schema);
 		
 		/* test valid SDS */
-		t.ts1("S01", "schema{ node{ name \"name\" type \"string\" } }", null);
-		t.ts1("S02", "schema{ node{ name \"contact\" node{ name \"name\" type \"string\" } } }", null);
-		t.ts1("S03", "schema{ node{ name \"contact\" node{ name \"name\" type \"string\" occurs \"0..1\" } } }", null);
-		t.ts1("S04", "schema{ node{ name \"book\" node{ name \"contact\" occurs \"1..*\" node{ name \"name\" type \"string\" } } } }", null);
-		t.ts1("S05", "schema{ node{ name \"phone\" type \"string\" } node{ type \"phone\" } }", null);
-		t.ts1("S06", "schema{ node{ name \"phone\" type \"string\" } node{ name \"mobile\" type \"phone\" } }", null);
-		t.ts1("S07", "schema{ type \"phone\" node{ name \"phone\" type \"string\" } node{ type \"phone\" } }", null);
-		t.ts1("S08", "schema{ type \"mobile\" node{ name \"phone\" type \"string\" } node{ name \"mobile\" type \"phone\" } }", null);
-		t.ts1("S09", "schema{ node{ name \"g\" group{ node{ name \"x\" type \"string\" } node{ name \"y\" type \"string\" } } } }", null);
-		t.ts1("S10", "schema{ node{ name \"c\" choice{ node{ name \"x\" type \"string\" } node{ name \"y\" type \"string\" } } } }", null);
-		t.ts1("S11", "schema{ node{ name \"u\" unordered{ node{ name \"x\" type \"string\" } node{ name \"y\" type \"string\" } } } }", null);
-		t.ts1("S12", "schema{ node{ name \"ean13\" type \"string\" length \"13\" } }", null);
-		t.ts1("S13", "schema{ node{ name \"image\" type \"binary\" length \"0..1024\" } }", null);
-		t.ts1("S14", "schema{ node{ name \"bool\" type \"boolean\" nullable \"true\" } }", null);
-		t.ts1("S15", "schema{ node{ name \"id\" type \"string\" nullable \"false\" } }", null);
-		t.ts1("S16", "schema{ node{ name \"id\" type \"string\" pattern \"[^\\\\s]\" } }", null);
-		t.ts1("S17", "schema{ node{ name \"bit\" type \"integer\" value \"[0..1]\" } }", null);
-		t.ts1("S18", "schema{ node{ name \"one\" type \"integer\" value \"1\" } }", null);
-		t.ts1("S19", "schema{ node{ name \"pi\" type \"decimal\" value \"3.14\" } }", null);
-		t.ts1("S20", "schema{ node{ name \"kelvin\" type \"decimal\" value \"[-273.15..*)\" } }", null);
-		t.ts1("S21", "schema{ node{ name \"now\" type \"datetime\" value \"2020-08-11T17:55:00+02:00\" } }", null);
-		t.ts1("S22", "schema{ node{ name \"today\" type \"datetime\" value \"[2020-08-11T00:00:00+02:00..2020-08-12T00:00:00+02:00)\" } }", null);
-		t.ts1("S23", "schema{ node{ name \"today\" type \"date\" value \"2020-08-11\" } }", null);
-		t.ts1("S24", "schema{ node{ name \"august\" type \"date\" value \"[2020-08-01..2020-09-01)\" } }", null);
-		t.ts1("S25", "schema{ node{ name \"anything\" type \"any\" } }", null);
-		t.ts1("S26", "schema{ node{ type \"any\" } }", null);
+		t.ts1("S01", "schema { node { name \"name\" type \"string\" } }", null);
+		t.ts1("S02", "schema { node { name \"contact\" node { name \"name\" type \"string\" } } }", null);
+		t.ts1("S03", "schema { node { name \"contact\" node { name \"name\" type \"string\" occurs \"0..1\" } } }", null);
+		t.ts1("S04", "schema { node { name \"book\" node { name \"contact\" occurs \"1..*\" node { name \"name\" type \"string\" } } } }", null);
+		t.ts1("S05", "schema { node { name \"phone\" type \"string\" } node { type \"phone\" } }", null);
+		t.ts1("S06", "schema { node { name \"phone\" type \"string\" } node { name \"mobile\" type \"phone\" } }", null);
+		t.ts1("S07", "schema { type \"phone\" node { name \"phone\" type \"string\" } node { type \"phone\" } }", null);
+		t.ts1("S08", "schema { type \"mobile\" node { name \"phone\" type \"string\" } node { name \"mobile\" type \"phone\" } }", null);
+		t.ts1("S09", "schema { node { name \"g\" group { node { name \"x\" type \"string\" } node { name \"y\" type \"string\" } } } }", null);
+		t.ts1("S10", "schema { node { name \"c\" choice { node { name \"x\" type \"string\" } node { name \"y\" type \"string\" } } } }", null);
+		t.ts1("S11", "schema { node { name \"u\" unordered { node { name \"x\" type \"string\" } node { name \"y\" type \"string\" } } } }", null);
+		t.ts1("S12", "schema { node { name \"ean13\" type \"string\" length \"13\" } }", null);
+		t.ts1("S13", "schema { node { name \"image\" type \"binary\" length \"0..1024\" } }", null);
+		t.ts1("S14", "schema { node { name \"bool\" type \"boolean\" nullable \"true\" } }", null);
+		t.ts1("S15", "schema { node { name \"id\" type \"string\" nullable \"false\" } }", null);
+		t.ts1("S16", "schema { node { name \"id\" type \"string\" pattern \"[^\\\\s]\" } }", null);
+		t.ts1("S17", "schema { node { name \"bit\" type \"integer\" value \"[0..1]\" } }", null);
+		t.ts1("S18", "schema { node { name \"one\" type \"integer\" value \"1\" } }", null);
+		t.ts1("S19", "schema { node { name \"pi\" type \"decimal\" value \"3.14\" } }", null);
+		t.ts1("S20", "schema { node { name \"kelvin\" type \"decimal\" value \"[-273.15..*)\" } }", null);
+		t.ts1("S21", "schema { node { name \"now\" type \"datetime\" value \"2020-08-11T17:55:00+02:00\" } }", null);
+		t.ts1("S22", "schema { node { name \"today\" type \"datetime\" value \"[2020-08-11T00:00:00+02:00..2020-08-12T00:00:00+02:00)\" } }", null);
+		t.ts1("S23", "schema { node { name \"today\" type \"date\" value \"2020-08-11\" } }", null);
+		t.ts1("S24", "schema { node { name \"august\" type \"date\" value \"[2020-08-01..2020-09-01)\" } }", null);
+		t.ts1("S25", "schema { node { name \"anything\" type \"any\" } }", null);
+		t.ts1("S26", "schema { node { type \"any\" } }", null);
 		
 		/* test invalid SDS */
 		try { 
