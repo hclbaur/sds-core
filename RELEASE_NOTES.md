@@ -1,19 +1,18 @@
 # Release Notes
 
-## [1.2.3] - 2022-06-28
-- `Fixed` bug in validation of unordered groups.
-- `Added` support for repeating components in unordered groups.
-
-## Known issues / ideas
-
-- option to control verbosity/abundancy of the SDA validator?
+## [1.2.4] - 2022-08-12
+- `Removed` references to SimpleNode/ComplexNode classes.
 
 ## Compatibility
 
-- Requires at least SDA 1.6.0.
+- Requires at least Java 8 and SDA 1.6.2.
 - Backwards compatible down to SDS 1.2.0.
 
 ## Previous releases
+
+### [1.2.3] - 2022-06-28
+- `Fixed` bug in validation of unordered groups.
+- `Added` support for repeating components in unordered groups.
 
 ### [1.2.2] - 2022-06-17
 - `Fixed` some issues with type casting.
