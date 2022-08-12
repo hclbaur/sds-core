@@ -1,8 +1,6 @@
 package be.baur.sds;
 
-import be.baur.sda.ComplexNode;
 import be.baur.sda.Node;
-import be.baur.sda.SimpleNode;
 import be.baur.sds.common.Attribute;
 
 /**
@@ -10,7 +8,7 @@ import be.baur.sds.common.Attribute;
  * from (for example) SDS notation into schema components. It acts as a
  * container for global node definitions or types (of {@link ComponentType}).
  */
-public final class Schema extends ComplexNode {
+public final class Schema extends Node {
 
 
 	public static final String TAG = "schema";
@@ -18,9 +16,9 @@ public final class Schema extends ComplexNode {
 	private String rootType = null; // The designated root type.
 	
 
-	/** Creates a schema. */
+	/** Creates a schema node. */
 	public Schema() {
-		super(TAG);
+		super(TAG); addNode(null); // by definition, a schema has child nodes.
 	}
 
 
@@ -50,15 +48,15 @@ public final class Schema extends ComplexNode {
 	 * the schema in SDS notation.
 	 * 
 	 */
-	public ComplexNode toNode() {
+	public Node toNode() {
 		
-		ComplexNode node = new ComplexNode(TAG);
+		Node node = new Node(TAG);
 		
 		if (rootType != null) // Render the type attribute if we have one.
-			node.getNodes().add(new SimpleNode(Attribute.TYPE.tag, rootType));
+			node.addNode(new Node(Attribute.TYPE.tag, rootType));
 
 		for (Node component : this.getNodes()) // Render all components.
-			node.getNodes().add(((ComponentType) component).toNode());
+			node.addNode(((ComponentType) component).toNode());
 
 		return node;
 	}

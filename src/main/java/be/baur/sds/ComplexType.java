@@ -20,7 +20,7 @@ public class ComplexType extends Node implements ComponentType {
 	
 	/** Creates a complex type with the specified <code>name</code>.*/
 	public ComplexType(String name) {
-		super(name); addNode(null);
+		super(name); addNode(null); // by definition, a complex type has child nodes.
 	}
 	
 
