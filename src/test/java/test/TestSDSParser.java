@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 
-import be.baur.sda.ComplexNode;
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
 import be.baur.sds.Schema;
@@ -21,7 +20,7 @@ public final class TestSDSParser
 		
 		Test t = new Test(s -> {
 			try {
-				return SDSParser.parse( (ComplexNode) sdaparser.parse(new StringReader(s)) ).toString();
+				return SDSParser.parse( sdaparser.parse(new StringReader(s)) ).toString();
 			} catch (Exception e) {
 				return e.getMessage();
 			}
@@ -30,7 +29,7 @@ public final class TestSDSParser
 		/* test parsing SDS from files and formatting back to SDS */
 		InputStream input = TestSDSParser.class.getResourceAsStream("/contacts.sds");
 		Node sds = sdaparser.parse(new InputStreamReader(input,"UTF-8"));
-		Schema schema = SDSParser.parse((ComplexNode) sds);
+		Schema schema = SDSParser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);
 			System.out.println("RETURNED: " + schema);
@@ -38,7 +37,7 @@ public final class TestSDSParser
 		
 		input = TestSDSParser.class.getResourceAsStream("/addressbook.sds");
 		sds = sdaparser.parse(new InputStreamReader(input,"UTF-8"));
-		schema = SDSParser.parse((ComplexNode) sds);
+		schema = SDSParser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);
 			System.out.println("RETURNED: " + schema);
