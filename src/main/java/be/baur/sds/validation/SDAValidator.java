@@ -5,10 +5,8 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import be.baur.sda.ComplexNode;
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
-import be.baur.sda.SimpleNode;
 import be.baur.sds.ComplexType;
 import be.baur.sds.ComponentType;
 import be.baur.sds.Schema;
@@ -99,13 +97,13 @@ public final class SDAValidator implements Validator {
 		}
 		if (! namesmatch) return false; // specific type; if names differ, there is no match
 		
-		if (node instanceof SimpleNode) {
+		if (node.getNodes() == null) { // simple content
 			
-			if (! (component instanceof SimpleType)) {  // we were expecting complex content
+			if (! (component instanceof SimpleType)) {  // but we were expecting complex content
 				errors.add(new Error(node, EXPECTING_NODE_OF_TYPE, nodename, "complex"));
 				return true;
 			}
-			errors.add(validateSimpleNode((SimpleNode) node, (SimpleType) component));
+			errors.add(validateSimpleNode(node, (SimpleType) component));
 			return true;
 		}
 		
@@ -113,7 +111,8 @@ public final class SDAValidator implements Validator {
 			errors.add(new Error(node, EXPECTING_NODE_OF_TYPE, nodename, "simple"));
 			return true;
 		}
-		errors.add(validateComplexNode((ComplexNode) node, (ComplexType) component, errors));
+		
+		errors.add(validateComplexNode(node, (ComplexType) component, errors));
 		return true;
 	}
 
@@ -123,7 +122,7 @@ public final class SDAValidator implements Validator {
 	 * with respect to the components content type, and any facets that may apply.
 	 * This method returns a validation error, or null otherwise.
 	 */
-	private static Error validateSimpleNode(SimpleNode node, SimpleType component) {
+	private static Error validateSimpleNode(Node node, SimpleType component) {
 		
 		// Empty values are allowed only for null-able types.
 		if (node.getValue().isEmpty() && ! component.isNullable())
@@ -156,7 +155,7 @@ public final class SDAValidator implements Validator {
 	 * However, this may not be true for a binary string type. Also, we check the
 	 * length (in characters for a string and bytes for a binary).
 	 */
-	private static Error validateStringValue(SimpleNode node, AbstractStringType component) {
+	private static Error validateStringValue(Node node, AbstractStringType component) {
 		
 		int length;
 
@@ -187,7 +186,7 @@ public final class SDAValidator implements Validator {
 	 * We assert that the node value is a valid string representation of this
 	 * content type by creating an instance, and check whether it is in range.
 	 */
-	private static Error validateRangedValue(SimpleNode node, RangedType<?> component) {
+	private static Error validateRangedValue(Node node, RangedType<?> component) {
 
 		Comparable<?> value = null;
 		try {
@@ -237,7 +236,7 @@ public final class SDAValidator implements Validator {
 	 * a validation error. If we run out of nodes while there is still mandatory
 	 * content expected, that is also a validation error.
 	 */
-	private static Error validateComplexNode(ComplexNode node, ComplexType component, ErrorList errors) {
+	private static Error validateComplexNode(Node node, ComplexType component, ErrorList errors) {
 		
 		NodeIterator inode = new NodeIterator(node.getNodes()); // iterator for child nodes
 		Node childnode = inode.hasNext() ? inode.next() : null; // first child node (or none)
@@ -262,12 +261,12 @@ public final class SDAValidator implements Validator {
 				}
 
 				boolean match;
-				//System.out.println("validateComplex: matching " + ((childnode instanceof SimpleNode) ? childnode : childnode.getName() + "{}") + " to " + childcomp.getName());
+				//System.out.println("validateComplex: matching " + ((childnode.getNodes() == null) ? childnode : childnode.getName() + "{}") + " to " + childcomp.getName());
 				if (childcomp instanceof AbstractGroup)
 					match = matchGroup(inode, childnode, (AbstractGroup) childcomp, errors);
 				else match = matchNode(childnode, childcomp, errors);
 				
-				//System.out.println("validateComplex: " + ((childnode instanceof SimpleNode) ? childnode : childnode.getName()+"{}") + (match ? " == " : " <> ") + "component " + childcomp.getName());
+				//System.out.println("validateComplex: " + ((childnode.getNodes() == null) ? childnode : childnode.getName()+"{}") + (match ? " == " : " <> ") + "component " + childcomp.getName());
 				if (match) { // count match and get the next node (or none) to match against this component
 					childnode = inode.hasNext() ? inode.next() : null;
 					++curmatches; continue;
