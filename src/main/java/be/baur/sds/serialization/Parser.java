@@ -1,8 +1,10 @@
 package be.baur.sds.serialization;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import be.baur.sda.serialization.SyntaxException;
 import be.baur.sds.Schema;
 
 
@@ -17,9 +19,8 @@ public interface Parser {
 	/**
 	 * Parses a character <code>input</code> stream and creates a {@link Schema}.
 	 * @return Schema - the schema node.
-	 * @throws Exception
 	 */
-	Schema parse(Reader input) throws Exception;
+	Schema parse(Reader input) throws IOException, SyntaxException, SchemaException;
 
 
 	/**
@@ -27,9 +28,8 @@ public interface Parser {
 	 * not obtained from an SDS definition, but constructed in some another way or
 	 * by another type of parser. The default implementation serializes the schema
 	 * to SDS format, which is then parsed to reveal any issues.
-	 * @throws Exception 
 	 */
-	default void verify(Schema schema) throws Exception  {
+	default void verify(Schema schema) throws SyntaxException, IOException, SchemaException   {
 		parse(new StringReader(schema.toString()));
 	}
 }

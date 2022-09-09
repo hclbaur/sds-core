@@ -1,5 +1,6 @@
 package be.baur.sds.serialization;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.regex.PatternSyntaxException;
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
 import be.baur.sda.SDA;
+import be.baur.sda.serialization.SyntaxException;
 import be.baur.sds.ComplexType;
 import be.baur.sds.ComponentType;
 import be.baur.sds.Schema;
@@ -80,9 +82,8 @@ public final class SDSParser implements Parser {
 	
 	/**
 	 * Parses a character stream with SDS content and return a <code>Schema</code>.
-	 * @throws Exception
 	 */
-	public Schema parse(Reader input) throws Exception {
+	public Schema parse(Reader input) throws IOException, SyntaxException, SchemaException  {
 
 		Node sds = SDA.parser().parse(input);
 		

@@ -1,10 +1,13 @@
 # Release Notes
 
 This release is compatible with SDA 2.0.x, but does not allow you to parse 
-schema in SDS 2 syntax, or allow you to validate documents in SDA 2 syntax.   
+schema in SDS 2 syntax, or allow you to validate documents in SDA 2 syntax.
+At the time of this writing, SDS 2 is still a work in progress.  
 
 ## [1.2.4] - 2022-08-12
 - `Removed` references to SimpleNode/ComplexNode classes.
+- `Changed` Parser.parse() to throw IOException, SyntaxException, 
+SchemaException (was Exception).
 
 ## Compatibility
 
