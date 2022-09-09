@@ -1,4 +1,4 @@
-# SDS Specification, version 2
+# SDS Specification
 
 - [Why we need it](/docs/SPECIFICATION.md#why-we-need-it)
 - [It is all about looks](/docs/SPECIFICATION.md#it-is-all-about-looks)
@@ -19,10 +19,10 @@
 
 ## Why we need it
 
-Why do we need schema? Well, for starters, a schema allows you to *validate*  
-data before you process it. This enables you to detect and mitigate  anomalies 
-before they wreak havoc in your precious application, system of record, or 
-business process.
+Why do we need schema? Well, for starters, a schema allows you to *validate* the 
+data you receive, before you process it. This enables you to detect and mitigate
+ anomalies before they wreak havoc in your precious application, system of 
+record,  or business process.
 
 Another reason is that it makes developing data processing software easier 
 because schema can show you at design-time exactly what you are working with. In 
@@ -30,21 +30,20 @@ fact, schema allows code generators to eliminate a lot of the software “writin
 part.
 
 And finally, it makes it easy to share information about your data (and how to 
-process it) without having to write lengthy specifications.
+process it) with other people, without having to write lengthy specifications.
 
 This is true regardless of whether the data is “encoded” as EDI (oh, the days of
  yore), XML, JSON, or – in fact - SDA.
 
 ## It is all about looks
 
-What does SDA schema (SDS for short) look like? Well, it looks like SDA; because 
-that is what it *is*. This follows the same approach as XML schema (or XSD)  
-which is usually written in XML and JSON schema, which can be written in JSON (or 
-YAML, but that is evil).
+What does SDA schema (SDS for short) look like? Well, it looks exactly like SDA.
+ Because that is what it *is*. This follows the same approach as XML schema (or 
+XSD)  which is usually written in XML and JSON schema, which can be written in 
+JSON (or YAML, but that is evil).
 
 The good thing about this approach is that you don’t have to learn another 
-“language” to read SDS, and I don't have to write a parser from scratch to 
-process it (ok, that's the real reason).
+“language” to read it (or write another parser to process it).
 
 The downside is (at least in the case of SDS) that I am limited by the syntax of 
 SDA, which rules out a few design options. Some things would be easier if SDA 
@@ -55,11 +54,11 @@ supported namespaces (but I decided not to go there, bummer).
 Let's consider the following:
 
 	addressbook {
-		contact "1" {
+		contact {
 			firstname "Alice"
 			phonenumber "06-21438709"
 		}
-		contact "2" {
+		contact {
 			firstname "Bob"
 			phonenumber "06-90784523"
 		}
@@ -74,24 +73,23 @@ Or maybe we already have such an application, and someone wants to send us a
 large number of contacts in a file format we can handle. Luckily, they support 
 SDA (what are the chances).
 
-In either case, a schema that describes the address book structure would be 
-really helpful. In SDS, such a schema would look like this:
+In either case, we could use a schema that describes the address book structure.
+ In SDS, such a schema could look like this:
 
 	schema {
-		node "addressbook" {
-			node "contact" {
-				type "integer" occurs "0..*"
-				node "firstname" { type "string" }
-				node "phonenumber" { type "string" }
+		node {
+			name "addressbook"
+			node {
+				name "contact" occurs "0..*"
+				node { name "firstname" type "string" }
+				node { name "phonenumber" type "string" }
 			}
 		}
 	}
 
-Note that the tags (`schema`, `node`, `type`, `occurs`) are part of the SDS 
-vocabulary, and the values (in quotes) define your particular use case. The  
-nodes with values are attributes[^1] of the ones with complex content, that 
-are usually referred to as components. Components are type definitions, 
-or model groups (which we will meet later).
+Note that the tags (`schema`, `node`, `name`, `occurs`, `type`) are part of the 
+SDS vocabulary, and the values (in quotes) define your particular use case. The 
+simple nodes are attributes[^1] of the complex ones which are usually referred to as components. Components are type definitions, or model groups (which we will meet later).
 
 [^1]: We use the word attribute only in the context of SDS terminology to 
 describe properties of components. You may recall that SDA has no attributes 
