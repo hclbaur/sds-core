@@ -3,8 +3,7 @@ package be.baur.sds;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import be.baur.sda.ComplexNode;
-import be.baur.sda.SimpleNode;
+import be.baur.sda.Node;
 import be.baur.sds.common.Attribute;
 import be.baur.sds.common.Component;
 import be.baur.sds.common.Content;
@@ -17,7 +16,7 @@ import be.baur.sds.content.RangedType;
  * A <code>SimpleType</code> represents an SDS definition of a simple SDA node,
  * with a simple content type like a string, integer, date, etc.
  */
-public abstract class SimpleType extends SimpleNode implements ComponentType {
+public abstract class SimpleType extends Node implements ComponentType {
 
 	private String globaltype = null; // the global type this component refers to.
 	private NaturalInterval multiplicity = null; // the default multiplicity: mandatory and singular.
@@ -93,43 +92,43 @@ public abstract class SimpleType extends SimpleNode implements ComponentType {
 	}
 
 	
-	public final ComplexNode toNode() {
+	public final Node toNode() {
 		
-		ComplexNode node = new ComplexNode(Component.NODE.tag);
+		Node node = new Node(Component.NODE.tag);
 		
 		// name attribute is omitted for an unnamed any type, and for a type
 		// reference that has the same name as the global type it refers to
 		if (! (( getGlobalType() != null && getName().equals(getGlobalType()) )
 			|| ( this instanceof AnyType && !((AnyType) this).isNamed() )) ) {
-			node.getNodes().add(new SimpleNode(Attribute.NAME.tag, getName()));
+			node.addNode(new Node(Attribute.NAME.tag, getName()));
 		}
 		
 		// set the content type - or in case of a reference - the global type
-		node.getNodes().add(new SimpleNode(Attribute.TYPE.tag,
+		node.addNode(new Node(Attribute.TYPE.tag,
 			getGlobalType() == null ? getContentType().type : getGlobalType()));
 		
 		// Render the multiplicity if not default.
 		if (multiplicity != null && (multiplicity.min != 1 || multiplicity.max != 1)) 
-			node.getNodes().add(new SimpleNode(Attribute.OCCURS.tag, multiplicity.toString()));
+			node.getNodes().add(new Node(Attribute.OCCURS.tag, multiplicity.toString()));
 		
 		boolean stringType = (this instanceof AbstractStringType);
 		if (stringType) {
 			AbstractStringType t = (AbstractStringType) this;
 			if (t.minLength() != 0 || t.maxLength() != Integer.MAX_VALUE)
-				node.getNodes().add(new SimpleNode(Attribute.LENGTH.tag, t.getLength().toString()));
+				node.getNodes().add(new Node(Attribute.LENGTH.tag, t.getLength().toString()));
 		}
 
 		if (this instanceof RangedType) {
 			RangedType<?> t = (RangedType<?>) this;
 			if (t.getRange() != null)
-				node.getNodes().add(new SimpleNode(Attribute.VALUE.tag, t.getRange().toString()));
+				node.getNodes().add(new Node(Attribute.VALUE.tag, t.getRange().toString()));
 		}
 		
 		if (pattern != null)
-			node.getNodes().add(new SimpleNode(Attribute.PATTERN.tag, pattexp));
+			node.getNodes().add(new Node(Attribute.PATTERN.tag, pattexp));
 		
 		if (stringType == !nullable)
-			node.getNodes().add(new SimpleNode(Attribute.NULLABLE.tag, String.valueOf(nullable)));
+			node.getNodes().add(new Node(Attribute.NULLABLE.tag, String.valueOf(nullable)));
 		
 		return node;
 	}

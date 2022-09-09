@@ -36,21 +36,16 @@ There is a lot more to be said about SDS than this, so please refer to the
 
 ## Running the demo
 
-Please read up on [SDA](https://github.com/hclbaur/sda-core#what-is-sda), build 
-and run the demo, then come back here for the SDS demo.
+Please read up on [SDA](https://github.com/hclbaur/sda-core#what-is-sda), run 
+the demo, then come back here for the SDS demo.
 
-Assuming you are on a Windows system you can clone the SDS project, open a 
-command window and switch to the [demo](src/test/demo) directory, where you 
-will find a builld script. On a UN\*X flavoured system you must make some 
-minor changes.
+To run the demo, download sds-core.jar, demo.class and the addressbook.sds file 
+from the latest [release](https://github.com/hclbaur/sds-core/releases/latest)
+and copy them to where you ran the SDA demo (overwriting the demo.class).
 
-Before you run the script, get the `sda-core.jar` that was built in the SDA 
-demo and copy it into the current directory, as we will need it to compile the 
-SDS core library.
-	
-Once built without errors, run the demo like this
+Assuming the java executable is in your path, run the demo like this:
 
-	java -cp .;sda-core.jar;sds-core.jar demo schema.sds book.sda
+	java -cp .;sda-core.jar;sds-core.jar demo addressbook.sds addressbook.sda
 	
 which will generate the following (familiar) output:
 
@@ -61,24 +56,23 @@ which will generate the following (familiar) output:
 	  Number 1: 06-33333333
 	  Number 2: 06-44444444
 
-When you look at the [code](src/test/java/demo.java) you will see that the 
-demo parses the `schema.sds` file and uses the resulting schema to validate
-the data in `book.sda` prior to processing it.
+When you look at the [code](src/test/java/demo.java) you will see that the demo 
+parses the `addressbook.sds` file and uses the resulting schema to validate the 
+data in `addressbook.sda` prior to processing it.
 
-In this case the addressbook is *valid*. But we also had a bad addressbook 
-that caused problems when being processed. Let's try that again now:
+In this case the addressbook is *valid*. But we also had a bad addressbook that 
+caused problems when being processed. Let's try that again now:
 
-	java -cp .;sda-core.jar;sds-core.jar demo schema.sds badbook.sda
+	java -cp .;sda-core.jar;sds-core.jar demo addressbook.sds badbook.sda
 
 Your output should look like this:
 
 	/addressbook/contact[1]/phonynumber: got 'phonynumber', but 'phonenumber' was expected
 	/addressbook/contact[2]/phonenumber[1]: got 'phonenumber', but 'firstname' was expected
 	
-As you can see, the validator found two issues with the data in the addressbook, and as a 
-result, the demo refuses to process it, lest it causes a catastrophe. 
+As you can see, the validator found two issues with the data in the addressbook, 
+and as a result, the demo refuses to process it, lest it causes a catastrophe. 
 
 I hope this demonstrates the use of SDS as a valuable companion to SDA.
 
 ----
-

@@ -1,6 +1,6 @@
 package be.baur.sds;
 
-import be.baur.sda.ComplexNode;
+import be.baur.sda.Node;
 import be.baur.sds.common.NaturalInterval;
 
 /**
@@ -60,7 +60,7 @@ public interface ComponentType {
 	 * what an SDA parser would return upon processing an input stream describing
 	 * the component in SDS notation.
 	 */
-	ComplexNode toNode();
+	Node toNode();
 
 	
 	/** Returns the string representation of this component in SDS syntax. */
