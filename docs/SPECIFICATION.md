@@ -747,25 +747,22 @@ When processing data, machines generally do not care about the order in which
 they receive it. By contrast, humans are very particular about order – if not 
 for aesthetic reasons, then surely for practical ones.
 
-That is why the order in which SDA nodes are expected, equals the order in the
-context in which you defined them.
+That is why the order in which SDA nodes are expected, equals the order in 
+which you defined them (within their context type).
 
-I have been working in the field of application integration for the bigger 
-part of my professional life, and I have hardly ever seen a design that 
-allows or expects data to be in any order. But I do remember using this 
-pattern as a workaround to deal with applications that are unable to enforce 
-to a particular order.
+I have been working in the field of application integration for most of my 
+professional life, and I have hardly ever seen a design that allows or expects 
+data to be in any order. But I do remember using this pattern as a workaround to 
+deal with applications that are unable to enforce to a particular order.
 
-Maybe in other areas, this is more common, I have no idea. But even if it is 
-not, SDS is able to support this. For example, if we need to allow the first 
-and last names of a contact to appear in any order, this is how we define 
-them to be `unordered`:
+Maybe in other areas, this is more common, I have no idea. But regardless, SDS is 
+able to support this. For example, if we need to allow the first and last names 
+of a contact to appear in any order, this is how we define them to be `unordered`:
 
-	node {
-		name "contact"
+	node "contact" {
 		unordered {
-			node { name "firstname" type "string" }
-			node { name "lastname" type "string" }
+			node "firstname" { type "string" }
+			node "lastname" { type "string" }
 		}
 	}
 
@@ -777,16 +774,16 @@ and
 
 	contact { lastname "Dijkstra" firstname "Edsger" }
 
-This also works for optional, and repetitive nodes:
+This also works for optional, and repetitive types:
 
-	…
-	unordered {
-		node { name "firstname" type "string" occurs "1..*" }
-		node { name "lastname" type "string" occurs "0..1" }
+	node "contact" {
+		unordered {
+			node "firstname" { type "string" occurs "1..*" }
+			node "lastname" { type "string" occurs "0..1" }
+		}
 	}
-	…
 
-Which will accept the previous two examples, and also
+Which will accept the previous two examples, and in addition
 
 	contact { firstname "Edsger" firstname "Wybe" lastname "Dijkstra" }
 
@@ -806,19 +803,20 @@ but *not*
 
 	contact { firstname "Edsger" lastname "Dijkstra" firstname "Wybe" }
 
-because that breaks up the repeating firstname.
+because that breaks up the repeating 'firstname' node.
 
 And with that, we have reached the end of this chapter, and almost the end of 
 this document.
 
+
 ## Conclusion
 
-This is it, the first draft of the SDS specification. Like with SDA,  it is not 
-going to take over the world any time soon. Compared to XSD or Relax NG, a lot is 
-missing, but that was the point; to keep things simple and yet powerful. 
+This is the second release of the SDS specification. Like SDA, it is simple, 
+yet powerful, and not going to take over the world any time soon. 
 
-Some useful features I excluded because I could not make them “fit” right away, or 
-because they would bring up the question of namespace support. On the other hand, 
-some features I included though I wasn't sure they would be necessary.
+Compared to version 1, I dropped the `name` attribute, as I was able to use the 
+SDA 2 syntax to name types (which is intuitive and looks better too). Some useful 
+features are still absent, because I could not make them “fit”, or because I 
+wasn't prepared to go there. Yet. 
 
-This may or may not be the end of it. Time will tell.
+For now this will have to do.
