@@ -1,21 +1,21 @@
 # SDS Specification
 
-- [Why we need it](/docs/SPECIFICATION.md#why-we-need-it)
-- [It is all about looks](/docs/SPECIFICATION.md#it-is-all-about-looks)
-	- [First contact](/docs/SPECIFICATION.md#first-contact)
-	- [Dolls, salami and blinds](/docs/SPECIFICATION.md#dolls-salami-and-blinds)
-	- [Finding the root](/docs/SPECIFICATION.md#finding-the-root)
-	- [More on multiplicity](/docs/SPECIFICATION.md#more-on-multiplicity)
-- [Typicalities](/docs/SPECIFICATION.md#typicalities)
-	- [Matters of space](/docs/SPECIFICATION.md#matters-of-space)
-	- [Facets of restriction](/docs/SPECIFICATION.md#facets-of-restriction)
-	- [The nothing that is](/docs/SPECIFICATION.md#the-nothing-that-is)
-	- [Anything goes](/docs/SPECIFICATION.md#anything-goes)
-- [Model citizens](/docs/SPECIFICATION.md#model-citizens)
-	- [Group mentality](/docs/SPECIFICATION.md#group-mentality)
-	- [The choice is yours](/docs/SPECIFICATION.md#the-choice-is-yours)
-	- [Order! Order!](/docs/SPECIFICATION.md#order-order)
-- [Conclusion](/docs/SPECIFICATION.md#conclusion)
+- [Why we need it](/docs/SPECIFICATIONV1.md#why-we-need-it)
+- [It is all about looks](/docs/SPECIFICATIONV1.md#it-is-all-about-looks)
+	- [First contact](/docs/SPECIFICATIONV1.md#first-contact)
+	- [Dolls, salami and blinds](/docs/SPECIFICATIONV1.md#dolls-salami-and-blinds)
+	- [Finding the root](/docs/SPECIFICATIONV1.md#finding-the-root)
+	- [More on multiplicity](/docs/SPECIFICATIONV1.md#more-on-multiplicity)
+- [Typicalities](/docs/SPECIFICATIONV1.md#typicalities)
+	- [Matters of space](/docs/SPECIFICATIONV1.md#matters-of-space)
+	- [Facets of restriction](/docs/SPECIFICATIONV1.md#facets-of-restriction)
+	- [The nothing that is](/docs/SPECIFICATIONV1.md#the-nothing-that-is)
+	- [Anything goes](/docs/SPECIFICATIONV1.md#anything-goes)
+- [Model citizens](/docs/SPECIFICATIONV1.md#model-citizens)
+	- [Group mentality](/docs/SPECIFICATIONV1.md#group-mentality)
+	- [The choice is yours](/docs/SPECIFICATIONV1.md#the-choice-is-yours)
+	- [Order! Order!](/docs/SPECIFICATIONV1.md#order-order)
+- [Conclusion](/docs/SPECIFICATIONV1.md#conclusion)
 
 ## Why we need it
 
@@ -335,7 +335,7 @@ The lexical space of this type allows both a single line representation and a
 		1LjFSDQFnP8ejoJ+i9u2sbFt21cjBbex7zsNEEURj69QhcVIXNeV899dKXjnrw+grmuoqorzJ5zb
 		SNMUlmURpXHM53nyK3tDmcMwFKVxzFmWwTiOoh64n5YwU9j3PecWu67MRJIkXERhHj/PKfO9gHDv
 		/MIPGRRsF7jd6noAAAAASUVORK5CYII=" 
-		filename="curlybrace.png"
+		filename "curlybrace.png"
 	}
 
 #### integer
