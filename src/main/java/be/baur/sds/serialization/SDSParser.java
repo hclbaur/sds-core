@@ -79,6 +79,7 @@ public final class SDSParser implements Parser {
 
 	private static final String CONTENT_TYPE_UNKNOWN = "content type '%s' is unknown";
 	private static final String NODE_NAME_INVALID = "'%s' is not a valid node name";
+	private static final String NAME_NOT_ALLOWED = "name '%s' is not allowed here";
 	
 	/**
 	 * Parses a character stream with SDS content and return a <code>Schema</code>.
@@ -320,22 +321,26 @@ public final class SDSParser implements Parser {
 //			.findFirst();
 		// Complex types should not have attributes other than occurs.
 		Optional<Node> attribute = sds.getNodes().get(n -> n.getNodes() == null).stream()
-		.filter(n -> ! (n.getName().equals(Attribute.OCCURS.tag)) )
-		.findFirst();		
+			.filter(n -> ! (n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();		
 		
 		if (attribute.isPresent())
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
 
-		// A valid name attribute is required unless we are a model group, in which case it is forbidden.
-		Node name = getAttribute(sds, Attribute.NAME, 
-			sds.getName().equals(Component.NODE.tag) ? true : null);
-		if (name != null && !SDA.isName(name.getValue())) 
-			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
-		
+//		Node name = getAttribute(sds, Attribute.NAME, 
+//			sds.getName().equals(Component.NODE.tag) ? true : null);
+//		if (name != null && !SDA.isName(name.getValue())) 
+//			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
+		// A valid name is required if we are a node type
+		String name = sds.getValue();
+		if (sds.getName().equals(Component.NODE.tag) && ! SDA.isName(name))
+			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
+		else if (! name.isEmpty()) // but for model groups it is not allowed
+			throw new SchemaException(sds, String.format(NAME_NOT_ALLOWED, name));
+				
 		ComplexType complex;	// the complex type that will be returned at the end of this method.
 
 		switch (Component.get(sds.getName())) {
-			case NODE		: complex = new ComplexType(name.getValue()); break;
+			case NODE		: complex = new ComplexType(name); break;
 			case GROUP		: complex = new Group(); break;
 			case CHOICE		: complex = new ChoiceGroup(); break;
 			case UNORDERED	: complex = new UnorderedGroup(); break;
