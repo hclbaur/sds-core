@@ -96,11 +96,12 @@ public abstract class SimpleType extends Node implements ComponentType {
 		
 		Node node = new Node(Component.NODE.tag);
 		
-		// name attribute is omitted for an unnamed any type, and for a type
-		// reference that has the same name as the global type it refers to
+		// Omit the name for an unnamed any type, and for a type
+		// reference with the same name as the referenced type
 		if (! (( getGlobalType() != null && getName().equals(getGlobalType()) )
 			|| ( this instanceof AnyType && !((AnyType) this).isNamed() )) ) {
-			node.addNode(new Node(Attribute.NAME.tag, getName()));
+			//node.addNode(new Node(Attribute.NAME.tag, getName()));
+			node.setValue(getName());
 		}
 		
 		// set the content type - or in case of a reference - the global type
