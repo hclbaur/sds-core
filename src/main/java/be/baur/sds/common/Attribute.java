@@ -5,7 +5,7 @@ package be.baur.sds.common;
  */
 public enum Attribute {
 
-	NAME("name"), TYPE("type"), OCCURS("occurs"), 
+	@Deprecated NAME("name"), TYPE("type"), OCCURS("occurs"), 
 	LENGTH("length"), VALUE("value"), PATTERN("pattern"),
 	NULLABLE("nullable");
 

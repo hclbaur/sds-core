@@ -1,6 +1,6 @@
 schema {
 	type "addressbook"
-	node {
+	node "person" {
 		name "person"
 		node { name "firstname" type "string" }
 		node { name "lastname" type "string" occurs "0..1" }
@@ -10,7 +10,7 @@ schema {
 			node { type "any" occurs "1..*" }
 		}
 	}
-	node {
+	node "address" {
 		name "address"
 		node { name "type" type "string" pattern "home|work" }
 		choice {
@@ -27,7 +27,7 @@ schema {
 			node { name "altitude" type "decimal" occurs "0..1" }
 		}
 	}
-	node {
+	node "contact" {
 		name "contact"
 		node { name "id" type "integer" value "[0..*)" }
 		node { type "person" }
@@ -39,7 +39,7 @@ schema {
 	}
 	node {
 		name "addressbook"
-		node { name "owner" type "contact" }
+		node "owner" { type "contact" }
 		node { type "contact" occurs "0..*" }
 	}
 }
