@@ -1,20 +1,20 @@
 # Release Notes
 
-This release is compatible with SDA 2.0.x, but does not allow you to parse 
-schema in SDS 2 syntax, or allow you to validate documents in SDA 2 syntax.
-At the time of this writing, SDS 2 is still a work in progress.  
+This release adds full support for SDA 2 and implements SDS 2. 
 
-## [1.2.4] - 2022-08-12
-- `Removed` references to SimpleNode/ComplexNode classes.
-- `Changed` Parser.parse() to throw IOException, SyntaxException, 
-SchemaException (was Exception).
+## [2.0.0] - 2022-xx-xx
+- `Removed` the *name* attribute from the SDS syntax.
 
 ## Compatibility
 
-- Requires at least Java 8 and SDA 1.6.2.
-- Backwards compatible down to SDS 1.2.0.
+- Requires at least Java 8 and SDA 2.0.0.
 
 ## Previous releases
+
+### [1.2.4] - 2022-08-12 (requires at least SDA v1.6.2)
+- `Removed` references to SimpleNode/ComplexNode classes.
+- `Changed` Parser.parse() to throw IOException, SyntaxException, 
+SchemaException (was Exception).
 
 ### [1.2.3] - 2022-06-28
 - `Fixed` bug in validation of unordered groups.
