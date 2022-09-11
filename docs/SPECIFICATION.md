@@ -1,5 +1,6 @@
 # SDS Specification, version 2
 
+- [Introduction](/docs/SPECIFICATION.md#introduction)
 - [Why we need it](/docs/SPECIFICATION.md#why-we-need-it)
 - [It is all about looks](/docs/SPECIFICATION.md#it-is-all-about-looks)
 	- [First contact](/docs/SPECIFICATION.md#first-contact)
@@ -17,6 +18,14 @@
 	- [The choice is yours](/docs/SPECIFICATION.md#the-choice-is-yours)
 	- [Order! Order!](/docs/SPECIFICATION.md#order-order)
 - [Conclusion](/docs/SPECIFICATION.md#conclusion)
+
+
+## Introduction
+
+This is the specification of the SDA syntax, version 2. Compared to version 1, I 
+dropped the `name` attribute, as I was able to use the SDA 2 syntax to name types 
+in a more intuitive and appealing way. Other than that, there are no suprprises. 
+You can find the original [here](/docs/SPECIFICATIONV1.md).
 
 
 ## Why we need it
@@ -814,9 +823,7 @@ this document.
 This is the second release of the SDS specification. Like SDA, it is simple, 
 yet powerful, and not going to take over the world any time soon. 
 
-Compared to version 1, I dropped the `name` attribute, as I was able to use the 
-SDA 2 syntax to name types (which is intuitive and looks better too). Some useful 
-features are still absent, because I could not make them “fit”, or because I 
-wasn't prepared to go there. Yet. 
+Some useful features are still absent, because I could not make them “fit”, or 
+because I wasn't prepared to go there. Yet. 
 
 For now this will have to do.
