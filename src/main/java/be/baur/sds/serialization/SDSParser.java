@@ -219,7 +219,6 @@ public final class SDSParser implements Parser {
 	}
 
 
-	static final List<String> REFTAGS = Arrays.asList(Attribute.TYPE.tag, Attribute.NAME.tag, Attribute.OCCURS.tag);
 	/**
 	 * A reference refers to a previously defined global type. If the name is
 	 * omitted, it is assumed to be equal to the name of the referenced type.
@@ -236,24 +235,24 @@ public final class SDSParser implements Parser {
 	 */
 	private static ComponentType parseTypeReference(Node sds, Node type) throws SchemaException {
 		/*
-		 * The reference is not a real component, but just a convenient shorthand way to
+		 * A reference is not a real component, but just a convenient shorthand way to
 		 * refer to a global type in SDS notation. When we encounter one, we create a
 		 * component from the global type it refers to and set its name (if explicitly
 		 * named). We also set the global type on this component, so that when rendering
 		 * back to SDS, we can recreate the correct reference.
 		 * Preconditions: the caller (parseComponentType) has already verified that this
-		 * node has no complex child nodes, and that all simple child nodes have valid
+		 * node has no complex child types, and that all simple child types have valid
 		 * attribute tags.
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
 		
-		// References should not have attributes other than type, name and occurs.
-//		Optional<Node> attribute = sds.getNodes().get(SimpleNode.class).stream()
-//			.filter(n -> ! ( n.getName().equals(Attribute.TYPE.tag) 
-//				|| n.getName().equals(Attribute.NAME.tag) || n.getName().equals(Attribute.OCCURS.tag)
-//			)).findFirst();
+		// References should not have attributes other than type and occurs.
 		Optional<Node> attribute = sds.getNodes().get(n -> n.getNodes() == null).stream()
-			.filter(n -> ! REFTAGS.contains(n.getName())).findFirst();
+			.filter(n -> ! ( n.getName().equals(Attribute.TYPE.tag) 
+				||  n.getName().equals(Attribute.OCCURS.tag) )).findFirst();
+//      static final List<String> REFTAGS = Arrays.asList(Attribute.TYPE.tag, Attribute.NAME.tag, Attribute.OCCURS.tag);
+//		Optional<Node> attribute = sds.getNodes().get(n -> n.getNodes() == null).stream()
+//			.filter(n -> ! REFTAGS.contains(n.getName())).findFirst();
 		if (attribute.isPresent())
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
 		
@@ -261,13 +260,14 @@ public final class SDSParser implements Parser {
 		if (root.equals(sds)) // if we are the root ourself, we bail out right away.
 			throw new SchemaException(type, String.format(CONTENT_TYPE_UNKNOWN, type.getValue()));
 		
-		// We now search all node declarations in the root for the referenced type.
+		// Search all node declarations in the schema root for the referenced type.
 		Node refNode = null;
 		for (Node cnode : root.getNodes().get(n -> n.getNodes() != null).get(Component.NODE.tag)) {
-			for (Node snode : cnode.getNodes().get(n -> n.getNodes() == null).get(Attribute.NAME.tag)) {
-				if ( snode.getValue().equals(type.getValue()) ) refNode = cnode; break;
-			}
-			if (refNode != null) break;
+//			for (Node snode : cnode.getNodes().get(n -> n.getNodes() == null).get(Attribute.NAME.tag)) {
+//				if ( snode.getValue().equals(type.getValue()) ) refNode = cnode; break;
+//			}
+//			if (refNode != null) break;
+			if ( cnode.getValue().equals(type.getValue()) ) refNode = cnode;
 		}
 		if (refNode == null || refNode.equals(sds)) // if we found nothing or ourself, we raise an error.
 			throw new SchemaException(type, String.format(CONTENT_TYPE_UNKNOWN, type.getValue()));
@@ -284,11 +284,17 @@ public final class SDSParser implements Parser {
 		refComp.setGlobalType(type.getValue());  // set the type we were created from
 		
 		// If a name is specified (different or equal to the type name) we set it
-		Node name = getAttribute(sds, Attribute.NAME, false);
-		if (name != null) {
-			if (! SDA.isName(name.getValue())) 
-				throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
-			refComp.setName(name.getValue());
+//		Node name = getAttribute(sds, Attribute.NAME, false);
+//		if (name != null) {
+//			if (! SDA.isName(name.getValue())) 
+//				throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
+//			refComp.setName(name.getValue());
+//		}
+		String name = sds.getValue();
+		if (! name.isEmpty()) {
+			if (! SDA.isName(name)) 
+				throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
+			refComp.setName(name);
 		}
 		
 		return refComp;
