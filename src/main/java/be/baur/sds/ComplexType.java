@@ -69,12 +69,13 @@ public class ComplexType extends Node implements ComponentType {
 		
 		Node node; // resulting node, returned at the end of this method
 		
-		// Omit the name attribute for model groups or 
-		// type references with the same name as the referenced global type.
+		// Omit the name attribute for model groups or type references
+		// with the same name as the referenced global type.
 		if (! (this instanceof AbstractGroup) ) {
 			node = new Node(Component.NODE.tag);
 			if (getGlobalType() == null || ! getName().equals(getGlobalType()))
-				node.addNode(new Node(Attribute.NAME.tag, getName()));
+				//node.addNode(new Node(Attribute.NAME.tag, getName()));
+				node.setValue(getName());
 		}
 		else node = new Node(getName());
 		
