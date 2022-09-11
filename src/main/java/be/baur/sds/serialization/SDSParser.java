@@ -374,7 +374,12 @@ public final class SDSParser implements Parser {
 		Node name = getAttribute(sds, Attribute.NAME, !isAnyType);
 		if (name != null && !SDA.isName(name.getValue())) 
 			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
-		
+
+		// A name is mandatory except for the "any" type. But if present, it must be valid.
+//		String name = sds.getValue();
+//		if (! isAnyType && ! SDA.isName(name))
+//			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
+
 		SimpleType simple;	// The simple type that will be returned at the end of this method.
 		
 		switch (content) {
