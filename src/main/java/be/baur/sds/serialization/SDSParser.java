@@ -370,27 +370,26 @@ public final class SDSParser implements Parser {
 		 */
 		boolean isAnyType = (content == Content.ANY); // we need this a few times
 		
-		// A name attribute is mandatory except for the "any" type. And it must be valid.
-		Node name = getAttribute(sds, Attribute.NAME, !isAnyType);
-		if (name != null && !SDA.isName(name.getValue())) 
-			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
-
 		// A name is mandatory except for the "any" type. But if present, it must be valid.
-//		String name = sds.getValue();
-//		if (! isAnyType && ! SDA.isName(name))
-//			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
+//		Node name = getAttribute(sds, Attribute.NAME, !isAnyType);
+//		if (name != null && !SDA.isName(name.getValue())) 
+//			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
+
+		String name = sds.getValue();
+		if ((! isAnyType || ! name.isEmpty()) && ! SDA.isName(name))
+			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
 
 		SimpleType simple;	// The simple type that will be returned at the end of this method.
 		
 		switch (content) {
-			case STRING   : simple = new StringType(name.getValue()); break;
-			case BINARY   : simple = new BinaryType(name.getValue()); break;
-			case BOOLEAN  : simple = new BooleanType(name.getValue()); break;
-			case INTEGER  : simple = new IntegerType(name.getValue()); break;
-			case DECIMAL  : simple = new DecimalType(name.getValue()); break;
-			case DATETIME : simple = new DateTimeType(name.getValue()); break;
-			case DATE     : simple = new DateType(name.getValue()); break;
-			case ANY      : simple = new AnyType(name == null ? null : name.getValue()); break;
+			case STRING   : simple = new StringType(name); break;
+			case BINARY   : simple = new BinaryType(name); break;
+			case BOOLEAN  : simple = new BooleanType(name); break;
+			case INTEGER  : simple = new IntegerType(name); break;
+			case DECIMAL  : simple = new DecimalType(name); break;
+			case DATETIME : simple = new DateTimeType(name); break;
+			case DATE     : simple = new DateType(name); break;
+			case ANY      : simple = new AnyType(name); break;
 			default: // will never get here, unless we forgot to implement something...
 				throw new RuntimeException("SDS type '" + content + "' not implemented!");
 		}
