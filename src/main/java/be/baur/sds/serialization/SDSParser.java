@@ -332,8 +332,11 @@ public final class SDSParser implements Parser {
 //			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
 		// A valid name is required if we are a node type
 		String name = sds.getValue();
-		if (sds.getName().equals(Component.NODE.tag) && ! SDA.isName(name))
-			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
+		
+		if (sds.getName().equals(Component.NODE.tag)) {
+			if (! SDA.isName(name))
+				throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
+		}
 		else if (! name.isEmpty()) // but for model groups it is not allowed
 			throw new SchemaException(sds, String.format(NAME_NOT_ALLOWED, name));
 				

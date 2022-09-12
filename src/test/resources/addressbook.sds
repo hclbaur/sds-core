@@ -1,44 +1,40 @@
 schema {
 	type "addressbook"
 	node "person" {
-		name "person"
-		node { name "firstname" type "string" }
-		node { name "lastname" type "string" occurs "0..1" }
-		node { name "birthdate" type "date" occurs "0..1" }
-		node {
-			name "about" occurs "0..1"
+		node "firstname" { type "string" }
+		node "lastname" { type "string" occurs "0..1" }
+		node "birthdate" { type "date" occurs "0..1" }
+		node "about" {
+			occurs "0..1"
 			node { type "any" occurs "1..*" }
 		}
 	}
 	node "address" {
-		name "address"
-		node { name "type" type "string" pattern "home|work" }
+		node "type" { type "string" pattern "home|work" }
 		choice {
-			node { name "streetname" type "string" }
-			node { name "postalcode" type "string" pattern "\\d{4} [A-Z]{2}" }
+			node "streetname" { type "string" }
+			node "postalcode" { type "string" pattern "\\d{4} [A-Z]{2}" }
 		}
-		node { name "housenumber" type "integer" value "[1..*)" }
-		node { name "sub" type "string" occurs "0..1" }
-		node { name "city" type "string" }
+		node "housenumber" { type "integer" value "[1..*)" }
+		node "sub" { type "string" occurs "0..1" }
+		node "city" { type "string" }
 		group {
 			occurs "0..1"
-			node { name "latitude" type "decimal" }
-			node { name "longitude" type "decimal" }
-			node { name "altitude" type "decimal" occurs "0..1" }
+			node "latitude" { type "decimal" }
+			node "longitude" { type "decimal" }
+			node "altitude" { type "decimal" occurs "0..1" }
 		}
 	}
 	node "contact" {
-		name "contact"
-		node { name "id" type "integer" value "[0..*)" }
+		node "id" { type "integer" value "[0..*)" }
 		node { type "person" }
 		node { type "address" occurs "0..2" }
 		unordered {
-			node { name "phone" type "string" occurs "1..2" length "11" pattern "\\d{2,4}-\\d{6,8}" }
-			node { name "email" type "string" occurs "0..2" }
+			node "phone" { type "string" occurs "1..2" length "11" pattern "\\d{2,4}-\\d{6,8}" }
+			node "email" { type "string" occurs "0..2" }
 		}
 	}
-	node {
-		name "addressbook"
+	node "addressbook" {
 		node "owner" { type "contact" }
 		node { type "contact" occurs "0..*" }
 	}

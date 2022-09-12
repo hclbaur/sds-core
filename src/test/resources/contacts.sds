@@ -1,15 +1,14 @@
 schema {
 	node "contacts" {
-		name "contacts"
 		node "contact" {
-			name "contact"  occurs "0..*"
-			node "id" { name "id" type "integer" value "(0..24)" }
-			node "name" { name "name" type "string" nullable "false" }
-			node "phone" { name "phone" type "string" occurs "0..1" length "11" pattern "\\d{2,4}-\\d{6,8}" }
-			node "birthdate" { name "birthdate" type "date" occurs "0..1" value "[1900-01-01..*)" }
-			node "star" { name "star" type "boolean" occurs "0..1" }
-			node "icon" { name "icon" type "binary" occurs "0..1" }
-			node "about" { name "about" type "any" occurs "0..1" }
+			occurs "0..*"
+			node "id" { type "integer" value "(0..24)" }
+			node "name" { type "string" nullable "false" }
+			node "phone" { type "string" occurs "0..1" length "11" pattern "\\d{2,4}-\\d{6,8}" }
+			node "birthdate" { type "date" occurs "0..1" value "[1900-01-01..*)" }
+			node "star" { type "boolean" occurs "0..1" }
+			node "icon" {type "binary" occurs "0..1" }
+			node "about" { type "any" occurs "0..1" }
 		}
 	}
 }
