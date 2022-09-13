@@ -1,74 +1,73 @@
 schema {
 	type "test"
-	node { name "id" type "integer" value "[1..*]" }
-	node {
-		name "test"
-		node {
-			name "man_man_man" occurs "1..*"
+	node "id" { type "integer" value "[1..*]" }
+	node "test" {
+		node "man_man_man" {
+			occurs "1..*"
 			node { type "id" }
 			unordered {
-				node { name "man1" type "string" }
-				node { name "man2" type "string" }
+				node "man1" { type "string" }
+				node "man2" { type "string" }
 			}
 		}
-		node {
-			name "man_man_opt" occurs "1..*"
+		node "man_man_opt" {
+			occurs "1..*"
 			node { type "id" }
 			unordered {
-				node { name "man1" type "string" }
-				node { name "opt1" type "string" occurs "0..1" }
+				node "man1" { type "string" }
+				node "opt1" { type "string" occurs "0..1" }
 			}
 		}
-		node {
-			name "man_opt_man" occurs "1..*"
+		node "man_opt_man" {
+			occurs "1..*"
 			node { type "id" }
 			unordered {
-				node { name "opt1" type "string" occurs "0..1" }
-				node { name "man1" type "string" }
+				node "opt1" { type "string" occurs "0..1" }
+				node "man1" { type "string" }
 			}
 		}
-		node {
-			name "man_opt_opt" occurs "1..*"
+		node "man_opt_opt" {
+			occurs "1..*"
 			node { type "id" }
 			unordered {
-				node { name "opt1" type "string" occurs "0..1" }
-				node { name "opt2" type "string" occurs "0..1" }
+				node "opt1" { type "string" occurs "0..1" }
+				node "opt2" { type "string" occurs "0..1" }
 			}
 		}
-		node {
-			name "opt_man_man" occurs "1..*"
+		node "opt_man_man" {
+			occurs "1..*"
 			node { type "id" }
 			unordered {
 				occurs "0..1"
-				node { name "man1" type "string" }
-				node { name "man2" type "string" }
+				node "man1" { type "string" }
+				node "man2" { type "string" }
 			}
 		}
-		node {
-			name "opt_man_opt" occurs "1..*"
+		node "opt_man_opt" {
+			occurs "1..*"
 			node { type "id" }
 			unordered {
 				occurs "0..1"
-				node { name "man1" type "string" }
-				node { name "opt1" type "string" occurs "0..1" }
+				node "man1" { type "string" }
+				node "opt1" { type "string" occurs "0..1" }
 			}
 		}
-		node {
-			name "opt_opt_man" occurs "1..*"
+		node "opt_opt_man" {
+			occurs "1..*"
 			node { type "id" }
 			unordered {
 				occurs "0..1"
-				node { name "opt1" type "string" occurs "0..1" }
-				node { name "man1" type "string" }
+				node "opt1" { type "string" occurs "0..1" }
+				node "man1" { type "string" }
 			}
 		}
-		node {
-			name "opt_opt_opt" occurs "1..*"
+		node "opt_opt_opt" {
+			occurs "1..*"
 			node { type "id" }
 			unordered {
 				occurs "0..1"
-				node { name "opt1" type "string" occurs "0..1" }
-				node { name "opt2" type "string" occurs "0..1" }
+				node "opt1" { type "string" occurs "0..1" }
+				node "opt2" { type "string" occurs "0..1" }
 			}
 		}
 	}
