@@ -74,7 +74,6 @@ public class ComplexType extends Node implements ComponentType {
 		if (! (this instanceof AbstractGroup) ) {
 			node = new Node(Component.NODE.tag);
 			if (getGlobalType() == null || ! getName().equals(getGlobalType()))
-				//node.addNode(new Node(Attribute.NAME.tag, getName()));
 				node.setValue(getName());
 		}
 		else node = new Node(getName());

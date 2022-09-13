@@ -2,8 +2,6 @@ package be.baur.sds.serialization;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.PatternSyntaxException;
 
@@ -319,7 +317,7 @@ public final class SDSParser implements Parser {
 //			.filter(n -> ! (n.getName().equals(Attribute.NAME.tag) 
 //				|| n.getName().equals(Attribute.OCCURS.tag)) )
 //			.findFirst();
-		// Complex types should not have attributes other than occurs.
+		// Complex types should not have attributes other than type and occurs.
 		Optional<Node> attribute = sds.getNodes().get(n -> n.getNodes() == null).stream()
 			.filter(n -> ! (n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();		
 		

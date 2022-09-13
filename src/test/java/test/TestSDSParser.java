@@ -99,7 +99,7 @@ public final class TestSDSParser
 		t.ts1("F08", "schema{ node{ name \"x\" occurs \"1\" node{ name \"x\" type \"string\" } } }", s + "/schema/node: attribute 'occurs' is not allowed here");
 		t.ts1("F09", "schema{ node \"x\" { choice{ } } }", s + "/schema/node/choice: component 'choice' is empty");
 		t.ts1("F10", "schema{ choice{ } }", s + "/schema/choice: component 'choice' is not allowed here");
-		t.ts1("F11", "schema{ name \"mobile\" }", s + "/schema/name: attribute 'name' is not allowed here");
+		t.ts1("F11", "schema{ name \"mobile\" }", s + "/schema/name: attribute 'name' is unknown");
 		t.ts1("F12", "schema{ node{ type \"phone\" } }", s + "/schema/node/type: content type 'phone' is unknown");
 		t.ts1("F13", "schema{ node \"mobile\" { type \"phone\" } }", s + "/schema/node/type: content type 'phone' is unknown");
 		t.ts1("F14", "schema{ node \"phone\" { type \"string\" } node{ type \"phone\" nullable \"false\"} }", s + "/schema/node[2]: attribute 'nullable' is not allowed here");
@@ -118,7 +118,7 @@ public final class TestSDSParser
 		t.ts1("F26", "schema{ node \"m\" { node \"x\" { type \"string\" occurs \"-1\" } } }", s + "/schema/node/node/occurs: occurs '-1' is invalid; negative values are not allowed");
 		t.ts1("F27", "schema{ node \"m\" { node \"x\" { type \"string\" occurs \"a\" } } }", s + "/schema/node/node/occurs: occurs 'a' is invalid; missing or non-integer value(s)");
 		t.ts1("F28", "schema{ node \"c\" { choice{ node{ name \"x\" type \"string\" } } } }", s + "/schema/node/choice: component 'choice' is incomplete");
-		t.ts1("F29", "schema{ node \"c\" { choice{ name \"x\" } } }", s + "/schema/node/choice: attribute 'name' is not allowed here");
+		t.ts1("F29", "schema{ node \"c\" { choice{ name \"x\" } } }", s + "/schema/node/choice/name: attribute 'name' is unknown");
 		t.ts1("F30", "schema{ node \"c\" { choice{ nullable \"true\" } } }", s + "/schema/node/choice: attribute 'nullable' is not allowed here");
 		t.ts1("F31", "schema{ node \"x\" { type \"string\" length \"\" } }", s + "/schema/node/length: attribute 'length' is empty");
 		t.ts1("F32", "schema{ node \"x\"{ type \"binary\" length \"-1\" } }", s + "/schema/node/length: length '-1' is invalid; negative values are not allowed");

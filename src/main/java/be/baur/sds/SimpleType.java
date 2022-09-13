@@ -26,7 +26,7 @@ public abstract class SimpleType extends Node implements ComponentType {
 	
 	/** Creates a simple type with the specified <code>name</code>.*/
 	public SimpleType(String name) {
-		super(name, null); // the value field is currently not used
+		super(name); // the value field is currently not used
 	}
 
 	
@@ -99,8 +99,7 @@ public abstract class SimpleType extends Node implements ComponentType {
 		// Omit the name for an unnamed any type, and for a type
 		// reference with the same name as the referenced type
 		if (! (( getGlobalType() != null && getName().equals(getGlobalType()) )
-			|| ( this instanceof AnyType && !((AnyType) this).isNamed() )) ) {
-			//node.addNode(new Node(Attribute.NAME.tag, getName()));
+				|| ( this instanceof AnyType && !((AnyType) this).isNamed() )) ) {
 			node.setValue(getName());
 		}
 		
