@@ -57,8 +57,8 @@ public interface ComponentType {
 
 	/**
 	 * Returns an SDA node structure that represents this component. In other words,
-	 * what an SDA parser would return upon processing an input stream describing
-	 * the component in SDS notation.
+	 * what an SDA parser would return upon processing an input stream defining the
+	 * component in SDS syntax.
 	 */
 	Node toNode();
 

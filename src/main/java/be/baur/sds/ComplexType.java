@@ -17,7 +17,6 @@ public class ComplexType extends Node implements ComponentType {
 	private ComplexType globalcomplextype = null; // the global complex type this component refers to.
 	private NaturalInterval multiplicity = null; // the default multiplicity: mandatory and singular.
 	
-	
 	/** Creates a complex type with the specified <code>name</code>.*/
 	public ComplexType(String name) {
 		super(name); addNode(null); // by definition, a complex type has child nodes.

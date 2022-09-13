@@ -14,13 +14,14 @@ public final class Schema extends Node {
 	public static final String TAG = "schema";
 	
 	private String rootType = null; // The designated root type.
-	
+	// rename to defaultType?
 
 	/** Creates a schema node. */
 	public Schema() {
 		super(TAG); addNode(null); // by definition, a schema has child nodes.
 	}
 
+	// Should override addNode() to accept only NodeType?
 
 	/** Returns the designated root type or <code>null</code> if not set. */
 	public String getRootType() {
