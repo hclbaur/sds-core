@@ -1,23 +1,20 @@
 schema {
 	type "cartesian"
-	node { name "id" type "integer" value "(0..*)" }
-	node { 
-		name "point"
+	node "id" { type "integer" value "(0..*)" }
+	node "point" { 
 		node { type "id" }
 		unordered {
-			node { name "x" type "decimal" }
-			node { name "y" type "decimal" }
-			node { name "z" type "decimal" occurs "0..1" }
+			node "x" { type "decimal" }
+			node "y" { type "decimal" }
+			node "z" { type "decimal" occurs "0..1" }
 		} 
-		node { name "tag" type "string"  occurs "0..1" }
+		node "tag" { type "string"  occurs "0..1" }
 	}
-	node {
-		name "line"
+	node "line" {
 		node { type "id" }
 		node { type "point" occurs "2" } 
 	}
-	node {
-		name "cartesian"
+	node "cartesian" {
 		node { type "line" occurs "1..*" } 
 	}
 }

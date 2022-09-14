@@ -2,8 +2,6 @@ package be.baur.sds.serialization;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.PatternSyntaxException;
 
@@ -79,6 +77,7 @@ public final class SDSParser implements Parser {
 
 	private static final String CONTENT_TYPE_UNKNOWN = "content type '%s' is unknown";
 	private static final String NODE_NAME_INVALID = "'%s' is not a valid node name";
+	private static final String NAME_NOT_ALLOWED = "name '%s' is not allowed here";
 	
 	/**
 	 * Parses a character stream with SDS content and return a <code>Schema</code>.
@@ -219,7 +218,6 @@ public final class SDSParser implements Parser {
 	}
 
 
-	static final List<String> REFTAGS = Arrays.asList(Attribute.TYPE.tag, Attribute.NAME.tag, Attribute.OCCURS.tag);
 	/**
 	 * A reference refers to a previously defined global type. If the name is
 	 * omitted, it is assumed to be equal to the name of the referenced type.
@@ -236,24 +234,24 @@ public final class SDSParser implements Parser {
 	 */
 	private static ComponentType parseTypeReference(Node sds, Node type) throws SchemaException {
 		/*
-		 * The reference is not a real component, but just a convenient shorthand way to
+		 * A reference is not a real component, but just a convenient shorthand way to
 		 * refer to a global type in SDS notation. When we encounter one, we create a
 		 * component from the global type it refers to and set its name (if explicitly
 		 * named). We also set the global type on this component, so that when rendering
 		 * back to SDS, we can recreate the correct reference.
 		 * Preconditions: the caller (parseComponentType) has already verified that this
-		 * node has no complex child nodes, and that all simple child nodes have valid
+		 * node has no complex child types, and that all simple child types have valid
 		 * attribute tags.
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
 		
-		// References should not have attributes other than type, name and occurs.
-//		Optional<Node> attribute = sds.getNodes().get(SimpleNode.class).stream()
-//			.filter(n -> ! ( n.getName().equals(Attribute.TYPE.tag) 
-//				|| n.getName().equals(Attribute.NAME.tag) || n.getName().equals(Attribute.OCCURS.tag)
-//			)).findFirst();
+		// References should not have attributes other than type and occurs.
 		Optional<Node> attribute = sds.getNodes().get(n -> n.getNodes() == null).stream()
-			.filter(n -> ! REFTAGS.contains(n.getName())).findFirst();
+			.filter(n -> ! ( n.getName().equals(Attribute.TYPE.tag) 
+				||  n.getName().equals(Attribute.OCCURS.tag) )).findFirst();
+//      static final List<String> REFTAGS = Arrays.asList(Attribute.TYPE.tag, Attribute.NAME.tag, Attribute.OCCURS.tag);
+//		Optional<Node> attribute = sds.getNodes().get(n -> n.getNodes() == null).stream()
+//			.filter(n -> ! REFTAGS.contains(n.getName())).findFirst();
 		if (attribute.isPresent())
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
 		
@@ -261,13 +259,14 @@ public final class SDSParser implements Parser {
 		if (root.equals(sds)) // if we are the root ourself, we bail out right away.
 			throw new SchemaException(type, String.format(CONTENT_TYPE_UNKNOWN, type.getValue()));
 		
-		// We now search all node declarations in the root for the referenced type.
+		// Search all node declarations in the schema root for the referenced type.
 		Node refNode = null;
 		for (Node cnode : root.getNodes().get(n -> n.getNodes() != null).get(Component.NODE.tag)) {
-			for (Node snode : cnode.getNodes().get(n -> n.getNodes() == null).get(Attribute.NAME.tag)) {
-				if ( snode.getValue().equals(type.getValue()) ) refNode = cnode; break;
-			}
-			if (refNode != null) break;
+//			for (Node snode : cnode.getNodes().get(n -> n.getNodes() == null).get(Attribute.NAME.tag)) {
+//				if ( snode.getValue().equals(type.getValue()) ) refNode = cnode; break;
+//			}
+//			if (refNode != null) break;
+			if ( cnode.getValue().equals(type.getValue()) ) refNode = cnode;
 		}
 		if (refNode == null || refNode.equals(sds)) // if we found nothing or ourself, we raise an error.
 			throw new SchemaException(type, String.format(CONTENT_TYPE_UNKNOWN, type.getValue()));
@@ -284,11 +283,17 @@ public final class SDSParser implements Parser {
 		refComp.setGlobalType(type.getValue());  // set the type we were created from
 		
 		// If a name is specified (different or equal to the type name) we set it
-		Node name = getAttribute(sds, Attribute.NAME, false);
-		if (name != null) {
-			if (! SDA.isName(name.getValue())) 
-				throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
-			refComp.setName(name.getValue());
+//		Node name = getAttribute(sds, Attribute.NAME, false);
+//		if (name != null) {
+//			if (! SDA.isName(name.getValue())) 
+//				throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
+//			refComp.setName(name.getValue());
+//		}
+		String name = sds.getValue();
+		if (! name.isEmpty()) {
+			if (! SDA.isName(name)) 
+				throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
+			refComp.setName(name);
 		}
 		
 		return refComp;
@@ -308,24 +313,35 @@ public final class SDSParser implements Parser {
 		 */
 
 		// Complex types should not have attributes other than name and occurs.
+//		Optional<Node> attribute = sds.getNodes().get(n -> n.getNodes() == null).stream()
+//			.filter(n -> ! (n.getName().equals(Attribute.NAME.tag) 
+//				|| n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
+		// Complex types should not have attributes other than type and occurs.
 		Optional<Node> attribute = sds.getNodes().get(n -> n.getNodes() == null).stream()
-			.filter(n -> ! (n.getName().equals(Attribute.NAME.tag) 
-				|| n.getName().equals(Attribute.OCCURS.tag)) )
-			.findFirst();
-		
+			.filter(n -> ! (n.getName().equals(Attribute.TYPE.tag) 
+				|| n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
+				
 		if (attribute.isPresent())
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
 
-		// A valid name attribute is required unless we are a model group, in which case it is forbidden.
-		Node name = getAttribute(sds, Attribute.NAME, 
-			sds.getName().equals(Component.NODE.tag) ? true : null);
-		if (name != null && !SDA.isName(name.getValue())) 
-			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
+//		Node name = getAttribute(sds, Attribute.NAME, 
+//			sds.getName().equals(Component.NODE.tag) ? true : null);
+//		if (name != null && !SDA.isName(name.getValue())) 
+//			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
+		// A valid name is required if we are a node type
+		String name = sds.getValue();
 		
+		if (sds.getName().equals(Component.NODE.tag)) {
+			if (! SDA.isName(name))
+				throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
+		}
+		else if (! name.isEmpty()) // but for model groups it is not allowed
+			throw new SchemaException(sds, String.format(NAME_NOT_ALLOWED, name));
+				
 		ComplexType complex;	// the complex type that will be returned at the end of this method.
 
 		switch (Component.get(sds.getName())) {
-			case NODE		: complex = new ComplexType(name.getValue()); break;
+			case NODE		: complex = new ComplexType(name); break;
 			case GROUP		: complex = new Group(); break;
 			case CHOICE		: complex = new ChoiceGroup(); break;
 			case UNORDERED	: complex = new UnorderedGroup(); break;
@@ -355,22 +371,26 @@ public final class SDSParser implements Parser {
 		 */
 		boolean isAnyType = (content == Content.ANY); // we need this a few times
 		
-		// A name attribute is mandatory except for the "any" type. And it must be valid.
-		Node name = getAttribute(sds, Attribute.NAME, !isAnyType);
-		if (name != null && !SDA.isName(name.getValue())) 
-			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
-		
+		// A name is mandatory except for the "any" type. But if present, it must be valid.
+//		Node name = getAttribute(sds, Attribute.NAME, !isAnyType);
+//		if (name != null && !SDA.isName(name.getValue())) 
+//			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
+
+		String name = sds.getValue();
+		if ((! isAnyType || ! name.isEmpty()) && ! SDA.isName(name))
+			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
+
 		SimpleType simple;	// The simple type that will be returned at the end of this method.
 		
 		switch (content) {
-			case STRING   : simple = new StringType(name.getValue()); break;
-			case BINARY   : simple = new BinaryType(name.getValue()); break;
-			case BOOLEAN  : simple = new BooleanType(name.getValue()); break;
-			case INTEGER  : simple = new IntegerType(name.getValue()); break;
-			case DECIMAL  : simple = new DecimalType(name.getValue()); break;
-			case DATETIME : simple = new DateTimeType(name.getValue()); break;
-			case DATE     : simple = new DateType(name.getValue()); break;
-			case ANY      : simple = new AnyType(name == null ? null : name.getValue()); break;
+			case STRING   : simple = new StringType(name); break;
+			case BINARY   : simple = new BinaryType(name); break;
+			case BOOLEAN  : simple = new BooleanType(name); break;
+			case INTEGER  : simple = new IntegerType(name); break;
+			case DECIMAL  : simple = new DecimalType(name); break;
+			case DATETIME : simple = new DateTimeType(name); break;
+			case DATE     : simple = new DateType(name); break;
+			case ANY      : simple = new AnyType(name); break;
 			default: // will never get here, unless we forgot to implement something...
 				throw new RuntimeException("SDS type '" + content + "' not implemented!");
 		}

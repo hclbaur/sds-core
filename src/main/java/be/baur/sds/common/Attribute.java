@@ -5,9 +5,8 @@ package be.baur.sds.common;
  */
 public enum Attribute {
 
-	NAME("name"), TYPE("type"), OCCURS("occurs"), 
-	LENGTH("length"), VALUE("value"), PATTERN("pattern"),
-	NULLABLE("nullable");
+	TYPE("type"), OCCURS("occurs"), LENGTH("length"), 
+	VALUE("value"), PATTERN("pattern"), NULLABLE("nullable");
 
 	public final String tag;
 	

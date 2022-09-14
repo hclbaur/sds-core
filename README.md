@@ -16,12 +16,11 @@ problems - which may happen if it's incomplete, incorrect, or unknown.
 For example:
 
 	schema {
-		node {
-			name "addressbook"
-			node {
-				name "contact" occurs "0..*"
-				node { name "firstname" type "string" }
-				node { name "phonenumber" type "string" occurs "1..*" }
+		node "addressbook" {
+			node "contact" {
+				occurs "0..*"
+				node "firstname" { type "string" }
+				node "phonenumber" { type "string" occurs "1..*" }
 			}
 		}
 	}

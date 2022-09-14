@@ -17,7 +17,6 @@ public class ComplexType extends Node implements ComponentType {
 	private ComplexType globalcomplextype = null; // the global complex type this component refers to.
 	private NaturalInterval multiplicity = null; // the default multiplicity: mandatory and singular.
 	
-	
 	/** Creates a complex type with the specified <code>name</code>.*/
 	public ComplexType(String name) {
 		super(name); addNode(null); // by definition, a complex type has child nodes.
@@ -69,12 +68,12 @@ public class ComplexType extends Node implements ComponentType {
 		
 		Node node; // resulting node, returned at the end of this method
 		
-		// Omit the name attribute for model groups or 
-		// type references with the same name as the referenced global type.
+		// Omit the name for model groups or type references
+		// with the same name as the referenced global type.
 		if (! (this instanceof AbstractGroup) ) {
 			node = new Node(Component.NODE.tag);
 			if (getGlobalType() == null || ! getName().equals(getGlobalType()))
-				node.addNode(new Node(Attribute.NAME.tag, getName()));
+				node.setValue(getName());
 		}
 		else node = new Node(getName());
 		

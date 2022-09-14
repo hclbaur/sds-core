@@ -19,3 +19,22 @@ Which, naturally, would have to include Structured (Simple) Data Schema.
 
 **Harold C.L. Baur, April 2020**
 
+---
+
+# Rationale 2
+
+After changing the SDA syntax to allow nodes to have both simple *and* complex 
+content, I obviously needed to change the SDS core library to support validation 
+of such nodes. 
+
+This would have been possible without changing the SDS syntax, but I could not 
+resist the urge to apply the SDA 2 syntax to SDS, and make it visually more 
+intuitive, and easier to read.
+
+Unfortunately that broke backwards compatibility, but I felt this was a small 
+price to pay, given that the entire user base of SDS comprised just me.
+
+And besides, this is what semantic versioning is for.
+
+**Harold C.L. Baur, September 2022**
+
