@@ -315,12 +315,12 @@ public final class SDSParser implements Parser {
 		// Complex types should not have attributes other than name and occurs.
 //		Optional<Node> attribute = sds.getNodes().get(n -> n.getNodes() == null).stream()
 //			.filter(n -> ! (n.getName().equals(Attribute.NAME.tag) 
-//				|| n.getName().equals(Attribute.OCCURS.tag)) )
-//			.findFirst();
+//				|| n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
 		// Complex types should not have attributes other than type and occurs.
 		Optional<Node> attribute = sds.getNodes().get(n -> n.getNodes() == null).stream()
-			.filter(n -> ! (n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();		
-		
+			.filter(n -> ! (n.getName().equals(Attribute.TYPE.tag) 
+				|| n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
+				
 		if (attribute.isPresent())
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
 

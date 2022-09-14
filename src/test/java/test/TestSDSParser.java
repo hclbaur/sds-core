@@ -112,7 +112,7 @@ public final class TestSDSParser
 		System.out.print("\n              ");
 		t.ts1("F21", "schema{ node{ type \"\" } }", s + "/schema/node/type: attribute 'type' is empty");
 		t.ts1("F22", "schema{ node{ type \"string\" } }", s + "/schema/node: '' is not a valid node name");
-		t.ts1("F23", "schema{ node{ type \"string\" node{} } }", s + "/schema/node: attribute 'type' is not allowed here");
+		t.ts1("F23", "schema{ node{ type \"string\" node{} } }", s + "/schema/node: '' is not a valid node name");
 		t.ts1("F24", "schema{ node{ type \"string\" type \"\" } }", s + "/schema/node/type[1]: attribute 'type' can occur only once");
 		t.ts1("F25", "schema{ node \"m\" { node \"x\" { type \"string\" occurs \"\" } } }", s + "/schema/node/node/occurs: attribute 'occurs' is empty");
 		t.ts1("F26", "schema{ node \"m\" { node \"x\" { type \"string\" occurs \"-1\" } } }", s + "/schema/node/node/occurs: occurs '-1' is invalid; negative values are not allowed");

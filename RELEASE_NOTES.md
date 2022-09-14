@@ -1,8 +1,10 @@
 # Release Notes
 
-This release adds full support for SDA 2 and implements SDS 2. 
+This release supports SDS 2 syntax. Note that the SDS 1 syntax is no longer 
+supported, so you will need to update your schema. Also, the validation of
+mixed types is not yet supported. 
 
-## [2.0.0] - 2022-xx-xx
+## [2.0.0] - 2022-09-14
 - `Removed` the *name* attribute from the SDS syntax.
 
 ## Compatibility
