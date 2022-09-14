@@ -5,8 +5,8 @@ import be.baur.sds.common.Attribute;
 
 /**
  * A <code>Schema</code> represents a entire SDA schema definition, converted
- * from (for example) SDS notation into schema components. It acts as a
- * container for global node definitions or types (of {@link ComponentType}).
+ * from (for example) SDS notation into schema components. It is a container for
+ * "components" (see {@link ComponentType}) like node types or model groups.
  */
 public final class Schema extends Node {
 
@@ -21,7 +21,7 @@ public final class Schema extends Node {
 		super(TAG); addNode(null); // by definition, a schema has child nodes.
 	}
 
-	// Should override addNode() to accept only NodeType?
+	// Should override addNode() to accept only ComponentType?
 
 	/** Returns the designated root type or <code>null</code> if not set. */
 	public String getRootType() {

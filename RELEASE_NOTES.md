@@ -4,7 +4,7 @@ This release includes full SDS 2 schema support, for specification and
 validation of SDA documents, syntax version 2.
 
 ## [2.1.0] - 2022-xx-xx
-- ...
+- `Changed` ComponentType to an abstract class (was an interface).
 
 ## Compatibility
 

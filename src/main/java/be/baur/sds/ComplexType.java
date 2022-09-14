@@ -4,42 +4,19 @@ import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
 import be.baur.sds.common.Attribute;
 import be.baur.sds.common.Component;
-import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.model.AbstractGroup;
 
 /**
  * A <code>ComplexType</code> represents an SDS definition of a complex SDA
  * node. It is a container for other components and/or model groups.
  */
-public class ComplexType extends Node implements ComponentType {
+public class ComplexType extends ComponentType {
 
-	private String globaltype = null; // the (name of the) global type this component refers to.
 	private ComplexType globalcomplextype = null; // the global complex type this component refers to.
-	private NaturalInterval multiplicity = null; // the default multiplicity: mandatory and singular.
 	
 	/** Creates a complex type with the specified <code>name</code>.*/
 	public ComplexType(String name) {
 		super(name); addNode(null); // by definition, a complex type has child nodes.
-	}
-	
-
-	public String getGlobalType() {
-		return globaltype;
-	}
-
-
-	public void setGlobalType(String type) {
-		this.globaltype = type;
-	}
-
-
-	public NaturalInterval getMultiplicity() {
-		return multiplicity;
-	}
-
-
-	public void setMultiplicity(NaturalInterval multiplicity) {
-		this.multiplicity = multiplicity;
 	}
 	
 		
@@ -55,10 +32,10 @@ public class ComplexType extends Node implements ComponentType {
 	@Override
 	public NodeSet getNodes() {
 		
-		if (globaltype == null) return super.getNodes();
+		if (getGlobalType() == null) return super.getNodes();
 		
 		if (globalcomplextype == null) // not bound yet, so get it from the schema root
-			globalcomplextype = (ComplexType) this.root().getNodes().get(globaltype).get(1);
+			globalcomplextype = (ComplexType) this.root().getNodes().get(getGlobalType()).get(1);
 		
 		return globalcomplextype != null ? globalcomplextype.getNodes() : new NodeSet();
 	}
@@ -81,8 +58,8 @@ public class ComplexType extends Node implements ComponentType {
 			node.addNode(new Node(Attribute.TYPE.tag, getGlobalType()));
 		
 		// Render the multiplicity if not default.
-		if (multiplicity != null && (multiplicity.min != 1 || multiplicity.max != 1)) 
-			node.addNode(new Node(Attribute.OCCURS.tag, multiplicity.toString()));
+		if (getMultiplicity() != null && (getMultiplicity().min != 1 || getMultiplicity().max != 1)) 
+			node.addNode(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		if (getGlobalType() == null) // Render children, unless we are a type reference.
 			for (Node child : getNodes()) node.addNode(((ComponentType) child).toNode());

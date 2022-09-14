@@ -4,54 +4,63 @@ import be.baur.sda.Node;
 import be.baur.sds.common.NaturalInterval;
 
 /**
- * An interface implemented by classes representing a schema component, such as
- * {@link SimpleType} and {@link ComplexType}.
+ * An abstract class representing a schema component, such as {@link SimpleType}
+ * and {@link ComplexType}.
  */
-public interface ComponentType {
+public abstract class ComponentType extends Node {
+
+	private String globaltype = null; 				// name of the global type this component refers to.
+	private NaturalInterval multiplicity = null; 	// the default multiplicity: mandatory and singular.
+
+	/** Creates a component with the specified <code>name</code>.*/
+	public ComponentType(String name) {
+		super(name);
+	}
 
 	
-	/** Returns the name of this component. */
-	String getName();
-	
-	
-	/** Sets the name of this component. */
-	void setName(String name);
-	
-	
 	/** Returns the name of the referenced global type. */
-	public String getGlobalType();
+	public String getGlobalType() {
+		return globaltype;
+	}
 
 	
 	/** Sets the name of the referenced global type. */
-	public void setGlobalType(String type);
+	public void setGlobalType(String type) {
+		this.globaltype = type;
+	}
 
 	
 	/**
 	 * Returns the formal multiplicity of this component. The default is
 	 * <code>null</code>, which means the component must occur exactly once.
 	 */
-	NaturalInterval getMultiplicity();
+	public NaturalInterval getMultiplicity() {
+		return multiplicity;
+	}
 
 	
 	/** Sets the multiplicity of this component. */
-	void setMultiplicity(NaturalInterval multiplicity);
+	public void setMultiplicity(NaturalInterval multiplicity) {
+		this.multiplicity = multiplicity;
+	}
+
 
 	
 	/**
 	 * Returns the effective minimum number of times this component must occur
 	 * within its context.
 	 */
-	default int minOccurs() {
-		return getMultiplicity() != null ? getMultiplicity().min : 1;
+	public int minOccurs() {
+		return multiplicity != null ? multiplicity.min : 1;
 	}
 
 	
 	/**
-	 * Returns the effective maximum number of times this component may occur within
-	 * its context.
+	 * Returns the effective maximum number of times this component may occur 
+	 * within its context.
 	 */
-	default int maxOccurs() {
-		return getMultiplicity() != null ? getMultiplicity().max : 1;
+	public int maxOccurs() {
+		return multiplicity != null ? multiplicity.max : 1;
 	}
 
 
@@ -60,9 +69,10 @@ public interface ComponentType {
 	 * what an SDA parser would return upon processing an input stream defining the
 	 * component in SDS syntax.
 	 */
-	Node toNode();
+	public abstract Node toNode();
 
 	
 	/** Returns the string representation of this component in SDS syntax. */
-	String toString();
+	@Override 
+	public abstract String toString();
 }

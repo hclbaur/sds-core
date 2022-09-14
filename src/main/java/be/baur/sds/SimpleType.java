@@ -7,7 +7,6 @@ import be.baur.sda.Node;
 import be.baur.sds.common.Attribute;
 import be.baur.sds.common.Component;
 import be.baur.sds.common.Content;
-import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.content.AbstractStringType;
 import be.baur.sds.content.AnyType;
 import be.baur.sds.content.RangedType;
@@ -16,10 +15,8 @@ import be.baur.sds.content.RangedType;
  * A <code>SimpleType</code> represents an SDS definition of a simple SDA node,
  * with a simple content type like a string, integer, date, etc.
  */
-public abstract class SimpleType extends Node implements ComponentType {
+public abstract class SimpleType extends ComponentType {
 
-	private String globaltype = null; // the global type this component refers to.
-	private NaturalInterval multiplicity = null; // the default multiplicity: mandatory and singular.
 	private String pattexp = null; // the regular expression defining the pattern.
 	private Pattern pattern = null;	// the pre-compiled pattern (from expression).
 	private boolean nullable = false; // the default null-ability (if that is a word).	
@@ -28,30 +25,10 @@ public abstract class SimpleType extends Node implements ComponentType {
 	public SimpleType(String name) {
 		super(name); // the value field is currently not used
 	}
-
-	
-	public String getGlobalType() {
-		return globaltype;
-	}
-
-	
-	public void setGlobalType(String type) {
-		this.globaltype = type;
-	}
 	
 	
 	/** Returns the content type. */
 	public abstract Content getContentType();
-
-	
-	public NaturalInterval getMultiplicity() {
-		return multiplicity;
-	}
-
-	
-	public void setMultiplicity(NaturalInterval multiplicity) {
-		this.multiplicity = multiplicity;
-	}
 	
 	
 	/** Returns the (pre-compiled) pattern for this type. */
@@ -108,8 +85,8 @@ public abstract class SimpleType extends Node implements ComponentType {
 			getGlobalType() == null ? getContentType().type : getGlobalType()));
 		
 		// Render the multiplicity if not default.
-		if (multiplicity != null && (multiplicity.min != 1 || multiplicity.max != 1)) 
-			node.getNodes().add(new Node(Attribute.OCCURS.tag, multiplicity.toString()));
+		if (getMultiplicity() != null && (getMultiplicity().min != 1 || getMultiplicity().max != 1)) 
+			node.getNodes().add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		boolean stringType = (this instanceof AbstractStringType);
 		if (stringType) {
