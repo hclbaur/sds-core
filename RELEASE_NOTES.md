@@ -1,17 +1,19 @@
 # Release Notes
 
-This release supports SDS 2 syntax. Note that the SDS 1 syntax is no longer 
-supported, so you will need to update your schema. Also, the validation of
-mixed types is not yet supported. 
+This release includes full SDS 2 schema support, for specification and 
+validation of SDA documents, syntax version 2.
 
-## [2.0.0] - 2022-09-14
-- `Removed` the *name* attribute from the SDS syntax.
+## [2.1.0] - 2022-xx-xx
+- ...
 
 ## Compatibility
 
 - Requires at least Java 8 and SDA 2.0.0.
 
 ## Previous releases
+
+### [2.0.0] - 2022-09-14 (requires at least SDA v2.0.0)
+- `Removed` the *name* attribute from the SDS syntax.
 
 ### [1.2.4] - 2022-08-12 (requires at least SDA v1.6.2)
 - `Removed` references to SimpleNode/ComplexNode classes.
