@@ -1,14 +1,14 @@
 # Release Notes
 
 This release includes full SDS 2 schema support, for specification and 
-validation of SDA documents, syntax version 2.
+validation of SDA documents, syntax version 2. !!! Work In Proress !!!
 
 ## [2.1.0] - 2022-xx-xx
 - `Changed` ComponentType to an abstract class (was an interface).
 
 ## Compatibility
 
-- Requires at least Java 8 and SDA 2.0.0.
+- Requires at least Java 8 and SDA 2.1.0.
 
 ## Previous releases
 
