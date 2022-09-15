@@ -102,7 +102,7 @@ public final class SDSParser implements Parser {
 		if (! sds.getName().equals(Schema.TAG))
 			throw new SchemaException(sds, String.format(SCHEMA_NODE_EXPECTED, Schema.TAG));
 		
-		if (! sds.hasNodes()) // A schema must have child nodes.
+		if (! sds.isParent()) // A schema must have child nodes.
 			throw new SchemaException(sds, String.format(SCHEMA_NODE_EMPTY, sds.getName()));
 		
 		// Schema nodes must not have any attributes, except for an optional type reference.
