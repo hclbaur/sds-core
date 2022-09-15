@@ -97,7 +97,7 @@ public final class SDAValidator implements Validator {
 		}
 		if (! namesmatch) return false; // specific type; if names differ, there is no match
 		
-		if (node.getNodes() == null) { // simple content
+		if (! node.isComplex()) { // simple content
 			
 			if (! (component instanceof SimpleType)) {  // but we were expecting complex content
 				errors.add(new Error(node, EXPECTING_NODE_OF_TYPE, nodename, "complex"));
@@ -261,12 +261,12 @@ public final class SDAValidator implements Validator {
 				}
 
 				boolean match;
-				//System.out.println("validateComplex: matching " + ((childnode.getNodes() == null) ? childnode : childnode.getName() + "{}") + " to " + childcomp.getName());
+				//System.out.println("validateComplex: matching " + (childnode.isComplex() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
 				if (childcomp instanceof AbstractGroup)
 					match = matchGroup(inode, childnode, (AbstractGroup) childcomp, errors);
 				else match = matchNode(childnode, childcomp, errors);
 				
-				//System.out.println("validateComplex: " + ((childnode.getNodes() == null) ? childnode : childnode.getName()+"{}") + (match ? " == " : " <> ") + "component " + childcomp.getName());
+				//System.out.println("validateComplex: " + (childnode.isComplex() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
 				if (match) { // count match and get the next node (or none) to match against this component
 					childnode = inode.hasNext() ? inode.next() : null;
 					++curmatches; continue;

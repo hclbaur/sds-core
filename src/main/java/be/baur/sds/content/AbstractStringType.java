@@ -9,7 +9,7 @@ import be.baur.sds.common.NaturalInterval;
  */
 public abstract class AbstractStringType extends SimpleType {
 
-	private NaturalInterval length = null; // Length null means: any length is allowed.
+	private NaturalInterval length = null; // null means any length is allowed.
 
 
 	/** Creates the type with the supplied <code>name</code>. */

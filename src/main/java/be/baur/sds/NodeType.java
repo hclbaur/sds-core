@@ -16,15 +16,15 @@ import be.baur.sds.content.RangedType;
  * A <code>NodeType</code> represents an SDS definition of an SDA node, with
  * simple and/or complex content; the basic building block of a {@link Schema}.
  */
-public abstract class NodeType extends ComponentType {
+public class NodeType extends ComponentType {
 
 	private String globaltype = null; 				// name of the global type this component refers to.
-	private NaturalInterval multiplicity = null; 	// the default multiplicity: mandatory and singular.
-	private String pattexp = null; // the regular expression defining the pattern.
-	private Pattern pattern = null;	// the pre-compiled pattern (compiled from pattexp).
-	private boolean nullable = false; // the default null-ability (if that is a word).	
+	private NaturalInterval multiplicity = null; 	// default multiplicity (mandatory and singular).
+	private String pattexp = null; 					// the regular expression defining the pattern.
+	private Pattern pattern = null;					// the pre-compiled (from pattexp) pattern.
+	private boolean nullable = false; 				// default null-ability (if that is a word).	
 	
-	// should overwrite addNode to accept only NodeType
+	// should overwrite addNode to accept only NodeType?
 	
 	/** Creates a type with the specified <code>name</code>.*/
 	public NodeType(String name) {
@@ -45,7 +45,9 @@ public abstract class NodeType extends ComponentType {
 	
 	
 	/** Returns the (simple) content type. */
-	public abstract Content getContentType();
+	public Content getContentType() {
+		return null;
+	}
 
 	
 	/**
