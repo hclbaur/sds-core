@@ -1,6 +1,6 @@
 package be.baur.sds.content;
 
-import be.baur.sds.SimpleType;
+import be.baur.sds.NodeType;
 import be.baur.sds.common.Content;
 
 /**
@@ -13,7 +13,7 @@ import be.baur.sds.common.Content;
  * <code>node{ type "any" }</code> 
  * (not explicitly named, any valid name is allowed).
  */
-public final class AnyType extends SimpleType {
+public final class AnyType extends NodeType {
 
 	private final boolean named;	// true if the any type is explicitly named
 	

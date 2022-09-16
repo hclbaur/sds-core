@@ -14,29 +14,30 @@ import be.baur.sds.content.IntegerType;
 import be.baur.sds.content.RangedType;
 import be.baur.sds.content.StringType;
 
+
 /**
  * A {@code NodeType} represents an SDS type definition of an SDA node, with
- * simple and/or complex content. It is the basic building block (component) of
- * a {@link Schema}.
+ * simple and/or complex content. It is the basic building block (a component)
+ * of a {@link Schema}.
  * 
- * Note that an instance of this class is a complex type; it cannot have simple
- * content. If you need a simple content type you should instantiate one of its
- * subclasses, like {@link StringType}, {@link IntegerType},
- * {@link BooleanType}, etc. Subsequently you can create a mixed type by adding
- * other components to it.
+ * Note that an instance of this class is a <i>complex type</i>; it cannot have
+ * simple content. For a simple content type, instantiate one of its subclasses,
+ * like {@link StringType}, {@link IntegerType}, {@link BooleanType}, etc.
+ * Subsequently, you may create a <i>mixed type</i> by adding other components.
  */
 public class NodeType extends ComponentType {
 
 	private String pattexp = null; 		// the regular expression defining the pattern.
 	private Pattern pattern = null;		// the pre-compiled (from pattexp) pattern.
 	private boolean nullable = false; 	// default null-ability (if that is a word).	
-	
-	// should overwrite addNode to accept only ComponentType?
+
 	
 	/** Creates a type with the specified <code>name</code>.*/
 	public NodeType(String name) {
 		super(name); // the value field is currently not used in a type definition
 	}
+
+	// should I overwrite add() to accept only ComponentType?
 	
 	
 	/** Returns the (simple) content type. */

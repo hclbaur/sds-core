@@ -1,13 +1,13 @@
 package be.baur.sds.content;
 
-import be.baur.sds.SimpleType;
+import be.baur.sds.NodeType;
 import be.baur.sds.common.NaturalInterval;
 
 /**
  * This is an abstract type representing an SDA node with string content and a
  * minimum/maximum length. Unlike other types, it is null-able by default.
  */
-public abstract class AbstractStringType extends SimpleType {
+public abstract class AbstractStringType extends NodeType {
 
 	private NaturalInterval length = null; // null means any length is allowed.
 

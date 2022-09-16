@@ -4,7 +4,7 @@ import be.baur.sda.Node;
 import be.baur.sds.common.NaturalInterval;
 
 /**
- * An abstract class representing a schema component, such as {@link SimpleType}
+ * An abstract class representing a schema component, such as {@link NodeType}
  * and {@link ComplexType}.
  */
 public abstract class ComponentType extends Node {

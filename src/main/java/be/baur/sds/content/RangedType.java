@@ -1,6 +1,6 @@
 package be.baur.sds.content;
 
-import be.baur.sds.SimpleType;
+import be.baur.sds.NodeType;
 import be.baur.sds.common.Interval;
 
 /**
@@ -8,7 +8,7 @@ import be.baur.sds.common.Interval;
  * with a value that lies within a particular {@link Interval}, like an integer,
  * a decimal, a date, etc..
  */
-public abstract class RangedType <T extends Comparable<?>> extends SimpleType {
+public abstract class RangedType <T extends Comparable<?>> extends NodeType {
 
 	private Interval<?> range = null; // Range null means: any value is allowed.
 	

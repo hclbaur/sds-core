@@ -12,7 +12,7 @@ import be.baur.sda.serialization.SyntaxException;
 import be.baur.sds.ComplexType;
 import be.baur.sds.ComponentType;
 import be.baur.sds.Schema;
-import be.baur.sds.SimpleType;
+import be.baur.sds.NodeType;
 import be.baur.sds.common.Attribute;
 import be.baur.sds.common.Component;
 import be.baur.sds.common.Content;
@@ -151,7 +151,7 @@ public final class SDSParser implements Parser {
 
 	/**
 	 * This parses an SDA node representing an SDS component, and returns a
-	 * {@link SimpleType} or {@link ComplexType} which in turn may contain other
+	 * {@link NodeType} or {@link ComplexType} which in turn may contain other
 	 * components or model groups. It is called by <code>parse()</code> to parse an
 	 * entire schema. A <code>shallow</code> parse means that no child nodes are
 	 * parsed, which is used in the parsing of type references.
@@ -191,7 +191,7 @@ public final class SDSParser implements Parser {
 			if (content == null) // Custom content type, must be a reference...
 				component = parseTypeReference(sds, type);
 			else // ... or a simple type otherwise...
-				component = parseSimpleType(sds, content); 
+				component = parseNodeType(sds, content); 
 		}
 		else // or else a complex type or model group.
 			component = parseComplexType(sds);
@@ -354,11 +354,11 @@ public final class SDSParser implements Parser {
 
 
 	/**
-	 * This creates a {@link SimpleType} from an SDS node defining a simple SDA
+	 * This creates a {@link NodeType} from an SDS node defining a simple SDA
 	 * node. This method is called by <code>parseComponent()</code>.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <T extends Comparable> SimpleType parseSimpleType(Node sds, Content content) throws SchemaException {
+	private static <T extends Comparable> NodeType parseNodeType(Node sds, Content content) throws SchemaException {
 		/*
 		 * Preconditions: the caller (parseComponentType) has already verified that this
 		 * node has no complex child nodes, that all simple child nodes have valid
@@ -376,7 +376,7 @@ public final class SDSParser implements Parser {
 		if ((! isAnyType || ! name.isEmpty()) && ! SDA.isName(name))
 			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
 
-		SimpleType simple;	// The simple type that will be returned at the end of this method.
+		NodeType simple;	// The simple type that will be returned at the end of this method.
 		
 		switch (content) {
 			case STRING   : simple = new StringType(name); break;

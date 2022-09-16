@@ -10,7 +10,7 @@ import be.baur.sda.NodeSet;
 import be.baur.sds.ComplexType;
 import be.baur.sds.ComponentType;
 import be.baur.sds.Schema;
-import be.baur.sds.SimpleType;
+import be.baur.sds.NodeType;
 import be.baur.sds.common.Date;
 import be.baur.sds.common.DateTime;
 import be.baur.sds.common.Interval;
@@ -99,11 +99,11 @@ public final class SDAValidator implements Validator {
 		
 		if (! node.isComplex()) { // simple content
 			
-			if (! (component instanceof SimpleType)) {  // but we were expecting complex content
+			if (! (component instanceof NodeType)) {  // but we were expecting complex content
 				errors.add(new Error(node, EXPECTING_NODE_OF_TYPE, nodename, "complex"));
 				return true;
 			}
-			errors.add(validateSimpleNode(node, (SimpleType) component));
+			errors.add(validateSimpleNode(node, (NodeType) component));
 			return true;
 		}
 		
@@ -122,7 +122,7 @@ public final class SDAValidator implements Validator {
 	 * with respect to the components content type, and any facets that may apply.
 	 * This method returns a validation error, or null otherwise.
 	 */
-	private static Error validateSimpleNode(Node node, SimpleType component) {
+	private static Error validateSimpleNode(Node node, NodeType component) {
 		
 		// Empty values are allowed only for null-able types.
 		if (node.getValue().isEmpty() && ! component.isNullable())
