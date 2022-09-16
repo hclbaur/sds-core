@@ -7,64 +7,41 @@ import be.baur.sda.Node;
 import be.baur.sds.common.Attribute;
 import be.baur.sds.common.Component;
 import be.baur.sds.common.Content;
-import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.content.AbstractStringType;
 import be.baur.sds.content.AnyType;
+import be.baur.sds.content.BooleanType;
+import be.baur.sds.content.IntegerType;
 import be.baur.sds.content.RangedType;
+import be.baur.sds.content.StringType;
 
 /**
- * A <code>NodeType</code> represents an SDS definition of an SDA node, with
- * simple and/or complex content; the basic building block of a {@link Schema}.
+ * A {@code NodeType} represents an SDS type definition of an SDA node, with
+ * simple and/or complex content. It is the basic building block (component) of
+ * a {@link Schema}.
+ * 
+ * Note that an instance of this class is a complex type; it cannot have simple
+ * content. If you need a simple content type you should instantiate one of its
+ * subclasses, like {@link StringType}, {@link IntegerType},
+ * {@link BooleanType}, etc. Subsequently you can create a mixed type by adding
+ * other components to it.
  */
 public class NodeType extends ComponentType {
 
-	private String globaltype = null; 				// name of the global type this component refers to.
-	private NaturalInterval multiplicity = null; 	// default multiplicity (mandatory and singular).
-	private String pattexp = null; 					// the regular expression defining the pattern.
-	private Pattern pattern = null;					// the pre-compiled (from pattexp) pattern.
-	private boolean nullable = false; 				// default null-ability (if that is a word).	
+	private String pattexp = null; 		// the regular expression defining the pattern.
+	private Pattern pattern = null;		// the pre-compiled (from pattexp) pattern.
+	private boolean nullable = false; 	// default null-ability (if that is a word).	
 	
-	// should overwrite addNode to accept only NodeType?
+	// should overwrite addNode to accept only ComponentType?
 	
 	/** Creates a type with the specified <code>name</code>.*/
 	public NodeType(String name) {
 		super(name); // the value field is currently not used in a type definition
 	}
-
-	
-	/** Returns the name of the referenced global type. */
-	public String getGlobalType() {
-		return globaltype;
-	}
-
-	
-	/** Sets the name of the referenced global type. */
-	public void setGlobalType(String type) {
-		this.globaltype = type;
-	}
 	
 	
 	/** Returns the (simple) content type. */
 	public Content getContentType() {
-		return null;
-	}
-
-	
-	/**
-	 * Returns the formal multiplicity of this component. The default is
-	 * <code>null</code>, which means the component must occur exactly once.
-	 */
-	public NaturalInterval getMultiplicity() {
-		return multiplicity;
-	}
-
-	
-	/**
-	 * Sets the multiplicity of this component. The default is <code>null</code>,
-	 * which means the component must occur exactly once.
-	 */
-	public void setMultiplicity(NaturalInterval multiplicity) {
-		this.multiplicity = multiplicity;
+		return null; // by default no simple content, subclasses override this method
 	}
 	
 	
@@ -111,10 +88,10 @@ public class NodeType extends ComponentType {
 	 * what an SDA parser would return upon processing an input stream defining the
 	 * component in SDS syntax.
 	 */
-	public final Node toNode() {
+	public final Node toNode() { // must change this so it can render complex types too
 		
 		Node node = new Node(Component.NODE.tag);
-/*		
+		
 		// Omit the name for an unnamed any type, and for a type
 		// reference with the same name as the referenced type
 		if (! (( getGlobalType() != null && getName().equals(getGlobalType()) )
@@ -123,12 +100,12 @@ public class NodeType extends ComponentType {
 		}
 		
 		// set the content type - or in case of a reference - the global type
-		node.addNode(new Node(Attribute.TYPE.tag,
+		node.add(new Node(Attribute.TYPE.tag,
 			getGlobalType() == null ? getContentType().type : getGlobalType()));
 		
 		// Render the multiplicity if not default.
-		if (multiplicity != null && (multiplicity.min != 1 || multiplicity.max != 1)) 
-			node.getNodes().add(new Node(Attribute.OCCURS.tag, multiplicity.toString()));
+		if (getMultiplicity() != null && (getMultiplicity().min != 1 || getMultiplicity().max != 1)) 
+			node.getNodes().add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		boolean stringType = (this instanceof AbstractStringType);
 		if (stringType) {
@@ -148,12 +125,11 @@ public class NodeType extends ComponentType {
 		
 		if (stringType == !nullable)
 			node.getNodes().add(new Node(Attribute.NULLABLE.tag, String.valueOf(nullable)));
-*/		
+		
 		return node;
 	}
 
-	
-	@Override
+
 	public final String toString() {
 		return toNode().toString();
 	}

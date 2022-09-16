@@ -42,19 +42,18 @@ import be.baur.sds.model.UnorderedGroup;
  * 
  * <pre>
  * schema { 
- * 	node { 
- * 		name "greeting" 
- * 		node { name "message" type "string" } 
- * 	} 
+ * 	  node "greeting" { 
+ * 		 node "message" { type "string" } 
+ * 	  } 
  * }
  * </pre>
  * 
  * the parser returns a <code>Schema</code> describing a SDA node named
- * 'greeting' with a single child named 'message' and a string value, such as:
+ * 'greeting' with a single child node 'message' and a string value, like:
  * 
  * <pre>
  * greeting { 
- * 	message "hello world" 
+ *	  message "hello world" 
  * }
  * </pre>
  */
@@ -129,7 +128,7 @@ public final class SDSParser implements Parser {
 			if (! node.getName().equals(Component.NODE.tag)) // Only node definitions are allowed here.
 				throw new SchemaException(node, String.format(COMPONENT_NOT_ALLOWED, node.getName()));
 			
-			// Global types must not have multiplicity.
+			// Global types must not have a multiplicity attribute.
 			getAttribute(node, Attribute.OCCURS, null);
 			
 			schema.getNodes().add((Node) parseComponent(node, false));
@@ -223,14 +222,11 @@ public final class SDSParser implements Parser {
 	 * omitted, it is assumed to be equal to the name of the referenced type.
 	 * In terms of SDS, the difference is this:<br>
 	 * <br>
-	 * <code>node{ name "mobile" type "phone" }</code> (explicitly named "mobile")
+	 * <code>node "mobile" { type "phone" }</code> (explicitly named "mobile")
 	 * <br>versus<br>
-	 * <code>node{ type "phone" }</code> (name will be "phone" as well)<br>
+	 * <code>node { type "phone" }</code> (name will be "phone" as well)<br>
 	 * <br>
-	 * assuming that <code>phone</code> was defined as a global type, e.g.:<br>
-	 * <br>
-	 * <code>node{ name "phone" type "string" }</code><br>
-	 * <br>
+	 * assuming that <code>phone</code> was defined as a global type.
 	 */
 	private static ComponentType parseTypeReference(Node sds, Node type) throws SchemaException {
 		/*
@@ -277,7 +273,7 @@ public final class SDSParser implements Parser {
 		 * adding types that reference themselves or each other, we will ultimately run
 		 * into a stack overflow. In order to support recursive references, we do not
 		 * parse any child nodes in the global type, but use a late binding technique to
-		 * return them when referenced. For details see ComplexType.getNodes().
+		 * return them when they are referenced. For details see ComplexType.getNodes().
 		 */
 		ComponentType refComp = parseComponent(refNode, true);
 		refComp.setGlobalType(type.getValue());  // set the type we were created from

@@ -11,7 +11,7 @@ import be.baur.sds.Schema;
 /**
  * A <code>Parser</code> (in SDS context) is a <em>deserializer</em> that 
  * reads an input stream (in a format specific to the type of parser) and
- * (re-)creates an SDA schema in memory.
+ * (re-)creates an SDS schema in memory.
  */
 public interface Parser {
 
@@ -29,7 +29,7 @@ public interface Parser {
 	 * by another type of parser. The default implementation serializes the schema
 	 * to SDS format, which is then parsed to reveal any issues.
 	 */
-	default void verify(Schema schema) throws SyntaxException, IOException, SchemaException   {
+	default void verify(Schema schema) throws SyntaxException, IOException, SchemaException {
 		parse(new StringReader(schema.toString()));
 	}
 }

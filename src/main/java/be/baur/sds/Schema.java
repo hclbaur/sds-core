@@ -18,7 +18,7 @@ public final class Schema extends Node {
 
 	/** Creates a schema node. */
 	public Schema() {
-		super(TAG); addNode(null); // by definition, a schema has child nodes.
+		super(TAG); add(null); // by definition, a schema has child nodes.
 	}
 
 	// Should override addNode() to accept only ComponentType?
@@ -54,10 +54,10 @@ public final class Schema extends Node {
 		Node node = new Node(TAG);
 		
 		if (rootType != null) // Render the type attribute if we have one.
-			node.addNode(new Node(Attribute.TYPE.tag, rootType));
+			node.add(new Node(Attribute.TYPE.tag, rootType));
 
 		for (Node component : this.getNodes()) // Render all components.
-			node.addNode(((ComponentType) component).toNode());
+			node.add(((ComponentType) component).toNode());
 
 		return node;
 	}

@@ -16,7 +16,7 @@ public class ComplexType extends ComponentType {
 	
 	/** Creates a complex type with the specified <code>name</code>.*/
 	public ComplexType(String name) {
-		super(name); addNode(null); // by definition, a complex type has child nodes.
+		super(name); add(null); // by definition, a complex type has child nodes.
 	}
 	
 		
@@ -55,14 +55,14 @@ public class ComplexType extends ComponentType {
 		else node = new Node(getName());
 		
 		if (getGlobalType() != null) // Render the type attribute if we have one.
-			node.addNode(new Node(Attribute.TYPE.tag, getGlobalType()));
+			node.add(new Node(Attribute.TYPE.tag, getGlobalType()));
 		
 		// Render the multiplicity if not default.
 		if (getMultiplicity() != null && (getMultiplicity().min != 1 || getMultiplicity().max != 1)) 
-			node.addNode(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
+			node.add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		if (getGlobalType() == null) // Render children, unless we are a type reference.
-			for (Node child : getNodes()) node.addNode(((ComponentType) child).toNode());
+			for (Node child : getNodes()) node.add(((ComponentType) child).toNode());
 
 		return node;
 	}
