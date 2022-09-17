@@ -20,9 +20,9 @@ import be.baur.sds.content.AnyType;
 import be.baur.sds.content.BinaryType;
 import be.baur.sds.content.BooleanType;
 import be.baur.sds.content.RangedType;
-import be.baur.sds.model.AbstractGroup;
+import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.ChoiceGroup;
-import be.baur.sds.model.Group;
+import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
 
 /**
@@ -99,7 +99,7 @@ public final class SDAValidator implements Validator {
 		
 		if (! node.isComplex()) { // simple content
 			
-			if (! (component instanceof NodeType)) {  // but we were expecting complex content
+			if (component.isComplex()) {  // but we were expecting complex content
 				errors.add(new Error(node, EXPECTING_NODE_OF_TYPE, nodename, "complex"));
 				return true;
 			}
@@ -262,8 +262,8 @@ public final class SDAValidator implements Validator {
 
 				boolean match;
 				//System.out.println("validateComplex: matching " + (childnode.isComplex() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
-				if (childcomp instanceof AbstractGroup)
-					match = matchGroup(inode, childnode, (AbstractGroup) childcomp, errors);
+				if (childcomp instanceof ModelGroup)
+					match = matchGroup(inode, childnode, (ModelGroup) childcomp, errors);
 				else match = matchNode(childnode, childcomp, errors);
 				
 				//System.out.println("validateComplex: " + (childnode.isComplex() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
@@ -300,12 +300,12 @@ public final class SDAValidator implements Validator {
 	 * against nested model groups. When matching a model group we may consider more
 	 * than one node, so this method accepts an iterator to access subsequent nodes.
 	 */
-	private static boolean matchGroup(NodeIterator inode, Node node, AbstractGroup group, ErrorList errors) {
+	private static boolean matchGroup(NodeIterator inode, Node node, ModelGroup group, ErrorList errors) {
 
 		if (group instanceof ChoiceGroup) 
 			return matchChoice(inode, node, (ChoiceGroup) group, errors);
-		if (group instanceof Group) 
-			return matchSequence(inode, node, (Group) group, errors);
+		if (group instanceof SequenceGroup) 
+			return matchSequence(inode, node, (SequenceGroup) group, errors);
 		if (group instanceof UnorderedGroup) 
 			return matchUnordered(inode, node, (UnorderedGroup) group, errors);
 		 // Should never happen, unless we forgot a model group
@@ -328,8 +328,8 @@ public final class SDAValidator implements Validator {
 			ComponentType component = (ComponentType) child; 
 			boolean match;
 			//System.out.println("matchChoice: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
-			if (component instanceof AbstractGroup)
-				match = matchGroup(inode, node, (AbstractGroup) component, errors);
+			if (component instanceof ModelGroup)
+				match = matchGroup(inode, node, (ModelGroup) component, errors);
 			else match = matchNode(node, component, errors);
 			//System.out.println("matchChoice: " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + (match ? " == " : " <> ") + "component " + component.getName());
 			if (match) return true;  // return true at the first match
@@ -350,7 +350,7 @@ public final class SDAValidator implements Validator {
 	 * that just marks the end of the group and we return, causing the remaining
 	 * nodes to be matched against the parent component context.
 	 */
-	private static boolean matchSequence(NodeIterator inode, Node node, Group group, ErrorList errors) {
+	private static boolean matchSequence(NodeIterator inode, Node node, SequenceGroup group, ErrorList errors) {
 
 		boolean invoked = false; // overall match for this group, initially false
 		Node parent = node.getParent(); // save the parent of the node(s)
@@ -378,8 +378,8 @@ public final class SDAValidator implements Validator {
 				}
 				
 				//System.out.println("matchSequence: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
-				if (component instanceof AbstractGroup)
-					match = matchGroup(inode, node, (AbstractGroup) component, errors);
+				if (component instanceof ModelGroup)
+					match = matchGroup(inode, node, (ModelGroup) component, errors);
 				else match = matchNode(node, component, errors);
 				
 				//System.out.println("matchSequence: " + node + (match ? " == " : " <> ") + "component " + component.getName());
@@ -471,8 +471,8 @@ public final class SDAValidator implements Validator {
 				
 					boolean match;
 					//System.out.println("matchUnordered: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
-					if (component instanceof AbstractGroup)
-						match = matchGroup(inode, node, (AbstractGroup) component, errors);
+					if (component instanceof ModelGroup)
+						match = matchGroup(inode, node, (ModelGroup) component, errors);
 					else match = matchNode(node, component, errors);
 	
 					/*
@@ -614,9 +614,9 @@ public final class SDAValidator implements Validator {
 	private static NodeSet expectedTypes(ComponentType comp) {
 		
 		// If not a group, just return the component itself, ending the recursion.
-		if (! (comp instanceof AbstractGroup)) return NodeSet.of((Node)comp);
+		if (! (comp instanceof ModelGroup)) return NodeSet.of((Node)comp);
 
-		AbstractGroup group = (AbstractGroup) comp;
+		ModelGroup group = (ModelGroup) comp;
 		
 		/*
 		 * For a choice, any one of the alternatives may follow, so we recursively
@@ -637,7 +637,7 @@ public final class SDAValidator implements Validator {
 		 * that. So we recursively return anything up to and including the first
 		 * mandatory component.
 		 */
-		if (group instanceof Group) {
+		if (group instanceof SequenceGroup) {
 			NodeSet result = new NodeSet();
 			for (Node n : group.getNodes()) {
 				for (Node e : expectedTypes((ComponentType)n)) result.add(e); // is this is correct?
@@ -665,7 +665,7 @@ public final class SDAValidator implements Validator {
 
 	/** This returns an error specifying a missing node at the end of a context node. */
 	private static Error missingNodeError(Node context, ComponentType comp) {
-		if (comp instanceof AbstractGroup)
+		if (comp instanceof ModelGroup)
 			return new Error(context, CONTENT_MISSING_AT_END, context.getName(), quoteNames(expectedTypes(comp)));
 		else return new Error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((Node) comp));
 	}
@@ -673,7 +673,7 @@ public final class SDAValidator implements Validator {
 
 	/** This returns an error specifying an unexpected node. */
 	private static Error unexpectedNodeError(Node node, ComponentType comp) {
-		if (comp instanceof AbstractGroup)
+		if (comp instanceof ModelGroup)
 			return new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteNames(expectedTypes(comp)));
 		else return new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName((Node) comp));
 	}

@@ -65,9 +65,9 @@ public abstract class ComponentType extends Node {
 
 
 	/**
-	 * Returns an SDA node structure that represents this component. In other words,
-	 * what an SDA parser would return upon processing an input stream defining the
-	 * component in SDS syntax.
+	 * Returns an SDA node structure that represents this component in SDS syntax.
+	 * In other words, what an SDA parser would return upon processing the schema
+	 * for this component.
 	 */
 	public abstract Node toNode();
 

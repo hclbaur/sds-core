@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import be.baur.sda.Node;
+import be.baur.sda.NodeSet;
 import be.baur.sds.common.Attribute;
 import be.baur.sds.common.Component;
 import be.baur.sds.common.Content;
@@ -21,9 +22,9 @@ import be.baur.sds.content.StringType;
  * of a {@link Schema}.
  * 
  * Note that an instance of this class is a <i>complex type</i>; it cannot have
- * simple content. For a simple content type, instantiate one of its subclasses,
+ * simple content. For a <i>simple type</i>, instantiate one of its subclasses,
  * like {@link StringType}, {@link IntegerType}, {@link BooleanType}, etc.
- * Subsequently, you may create a <i>mixed type</i> by adding other components.
+ * Subsequently, you may create a <i>mixed type</i> by adding child components.
  */
 public class NodeType extends ComponentType {
 
@@ -31,6 +32,7 @@ public class NodeType extends ComponentType {
 	private Pattern pattern = null;		// the pre-compiled (from pattexp) pattern.
 	private boolean nullable = false; 	// default null-ability (if that is a word).	
 
+	private NodeType globalcomplextype = null; // the global complex type this component refers to.
 	
 	/** Creates a type with the specified <code>name</code>.*/
 	public NodeType(String name) {
@@ -84,17 +86,35 @@ public class NodeType extends ComponentType {
 	}
 
 	
-	/**
-	 * Returns an SDA node structure that represents this component. In other words,
-	 * what an SDA parser would return upon processing an input stream defining the
-	 * component in SDS syntax.
+	/*
+	 * This method overrides the super type method to handle type references. For a
+	 * normal complex type, we just return the child nodes. But a type reference has
+	 * no children; it is just a reference to a global type in the schema root. So
+	 * we find that type and return its children as if they were our own. Note that
+	 * this does not constitute an actual parent-child relation, and may cause
+	 * unexpected behavior at some point in the future, but we shall cross that
+	 * bridge when we get there.
 	 */
-	public final Node toNode() { // must change this so it can render complex types too
+	@Override
+	public NodeSet getNodes() {
+		
+		if (getGlobalType() == null) return super.getNodes();
+		
+		if (globalcomplextype == null) // not bound yet, so get it from the schema root
+			globalcomplextype = (ComplexType) this.root().getNodes().get(getGlobalType()).get(1);
+		
+		return globalcomplextype != null ? globalcomplextype.getNodes() : new NodeSet();
+	}
+	
+	
+    @Override
+	public /*final*/ Node toNode() { // must change this so it can render complex types too
 		
 		Node node = new Node(Component.NODE.tag);
 		
 		// Omit the name for an unnamed any type, and for a type
 		// reference with the same name as the referenced type
+		
 		if (! (( getGlobalType() != null && getName().equals(getGlobalType()) )
 				|| ( this instanceof AnyType && !((AnyType) this).isNamed() )) ) {
 			node.setValue(getName());
@@ -127,11 +147,15 @@ public class NodeType extends ComponentType {
 		if (stringType == !nullable)
 			node.getNodes().add(new Node(Attribute.NULLABLE.tag, String.valueOf(nullable)));
 		
+		// finally, render any children, unless we are a type reference
+		if (isParent() /*&& getGlobalType() == null */)
+			for (Node child : getNodes()) node.add(((ComponentType) child).toNode());
+		
 		return node;
 	}
 
 
-	public final String toString() {
+	public /*final*/ String toString() {
 		return toNode().toString();
 	}
 }

@@ -30,9 +30,9 @@ import be.baur.sds.content.DecimalType;
 import be.baur.sds.content.IntegerType;
 import be.baur.sds.content.RangedType;
 import be.baur.sds.content.StringType;
-import be.baur.sds.model.AbstractGroup;
+import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.ChoiceGroup;
-import be.baur.sds.model.Group;
+import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
 
 
@@ -298,7 +298,7 @@ public final class SDSParser implements Parser {
 	
 	/**
 	 * This creates a {@link ComplexType} from an SDS node defining a complex SDA
-	 * node or a {@link AbstractGroup}. This method is called by <code>parseComponent()</code>.
+	 * node or a {@link ModelGroup}. This method is called by <code>parseComponent()</code>.
 	 */
 	private static ComplexType parseComplexType(Node sds) throws SchemaException {
 		/*
@@ -338,7 +338,7 @@ public final class SDSParser implements Parser {
 
 		switch (Component.get(sds.getName())) {
 			case NODE		: complex = new ComplexType(name); break;
-			case GROUP		: complex = new Group(); break;
+			case GROUP		: complex = new SequenceGroup(); break;
 			case CHOICE		: complex = new ChoiceGroup(); break;
 			case UNORDERED	: complex = new UnorderedGroup(); break;
 			default: // will never get here, unless we forgot to implement something...
@@ -346,7 +346,7 @@ public final class SDSParser implements Parser {
 		}
 		
 		// Within a model group, we must have at least two components.
-		if (complex instanceof AbstractGroup && sds.getNodes().get(n -> n.isComplex()).size() < 2)
+		if (complex instanceof ModelGroup && sds.getNodes().get(n -> n.isComplex()).size() < 2)
 			throw new SchemaException(sds, String.format(COMPONENT_INCOMPLETE, complex.getName()));
 		
 		return complex;

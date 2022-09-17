@@ -15,7 +15,7 @@ import be.baur.sds.common.Component;
  * </pre>
  * Which means that a first and last name is expected, or the other way around.
  */
-public final class UnorderedGroup extends AbstractGroup {
+public final class UnorderedGroup extends ModelGroup {
 
 	/** Creates an unordered group. */
 	public UnorderedGroup() {

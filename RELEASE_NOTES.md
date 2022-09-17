@@ -5,6 +5,7 @@ validation of SDA documents, syntax version 2. !!! Work In Proress !!!
 
 ## [2.1.0] - 2022-xx-xx
 - `Changed` ComponentType to an abstract class (was an interface).
+- `Changed` AbstractGroup to ModelGroup, Group to SequenceGroup.
 - `Removed` SimpleType (replaced with NodeType).
 
 ## Compatibility

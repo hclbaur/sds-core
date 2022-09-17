@@ -19,7 +19,7 @@ import be.baur.sds.common.Component;
  * </pre>
  * Which means that either a first name is expected, or a last name, but not both.
  */
-public final class ChoiceGroup extends AbstractGroup {
+public final class ChoiceGroup extends ModelGroup {
 
 	/** Creates a choice. */
 	public ChoiceGroup() {
