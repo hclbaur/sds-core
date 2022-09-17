@@ -27,11 +27,10 @@ public abstract class ModelGroup extends ComplexType {
 	 * all of the alternatives are optional. For example, given a schema like
 	 * 
 	 * <pre>
-	 * node {
-	 *     name "person"
+	 * node "person" {
 	 *     group { 
-	 *         node { name "firstname" type "string" occurs "0..1" } 
-	 *         node { name "lastname" type "string" occurs "0..1" } 
+	 *         node "firstname" { type "string" occurs "0..1" } 
+	 *         node "lastname" { type "string" occurs "0..1" } 
 	 *     }
 	 * }
 	 * </pre>

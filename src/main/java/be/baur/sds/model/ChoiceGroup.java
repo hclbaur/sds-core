@@ -13,8 +13,8 @@ import be.baur.sds.common.Component;
  * A choice group defines two (or more) mutually exclusive nodes or content models, for example:
  * <pre>
  * choice {
- *     node { name "firstname" type "string" }
- *     node { name "lastname" type "string" }
+ *     node "firstname" { type "string" }
+ *     node "lastname" { type "string" }
  * }
  * </pre>
  * Which means that either a first name is expected, or a last name, but not both.
