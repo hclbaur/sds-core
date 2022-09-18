@@ -3,9 +3,7 @@ package be.baur.sds.model;
 import java.util.Optional;
 
 import be.baur.sda.Node;
-import be.baur.sds.ComplexType;
 import be.baur.sds.ComponentType;
-import be.baur.sds.NodeType;
 import be.baur.sds.common.Attribute;
 
 /**

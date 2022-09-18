@@ -8,7 +8,7 @@ import be.baur.sds.common.Component;
  * A <code>ComplexType</code> represents an SDS definition of a complex SDA
  * node. It is a container for other components and/or model groups.
  */
-//@Deprecated
+@Deprecated
 public class ComplexType extends NodeType {
 
 	//private ComplexType globalcomplextype = null; // the global complex type this component refers to.
