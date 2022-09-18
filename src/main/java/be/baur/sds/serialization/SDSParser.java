@@ -9,10 +9,9 @@ import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
 import be.baur.sda.SDA;
 import be.baur.sda.serialization.SyntaxException;
-import be.baur.sds.ComplexType;
 import be.baur.sds.ComponentType;
-import be.baur.sds.Schema;
 import be.baur.sds.NodeType;
+import be.baur.sds.Schema;
 import be.baur.sds.common.Attribute;
 import be.baur.sds.common.Component;
 import be.baur.sds.common.Content;
@@ -30,8 +29,8 @@ import be.baur.sds.content.DecimalType;
 import be.baur.sds.content.IntegerType;
 import be.baur.sds.content.RangedType;
 import be.baur.sds.content.StringType;
-import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.ChoiceGroup;
+import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
 
@@ -355,7 +354,7 @@ public final class SDSParser implements Parser {
 	 * This creates a {@link ComplexType} from an SDS node defining a complex SDA
 	 * node or a {@link ModelGroup}. This method is called by <code>parseComponent()</code>.
 	 */
-	private static ComplexType parseComplexType(Node sds) throws SchemaException {
+	private static NodeType parseComplexType(Node sds) throws SchemaException {
 		/*
 		 * Preconditions: the caller (parseComponentType) has already verified that this
 		 * node has a valid tag, one or more complex child nodes, and that all of the
@@ -376,7 +375,7 @@ public final class SDSParser implements Parser {
 		if (! SDA.isName(name))
 			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
 
-		return new ComplexType(name);
+		return new NodeType(name);
 	}
 	
 

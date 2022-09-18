@@ -32,7 +32,7 @@ public class NodeType extends ComponentType {
 	private Pattern pattern = null;		// the pre-compiled (from pattexp) pattern.
 	private boolean nullable = false; 	// default null-ability (if that is a word).	
 
-	private NodeType globalcomplextype = null; // the global complex type this component refers to.
+	private NodeType globaltypenode = null; // the global type this component refers to.
 	
 	/** Creates a type with the specified <code>name</code>.*/
 	public NodeType(String name) {
@@ -87,68 +87,86 @@ public class NodeType extends ComponentType {
 
 	
 	/*
-	 * This method overrides the super type method to handle type references. For a
-	 * normal complex type, we just return the child nodes. But a type reference has
-	 * no children; it is just a reference to a global type in the schema root. So
-	 * we find that type and return its children as if they were our own. Note that
-	 * this does not constitute an actual parent-child relation, and may cause
-	 * unexpected behavior at some point in the future, but we shall cross that
-	 * bridge when we get there.
+	 * The following three methods overrides the super type method to handle type
+	 * references. For a regular node type, we just return the child nodes. But a
+	 * type reference has no children; it is just a reference to a global type in
+	 * the schema root. So we find that type and treat its children as if they were
+	 * our own. Obviously this does not constitute an actual parent-child relation,
+	 * and may cause unexpected behavior at some point in the future, but we shall
+	 * cross that bridge when we get there.
 	 */
 	@Override
-	public NodeSet getNodes() {
+	public final NodeSet getNodes() {
 		
 		if (getGlobalType() == null) return super.getNodes();
+		if (globaltypenode == null) // not bound yet, so get it from the schema root
+			globaltypenode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
+		return globaltypenode.getNodes(); // should never cause NPE
+	}
+
+	@Override /* handle type reference */
+	public final boolean isComplex() {
 		
-		if (globalcomplextype == null) // not bound yet, so get it from the schema root
-			globalcomplextype = (ComplexType) this.root().getNodes().get(getGlobalType()).get(1);
+		if (getGlobalType() == null) return super.isComplex();
+		if (globaltypenode == null) // not bound yet, so get it from the schema root
+			globaltypenode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
+		return globaltypenode.isComplex(); // should never cause NPE
+	}
+
+	@Override /* handle type reference */
+	public final boolean isParent() {
 		
-		return globalcomplextype != null ? globalcomplextype.getNodes() : new NodeSet();
+		if (getGlobalType() == null) return super.isParent();
+		if (globaltypenode == null) // not bound yet, so get it from the schema root
+			globaltypenode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
+		return globaltypenode.isParent(); // should never cause NPE
 	}
 	
 	
     @Override
-	public /*final*/ Node toNode() { // must change this so it can render complex types too
+	public /*final*/ Node toNode() { // must make final later, also toString
 		
 		Node node = new Node(Component.NODE.tag);
 		
 		// Omit the name for an unnamed any type, and for a type
-		// reference with the same name as the referenced type
-		
+		// reference with the same name as the referenced type.
 		if (! (( getGlobalType() != null && getName().equals(getGlobalType()) )
 				|| ( this instanceof AnyType && !((AnyType) this).isNamed() )) ) {
 			node.setValue(getName());
 		}
-		
-		// set the content type - or in case of a reference - the global type
-		node.add(new Node(Attribute.TYPE.tag,
-			getGlobalType() == null ? getContentType().type : getGlobalType()));
+	
+		// Render the type attribute for a global type reference,
+		// or for the simple content type, if we have that.
+		if (getGlobalType() != null)
+			node.add(new Node(Attribute.TYPE.tag, getGlobalType()));
+		else if (getContentType() != null)
+			node.add(new Node(Attribute.TYPE.tag, getContentType().type));
 		
 		// Render the multiplicity if not default.
 		if (getMultiplicity() != null && (getMultiplicity().min != 1 || getMultiplicity().max != 1)) 
-			node.getNodes().add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
+			node.add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		boolean stringType = (this instanceof AbstractStringType);
 		if (stringType) {
 			AbstractStringType t = (AbstractStringType) this;
 			if (t.minLength() != 0 || t.maxLength() != Integer.MAX_VALUE)
-				node.getNodes().add(new Node(Attribute.LENGTH.tag, t.getLength().toString()));
+				node.add(new Node(Attribute.LENGTH.tag, t.getLength().toString()));
 		}
 
 		if (this instanceof RangedType) {
 			RangedType<?> t = (RangedType<?>) this;
 			if (t.getRange() != null)
-				node.getNodes().add(new Node(Attribute.VALUE.tag, t.getRange().toString()));
+				node.add(new Node(Attribute.VALUE.tag, t.getRange().toString()));
 		}
 		
 		if (pattern != null)
-			node.getNodes().add(new Node(Attribute.PATTERN.tag, pattexp));
+			node.add(new Node(Attribute.PATTERN.tag, pattexp));
 		
 		if (stringType == !nullable)
-			node.getNodes().add(new Node(Attribute.NULLABLE.tag, String.valueOf(nullable)));
+			node.add(new Node(Attribute.NULLABLE.tag, String.valueOf(nullable)));
 		
-		// finally, render any children, unless we are a type reference
-		if (isParent() /*&& getGlobalType() == null */)
+		// Finally, render any children, unless we are a type reference.
+		if (isParent() && getGlobalType() == null)
 			for (Node child : getNodes()) node.add(((ComponentType) child).toNode());
 		
 		return node;

@@ -9,7 +9,7 @@ import be.baur.sds.common.NaturalInterval;
  */
 public abstract class ComponentType extends Node {
 
-	private String globaltype = null; 				// name of the global type this component refers to.
+	private String globaltypename = null; 			// name of the global type this component refers to.
 	private NaturalInterval multiplicity = null; 	// default multiplicity (mandatory and singular).
 
 	/** Creates a component with the specified <code>name</code>.*/
@@ -20,13 +20,13 @@ public abstract class ComponentType extends Node {
 	
 	/** Returns the name of the referenced global type. */
 	public String getGlobalType() {
-		return globaltype;
+		return globaltypename;
 	}
 
 	
 	/** Sets the name of the referenced global type. */
 	public void setGlobalType(String type) {
-		this.globaltype = type;
+		this.globaltypename = type;
 	}
 
 	

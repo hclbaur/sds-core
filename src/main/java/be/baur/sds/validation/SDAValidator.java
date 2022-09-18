@@ -7,10 +7,9 @@ import java.util.stream.Collectors;
 
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
-import be.baur.sds.ComplexType;
 import be.baur.sds.ComponentType;
-import be.baur.sds.Schema;
 import be.baur.sds.NodeType;
+import be.baur.sds.Schema;
 import be.baur.sds.common.Date;
 import be.baur.sds.common.DateTime;
 import be.baur.sds.common.Interval;
@@ -20,8 +19,8 @@ import be.baur.sds.content.AnyType;
 import be.baur.sds.content.BinaryType;
 import be.baur.sds.content.BooleanType;
 import be.baur.sds.content.RangedType;
-import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.ChoiceGroup;
+import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
 
@@ -107,12 +106,12 @@ public final class SDAValidator implements Validator {
 			return true;
 		}
 		
-		if (! (component instanceof ComplexType)) {  // we were expecting simple content
+		if (! component.isComplex()) {  // we were expecting simple content
 			errors.add(new Error(node, EXPECTING_NODE_OF_TYPE, nodename, "simple"));
 			return true;
 		}
 		
-		errors.add(validateComplexNode(node, (ComplexType) component, errors));
+		errors.add(validateComplexNode(node, (NodeType) component, errors));
 		return true;
 	}
 
@@ -236,7 +235,7 @@ public final class SDAValidator implements Validator {
 	 * a validation error. If we run out of nodes while there is still mandatory
 	 * content expected, that is also a validation error.
 	 */
-	private static Error validateComplexNode(Node node, ComplexType component, ErrorList errors) {
+	private static Error validateComplexNode(Node node, NodeType component, ErrorList errors) {
 		
 		NodeIterator inode = new NodeIterator(node.getNodes()); // iterator for child nodes
 		Node childnode = inode.hasNext() ? inode.next() : null; // first child node (or none)
