@@ -4,10 +4,11 @@ This release includes full SDS 2 schema support, for specification and
 validation of SDA documents, syntax version 2. !!! Work In Proress !!!
 
 ## [2.1.0] - 2022-xx-xx
+- `Added` NodeType to replace SimpleType and ComplexType.
 - `Changed` ComponentType to an abstract class (was an interface).
 - `Changed` AbstractGroup to extend ComponentType (was ComplexType).
 - `Renamed` AbstractGroup to ModelGroup, Group to SequenceGroup.
-- `Removed` SimpleType (replaced with NodeType).
+- `Removed` SimpleType and ComplexType (replaced with NodeType).
 
 ## Compatibility
 

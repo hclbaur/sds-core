@@ -341,7 +341,7 @@ public final class SDSParser implements Parser {
 //		}
 		String name = sds.getValue();
 		if (! name.isEmpty()) {
-			if (! SDA.isName(name)) 
+			if (! SDA.isName(name)) // MUST BE IMPROVED, LOOKS STRANGE FOR EMPTY NAMES
 				throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
 			refComp.setName(name);
 		}
@@ -372,7 +372,7 @@ public final class SDSParser implements Parser {
 
 		// A valid name is required
 		String name = sds.getValue();
-		if (! SDA.isName(name))
+		if (! SDA.isName(name))  // MUST BE IMPROVED, LOOKS STRANGE FOR EMPTY NAMES
 			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
 
 		return new NodeType(name);
@@ -398,7 +398,7 @@ public final class SDSParser implements Parser {
 //		if (name != null && !SDA.isName(name.getValue())) 
 //			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
 
-		String name = sds.getValue();
+		String name = sds.getValue(); // MUST BE IMPROVED, LOOKS STRANGE FOR EMPTY NAMES
 		if ((! isAnyType || ! name.isEmpty()) && ! SDA.isName(name))
 			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
 

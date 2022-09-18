@@ -50,7 +50,6 @@ public abstract class ModelGroup extends ComponentType {
 	}
 	
 
-	@Override
 	public final Node toNode() {
 		
 		Node node = new Node(getName()); // group, choice or unordered
@@ -72,6 +71,7 @@ public abstract class ModelGroup extends ComponentType {
 
 		return node;
 	}
+
 
 	public final String toString() {
 		return toNode().toString();

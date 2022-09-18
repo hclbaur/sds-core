@@ -123,8 +123,7 @@ public class NodeType extends ComponentType {
 	}
 	
 	
-    @Override
-	public /*final*/ Node toNode() { // must make final later, also toString
+	public Node toNode() {
 		
 		Node node = new Node(Component.NODE.tag);
 		
@@ -173,7 +172,7 @@ public class NodeType extends ComponentType {
 	}
 
 
-	public /*final*/ String toString() {
+	public String toString() {
 		return toNode().toString();
 	}
 }

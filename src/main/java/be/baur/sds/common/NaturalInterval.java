@@ -3,14 +3,7 @@ package be.baur.sds.common;
 /**
  * This class models an interval, with limits that are natural numbers (e.g.
  * non-negative integers). It is used for multiplicity and length. The limits
- * are inclusive, so the interval is closed by definition. The notation is as
- * follows:
- * 
- * <pre>
- * a..b	: where both a and b are non-negative integers and a <= b
- * a..*	: "unbounded", but equivalent to a..MAX_INT in practice
- * a	: fixed value, equivalent to "a..a"	(degenerate interval)
- * </pre>
+ * are inclusive, so the interval is closed by definition.
  */
 public final class NaturalInterval {
 
@@ -38,7 +31,13 @@ public final class NaturalInterval {
 	
 	
 	/**
-	 * Creates an interval from a string in interval notation.
+	 * Creates an interval from a string in interval notation:
+	 * 
+	 * <pre>
+	 * a..b	: where both a and b are non-negative integers and a <= b
+	 * a..*	: "unbounded", but equivalent to a..MAX_INT in practice
+	 * a	: fixed value, equivalent to "a..a"	(degenerate interval)
+	 * </pre>
 	 * 
 	 * @throws IllegalArgumentException
 	 */
