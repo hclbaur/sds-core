@@ -122,13 +122,13 @@ public final class SDSParser implements Parser {
 		// Parse global types, and add them to the schema (if all is in order).
 		for (Node node : sds.getNodes().get(n -> n.isComplex())) {
 			
-			if (Component.get(node.getName()) == null) // Component is unknown.
+			if (Component.get(node.getName()) == null) // component is unknown
 				throw new SchemaException(node, String.format(COMPONENT_UNKNOWN, node.getName()));
 			
-			if (! node.getName().equals(Component.NODE.tag)) // Only node definitions are allowed here.
+			if (! node.getName().equals(Component.NODE.tag)) // only node definitions are allowed here
 				throw new SchemaException(node, String.format(COMPONENT_NOT_ALLOWED, node.getName()));
 			
-			// Global types must not have a multiplicity attribute.
+			// Global types must not have a multiplicity attribute
 			getAttribute(node, Attribute.OCCURS, null);
 			
 			schema.getNodes().add((Node) parseComponent(node, false));
@@ -174,44 +174,46 @@ public final class SDSParser implements Parser {
 			throw new SchemaException(sds, String.format(COMPONENT_EMPTY, sds.getName()));
 		
 		/*
-		 * A component is either a simple type, a complex type, a model group, or a
-		 * reference. If there are no complex child nodes, it is either a simple type or
-		 * a reference, which looks like a simple type but refers to a custom content
-		 * type (e.g. not one of string, integer, boolean, etc.
+		 * A component is either a node type (simple and/or complex), a model group, or
+		 * a reference to a global type. If there are no complex child nodes, it is
+		 * either a simple type or a reference, which looks like a simple type but
+		 * refers to a global type rather than a string, integer, boolean, etc.
 		 */
 		ComponentType component; // the component to be returned at the end of this method
-		boolean isNodeType = sds.getName().equals(Component.NODE.tag); // false for a model group.
-		NodeSet complexChildren = sds.getNodes().get(n -> n.isComplex()); // empty if simple type or reference.
+		boolean isNodeType = sds.getName().equals(Component.NODE.tag); // will be false for a model group
+		NodeSet complexChildren = sds.getNodes().get(n -> n.isComplex()); // empty if simple type or reference
 		
 		if (isNodeType && complexChildren.isEmpty()) {
 			
 			Node type = getAttribute(sds, Attribute.TYPE, true);
 			Content content = Content.get(type.getValue());
 			
-			if (content == null) // Custom content type, must be a reference...
+			if (content == null) // unknown content, so a reference
 				component = parseTypeReference(sds, type);
-			else // ... or a simple type otherwise...
+			else // otherwise it is a simple type
 				component = parseNodeType(sds, content); 
 		}
-		else // or else a complex type or model group.
+		else if (isNodeType )// or a complex type
 			component = parseComplexType(sds);
-
+		else // or a model group
+			component = parseModelGroup(sds);
+		
 		// Set the (optional) multiplicity of this component
-		Node multi = getAttribute(sds, Attribute.OCCURS, false);
+		Node occurs = getAttribute(sds, Attribute.OCCURS, false);
 		try {
-			if (multi != null) {
-				NaturalInterval interval = NaturalInterval.from(multi.getValue());
+			if (occurs != null) {
+				NaturalInterval interval = NaturalInterval.from(occurs.getValue());
 				component.setMultiplicity(interval);
 			}
 		} catch (IllegalArgumentException e) {
-			throw new SchemaException(multi, 
-				String.format(ATTRIBUTE_INVALID, Attribute.OCCURS.tag, multi.getValue(), e.getMessage()));
+			throw new SchemaException(occurs, 
+				String.format(ATTRIBUTE_INVALID, Attribute.OCCURS.tag, occurs.getValue(), e.getMessage()));
 		}
 		
-		// And finally, for a ComplexType, recursively parse and add all child components,
-		if (component instanceof ComplexType && ! shallow) // unless it's a shallow parse.
+		// And finally, recursively parse and add any child components
+		if (! shallow) // unless this is a shallow parse
 			for (Node node : complexChildren)
-				((ComplexType) component).getNodes().add((Node) parseComponent(node, false));
+				component.add((Node) parseComponent(node, false));
 
 		return component;
 	}
@@ -234,53 +236,39 @@ public final class SDSParser implements Parser {
 	private static ComponentType parseModelGroup(Node sds) throws SchemaException {
 		/*
 		 * Preconditions: the caller (parseComponent) has already verified that this
-		 * node has a valid tag, one or more child nodes, and that all of the
-		 * simple child nodes have valid attribute tags. 
+		 * component has a valid tag, attributes with valid tags only, and one or more
+		 * child components.
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
 
-		// Complex types should not have attributes other than name and occurs.
-//		Optional<Node> attribute = sds.getNodes().get(n -> ! n.isComplex()).stream()
-//			.filter(n -> ! (n.getName().equals(Attribute.NAME.tag) 
-//				|| n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
-		// Complex types should not have attributes other than type and occurs.
+		// Model groups should not have attributes other than OCCURS (maybe TYPE in the future).
 		Optional<Node> attribute = sds.getNodes().get(n -> ! n.isComplex()).stream()
-			.filter(n -> ! (n.getName().equals(Attribute.TYPE.tag) 
-				|| n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
+			.filter(n -> ! (/* n.getName().equals(Attribute.TYPE.tag) 
+				|| */ n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
 				
 		if (attribute.isPresent())
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
 
-//		Node name = getAttribute(sds, Attribute.NAME, 
-//			sds.getName().equals(Component.NODE.tag) ? true : null);
-//		if (name != null && !SDA.isName(name.getValue())) 
-//			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
-		// A valid name is required if we are a node type
+		// Model groups are not allowed to have names (maybe in the future).
 		String name = sds.getValue();
-		
-		if (sds.getName().equals(Component.NODE.tag)) {
-			if (! SDA.isName(name))
-				throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
-		}
-		else if (! name.isEmpty()) // but for model groups it is not allowed
+		if (! name.isEmpty()) // but for model groups it is not allowed
 			throw new SchemaException(sds, String.format(NAME_NOT_ALLOWED, name));
-				
-		ComplexType complex;	// the complex type that will be returned at the end of this method.
+
+		// Within a model group, there must be at least two components.
+		if (sds.getNodes().get(n -> n.isComplex()).size() < 2)
+			throw new SchemaException(sds, String.format(COMPONENT_INCOMPLETE, sds.getName()));
+
+		ModelGroup mgroup;
 
 		switch (Component.get(sds.getName())) {
-			case NODE		: complex = new ComplexType(name); break;
-			case GROUP		: complex = new SequenceGroup(); break;
-			case CHOICE		: complex = new ChoiceGroup(); break;
-			case UNORDERED	: complex = new UnorderedGroup(); break;
-			default: // will never get here, unless we forgot to implement something...
-				throw new RuntimeException("SDS component '" + sds.getName() + "' not implemented!");
+			case GROUP		: mgroup = new SequenceGroup(); break;
+			case CHOICE		: mgroup = new ChoiceGroup(); break;
+			case UNORDERED	: mgroup = new UnorderedGroup(); break;
+			default: // we should never get here, unless we screwed up pretty bad
+				throw new RuntimeException("SDS component '" + sds.getName() + "' is not a model group!");
 		}
 		
-		// Within a model group, we must have at least two components.
-		if (complex instanceof ModelGroup && sds.getNodes().get(n -> n.isComplex()).size() < 2)
-			throw new SchemaException(sds, String.format(COMPONENT_INCOMPLETE, complex.getName()));
-		
-		return complex;
+		return mgroup;
 	}
 
 
@@ -375,11 +363,7 @@ public final class SDSParser implements Parser {
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
 
-		// Complex types should not have attributes other than name and occurs.
-//		Optional<Node> attribute = sds.getNodes().get(n -> ! n.isComplex()).stream()
-//			.filter(n -> ! (n.getName().equals(Attribute.NAME.tag) 
-//				|| n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
-		// Complex types should not have attributes other than type and occurs.
+		// Complex types should not have attributes other than TYPE and OCCURS.
 		Optional<Node> attribute = sds.getNodes().get(n -> ! n.isComplex()).stream()
 			.filter(n -> ! (n.getName().equals(Attribute.TYPE.tag) 
 				|| n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
@@ -387,36 +371,12 @@ public final class SDSParser implements Parser {
 		if (attribute.isPresent())
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
 
-//		Node name = getAttribute(sds, Attribute.NAME, 
-//			sds.getName().equals(Component.NODE.tag) ? true : null);
-//		if (name != null && !SDA.isName(name.getValue())) 
-//			throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
-		// A valid name is required if we are a node type
+		// A valid name is required
 		String name = sds.getValue();
-		
-		if (sds.getName().equals(Component.NODE.tag)) {
-			if (! SDA.isName(name))
-				throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
-		}
-		else if (! name.isEmpty()) // but for model groups it is not allowed
-			throw new SchemaException(sds, String.format(NAME_NOT_ALLOWED, name));
-				
-		ComplexType complex;	// the complex type that will be returned at the end of this method.
+		if (! SDA.isName(name))
+			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
 
-		switch (Component.get(sds.getName())) {
-			case NODE		: complex = new ComplexType(name); break;
-			case GROUP		: complex = new SequenceGroup(); break;
-			case CHOICE		: complex = new ChoiceGroup(); break;
-			case UNORDERED	: complex = new UnorderedGroup(); break;
-			default: // will never get here, unless we forgot to implement something...
-				throw new RuntimeException("SDS component '" + sds.getName() + "' not implemented!");
-		}
-		
-		// Within a model group, we must have at least two components.
-		if (complex instanceof ModelGroup && sds.getNodes().get(n -> n.isComplex()).size() < 2)
-			throw new SchemaException(sds, String.format(COMPONENT_INCOMPLETE, complex.getName()));
-		
-		return complex;
+		return new ComplexType(name);
 	}
 	
 

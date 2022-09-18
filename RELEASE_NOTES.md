@@ -5,7 +5,8 @@ validation of SDA documents, syntax version 2. !!! Work In Proress !!!
 
 ## [2.1.0] - 2022-xx-xx
 - `Changed` ComponentType to an abstract class (was an interface).
-- `Changed` AbstractGroup to ModelGroup, Group to SequenceGroup.
+- `Changed` AbstractGroup to extend ComponentType (was ComplexType).
+- `Renamed` AbstractGroup to ModelGroup, Group to SequenceGroup.
 - `Removed` SimpleType (replaced with NodeType).
 
 ## Compatibility
@@ -15,7 +16,7 @@ validation of SDA documents, syntax version 2. !!! Work In Proress !!!
 ## Previous releases
 
 ### [2.0.0] - 2022-09-14 (requires at least SDA v2.0.0)
-- `Removed` the *name* attribute from the SDS syntax.
+- `Removed` Attribute.NAME (there is no *name* attribute in SDS 2).
 
 ### [1.2.4] - 2022-08-12 (requires at least SDA v1.6.2)
 - `Removed` references to SimpleNode/ComplexNode classes.

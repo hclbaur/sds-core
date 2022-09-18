@@ -27,6 +27,7 @@ public final class TestSDSParser
 		});
 		
 		/* test parsing SDS from files and formatting back to SDS */
+		System.out.print("contacts ");
 		InputStream input = TestSDSParser.class.getResourceAsStream("/contacts.sds");
 		Node sds = sdaparser.parse(new InputStreamReader(input,"UTF-8"));
 		Schema schema = SDSParser.parse(sds);
@@ -35,6 +36,7 @@ public final class TestSDSParser
 			System.out.println("RETURNED: " + schema);
 		}
 		
+		System.out.print("addressbook ");
 		input = TestSDSParser.class.getResourceAsStream("/addressbook.sds");
 		sds = sdaparser.parse(new InputStreamReader(input,"UTF-8"));
 		schema = SDSParser.parse(sds);

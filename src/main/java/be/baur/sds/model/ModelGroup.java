@@ -13,7 +13,7 @@ import be.baur.sds.common.Attribute;
  * 
  * @see {@link SequenceGroup}, {@link ChoiceGroup} and {@link UnorderedGroup}
  */
-public abstract class ModelGroup extends ComplexType {
+public abstract class ModelGroup extends ComponentType {
 
 	public ModelGroup(String name) {
 		super(name);
