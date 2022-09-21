@@ -2,13 +2,13 @@ package be.baur.sds.serialization;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.text.ParseException;
 import java.util.Optional;
 import java.util.regex.PatternSyntaxException;
 
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
 import be.baur.sda.SDA;
-import be.baur.sda.serialization.SyntaxException;
 import be.baur.sds.ComponentType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
@@ -40,21 +40,24 @@ import be.baur.sds.model.UnorderedGroup;
  * example, when processing the following SDS definition:<br>
  * 
  * <pre>
+ * <code>
  * schema { 
  * 	  node "greeting" { 
  * 		 node "message" { type "string" } 
  * 	  } 
  * }
+ * </code>
  * </pre>
  * 
  * the parser returns a <code>Schema</code> describing a SDA node named
  * 'greeting' with a single child node 'message' and a string value, like:
  * 
  * <pre>
+ * <code>
  * greeting { 
  *	  message "hello world" 
  * }
- * </pre>
+ * </pre></code>
  */
 public final class SDSParser implements Parser {
 
@@ -80,7 +83,7 @@ public final class SDSParser implements Parser {
 	/**
 	 * Parses a character stream with SDS content and return a <code>Schema</code>.
 	 */
-	public Schema parse(Reader input) throws IOException, SyntaxException, SchemaException  {
+	public Schema parse(Reader input) throws IOException, ParseException, SchemaException  {
 
 		Node sds = SDA.parser().parse(input);
 		
