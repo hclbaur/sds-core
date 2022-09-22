@@ -55,8 +55,8 @@ public final class SDAValidator implements Validator {
 			
 			if (schema.getNodes().size() == 1)
 				component = (ComponentType) schema.getNodes().get(1);
-			else if (schema.getRootType() != null) 
-				component = (ComponentType) schema.getNodes().get(schema.getRootType()).get(1);
+			else if (schema.getDefaultType() != null) 
+				component = (ComponentType) schema.getNodes().get(schema.getDefaultType()).get(1);
 			// else throw something like "schema has no designated type"
 			// to prevent:  global type 'null' not found
 		}	

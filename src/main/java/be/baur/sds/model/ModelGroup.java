@@ -7,9 +7,9 @@ import be.baur.sds.ComponentType;
 import be.baur.sds.common.Attribute;
 
 /**
- * The abstract superclass of all model groups. 
- * 
- * @see {@link SequenceGroup}, {@link ChoiceGroup} and {@link UnorderedGroup}
+ * The abstract superclass of all model groups. <br>
+ * See also {@link SequenceGroup}, {@link ChoiceGroup} and
+ * {@link UnorderedGroup}.
  */
 public abstract class ModelGroup extends ComponentType {
 

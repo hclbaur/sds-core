@@ -2,31 +2,38 @@ package be.baur.sds;
 
 import be.baur.sda.Node;
 import be.baur.sds.common.NaturalInterval;
+import be.baur.sds.model.ChoiceGroup;
+import be.baur.sds.model.ModelGroup;
+import be.baur.sds.model.SequenceGroup;
+import be.baur.sds.model.UnorderedGroup;
 
 /**
- * An abstract class representing a schema component, such as {@link NodeType}
- * and {@link ComplexType}.
+ * The abstract superclass of schema components. <br>
+ * See also {@link NodeType} and {@link ModelGroup}
  */
 public abstract class ComponentType extends Node {
 
-	private String globaltypename = null; 			// name of the global type this component refers to.
+	private String globalTypeName = null; 			// name of the global type this component refers to.
 	private NaturalInterval multiplicity = null; 	// default multiplicity (mandatory and singular).
 
-	/** Creates a component with the specified <code>name</code>.*/
+	/** Creates a component. */
 	public ComponentType(String name) {
-		super(name);
+		super(name); // extends Node so it must have a tag, even if we do not really need or use it
 	}
 
 	
-	/** Returns the name of the referenced global type. */
+	/**
+	 * Returns the name of the referenced global type. A schema component may re-use
+	 * a type defined in the main section of the schema.
+	 */
 	public String getGlobalType() {
-		return globaltypename;
+		return globalTypeName;
 	}
 
 	
 	/** Sets the name of the referenced global type. */
 	public void setGlobalType(String type) {
-		this.globaltypename = type;
+		this.globalTypeName = type;
 	}
 
 	

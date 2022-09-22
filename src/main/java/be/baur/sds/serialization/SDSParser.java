@@ -133,14 +133,14 @@ public final class SDSParser implements Parser {
 			// Global types must not have a multiplicity attribute
 			getAttribute(node, Attribute.OCCURS, null);
 			
-			schema.getNodes().add((Node) parseComponent(node, false));
+			schema.add((Node) parseComponent(node, false));
 		}
 
 		// When done, set the designated root type reference (if specified and valid).
 		Node type = getAttribute(sds, Attribute.TYPE, false);
 		
 		if (type != null) try {
-			schema.setRootType(type.getValue());
+			schema.setDefaultType(type.getValue());
 		}
 		catch (IllegalArgumentException e) {
 			throw new SchemaException(schema, String.format(ATTRIBUTE_INVALID, 
