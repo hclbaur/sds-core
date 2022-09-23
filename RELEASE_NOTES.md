@@ -9,6 +9,7 @@ validation of SDA documents, syntax version 2. !!! Work In Proress !!!
 - `Changed` AbstractGroup to extend ComponentType (was ComplexType).
 - `Changed` Parser.parse() to throw ParseException (was SyntaxException).
 - `Renamed` AbstractGroup to ModelGroup, Group to SequenceGroup.
+- `Renamed` Schema.getRootType() to Schema.getDefaultType().
 - `Removed` SimpleType and ComplexType (replaced with NodeType).
 
 ## Compatibility

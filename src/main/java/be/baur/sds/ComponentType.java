@@ -2,10 +2,7 @@ package be.baur.sds;
 
 import be.baur.sda.Node;
 import be.baur.sds.common.NaturalInterval;
-import be.baur.sds.model.ChoiceGroup;
 import be.baur.sds.model.ModelGroup;
-import be.baur.sds.model.SequenceGroup;
-import be.baur.sds.model.UnorderedGroup;
 
 /**
  * The abstract superclass of schema components. <br>
