@@ -10,10 +10,7 @@ import be.baur.sds.common.Component;
 import be.baur.sds.common.Content;
 import be.baur.sds.content.AbstractStringType;
 import be.baur.sds.content.AnyType;
-import be.baur.sds.content.BooleanType;
-import be.baur.sds.content.IntegerType;
 import be.baur.sds.content.RangedType;
-import be.baur.sds.content.StringType;
 
 
 /**

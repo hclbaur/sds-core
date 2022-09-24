@@ -1,9 +1,9 @@
 package be.baur.sds.common;
 
 /**
- * Attributes allowed by the SDS syntax. The lower-case representation of an
- * attribute ("occurs", "length", etc) or <i>tag</i> can be accessed using the
- * {@code toString()} method or the {@code tag} field.
+ * Attributes allowed by the SDS syntax. The lower-case name of an attribute
+ * ("occurs", "length", etc) can be accessed using the {@code toString()} method
+ * or the {@code tag} field.
  */
 public enum Attribute {
 

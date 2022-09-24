@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
  * open) on that particular side. Or, in interval notation:
  * 
  * <pre>
+ * <code>
  * (a..b)	Open
  * [a..b]	Closed
  * (a..b]	Left open
@@ -18,19 +19,21 @@ import java.util.regex.Pattern;
  * (*..b)	Right open, left unbounded
  * (*..b]	Left unbounded
  * (*..*)	Unbounded
+ *   a  	Closed, equivalent to [a..a]
+ * </code>
  * </pre>
  */
 @SuppressWarnings("rawtypes")
 public final class Interval <T extends Comparable> {
 
-	/** Lower limit */
+	/** Lower interval limit */
 	public final T min;
-	/** Upper limit */
+	/** Upper interval limit */
 	public final T max;
-	/** Interval type */
+	/** The type of interval */
 	public final int type;
 
-	/** Interval types */
+	/** Interval types */  // must change this to an enum!
 	public final static int CLOSED 		= 	0b00;
 	public final static int LEFT_OPEN 	= 	0b10;
 	public final static int RIGHT_OPEN 	= 	0b01;
@@ -44,12 +47,14 @@ public final class Interval <T extends Comparable> {
 
 	
 	/**
-	 * Creates an <code>Interval</code> from its limit points and a type. The
-	 * minimum value can never exceed the maximum value. A <code>null</code> value
-	 * for a limit point means that the interval is unbounded (and by definition
-	 * open) on that side.
+	 * Creates an <code>Interval</code> from two limit points and a type. The
+	 * minimum should never exceed the maximum value. A null value for a limit
+	 * means that the interval is unbounded (and open) on that side.
 	 * 
-	 * @throws IllegalArgumentException
+	 * @param min  the lower limit
+	 * @param max  the upper limit
+	 * @param type the interval type
+	 * @throws IllegalArgumentException if the lower exceeds the upper limit
 	 */
 	@SuppressWarnings("unchecked")
 	public Interval(T min, T max, int type) {
@@ -68,10 +73,12 @@ public final class Interval <T extends Comparable> {
 
 	
 	/**
-	 * Creates a an <code>Interval</code> from a string in interval notation, or a
-	 * fixed value.
+	 * Creates an <code>Interval</code> from a string in interval notation, for a
+	 * specific class.
 	 * 
-	 * @throws IllegalArgumentException
+	 * @param interval a valid interval notation
+	 * @param cls      the value class
+	 * @throws IllegalArgumentException in case of an invalid interval
 	 */
 	public static <T extends Comparable> Interval<T> from(String interval, Class<T> cls) {
 		

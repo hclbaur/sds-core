@@ -1,13 +1,9 @@
 package be.baur.sds.common;
 
 /**
- * This enumeration defines the tags of all SDS components.
- */
-
-/**
- * Components allowed by the SDS syntax. The lower-case representation of a
- * component ("node", "choice", etc) or <i>tag</i> can be accessed using the
- * {@code toString()} method or the {@code tag} field.
+ * Components allowed by the SDS syntax. The lower-case name of a component
+ * ("node", "choice", etc) can be accessed using the {@code toString()} method
+ * or the {@code tag} field.
  */
 public enum Component {
 
@@ -36,7 +32,7 @@ public enum Component {
 	 * component with the specified tag is known.
 	 * 
 	 * @param tag a name tag
-	 * @return an component
+	 * @return a component
 	 */
 	public static Component get(String tag) {
 		for (Component m : values()) 

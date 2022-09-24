@@ -1,6 +1,5 @@
 package be.baur.sds;
 
-import be.baur.sda.serialization.SDAParser;
 import be.baur.sds.serialization.Parser;
 import be.baur.sds.serialization.SDSParser;
 import be.baur.sds.validation.SDAValidator;
