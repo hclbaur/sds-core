@@ -17,14 +17,13 @@ import be.baur.sds.content.StringType;
 
 
 /**
- * A {@code NodeType} represents an SDS type definition of an SDA node, with
- * simple and/or complex content. It is the basic building block (a component)
- * of a {@link Schema}.
+ * A {@code NodeType} represents an SDA node definition, with simple and/or
+ * complex content. It is one of the building blocks of a {@code Schema}.
  * 
  * Note that an instance of this class is a <i>complex type</i>; it cannot have
  * simple content. For a <i>simple type</i>, instantiate one of its subclasses,
- * like {@link StringType}, {@link IntegerType}, {@link BooleanType}, etc.
- * Subsequently, you may create a <i>mixed type</i> by adding child components.
+ * like {@code StringType}, {@code IntegerType}, {@code BooleanType}, etc.
+ * Subsequently, you can create a <i>mixed type</i> by adding child components.
  */
 public class NodeType extends ComponentType {
 
@@ -32,35 +31,57 @@ public class NodeType extends ComponentType {
 	private Pattern pattern = null;		// the pre-compiled (from pattexp) pattern.
 	private boolean nullable = false; 	// default null-ability (if that is a word).	
 
-	private NodeType globaltypenode = null; // the global type this component refers to.
+	//private String globalTypeName = null; 	// the name of the type this component refers to.
+	private NodeType globalTypeNode = null; // the global node type this component refers to.
 	
-	/** Creates a type with the specified <code>name</code>.*/
+	/**
+	 * Creates a node type with the specified name.
+	 * 
+	 * @param name a valid node name, see also {@link Node}
+	 * @throws IllegalArgumentException if the name is invalid
+	 */
 	public NodeType(String name) {
 		super(name); // the value field is currently not used in a type definition
 	}
-
-	// should I overwrite add() to accept only ComponentType?
 	
 	
-	/** Returns the (simple) content type. */
+	/**
+	 * Returns the (simple) content type. This method will return a null reference
+	 * if this type does not allow simple content.
+	 * 
+	 * @return a content type, may be null
+	 */
 	public Content getContentType() {
 		return null; // by default no simple content, subclasses override this method
 	}
 	
 	
-	/** Returns the (pre-compiled) pattern that valid simple content must match. */
+	/**
+	 * Returns the pattern that valid simple content must match. This method will
+	 * return a null reference if no pattern expression has been set.
+	 * 
+	 * @return the (pre-compiled) pattern, may be null
+	 */
 	public Pattern getPattern() {
 		return pattern;
 	}
 
-	/** Returns the simple content pattern as a regular expression. */
+	
+	/**
+	 * Returns the regular expression that valid simple content must match. This
+	 * method will return a null reference if no pattern expression has been set.
+	 * 
+	 * @return a regular expression, may be null
+	 */
 	public String getPatternExpr() {
 		return pattexp;
 	}
 
 
 	/**
-	 * Sets and compiles the simple content pattern for this type from a regular expression.
+	 * Sets the simple content pattern for this type from a regular expression.
+	 * 
+	 * @param regexp a regular expression
 	 * @throws PatternSyntaxException if the regular expression is invalid.
 	 */
 	public void setPatternExpr(String regexp) {
@@ -74,23 +95,54 @@ public class NodeType extends ComponentType {
 	}
 
 	
-	/** Returns whether this type is null-able. */
+	/**
+	 * Returns whether this type is null-able.
+	 * 
+	 * @return true or false
+	 */
 	public boolean isNullable() {
 		return nullable;
 	}
 
-	
-	/** Sets whether this type is null-able. */
+
+	/**
+	 * Returns whether this type is null-able.
+	 * 
+	 * @param nullable true or false
+	 */
 	public void setNullable(boolean nullable) {
 		this.nullable = nullable;
 	}
 
 	
+//	/**
+//	 * Returns the name of the referenced global type. A component may re-use a type
+//	 * defined in the root section of the schema. This method returns null if this
+//	 * component is not referencing a type.
+//	 * 
+//	 * @return the name of the referenced type, may be null
+//	 */
+//	public String getGlobalType() {
+//		return globalTypeName;
+//	}
+//
+//	
+//	/**
+//	 * Sets the name of the referenced global type. A component may re-use a type
+//	 * defined in the root section of the schema. This method cannot be used to
+//	 * re(set) an existing reference as this is likely to cause a problem.
+//	 * 
+//	 * @param type the name of the referenced type
+//	 */
+//	public void setGlobalType(String type) {
+//		if (type != null) this.globalTypeName = type;
+//	}
+	
 	/*
 	 * The following three methods overrides the super type method to handle type
-	 * references. For a regular node type, we just return the child nodes. But a
-	 * type reference has no children; it is just a reference to a global type in
-	 * the schema root. So we find that type and treat its children as if they were
+	 * references. For a regular node type, we just access the super type. But a
+	 * type reference has no child nodes of its own; it is just a reference to a
+	 * type in the schema. So we find that and treat its children as if they were
 	 * our own. Obviously this does not constitute an actual parent-child relation,
 	 * and may cause unexpected behavior at some point in the future, but we shall
 	 * cross that bridge when we get there.
@@ -99,30 +151,31 @@ public class NodeType extends ComponentType {
 	public final NodeSet getNodes() {
 		
 		if (getGlobalType() == null) return super.getNodes();
-		if (globaltypenode == null) // not bound yet, so get it from the schema root
-			globaltypenode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
-		return globaltypenode.getNodes(); // should never cause NPE
+		if (globalTypeNode == null) // not bound yet, so get it from the schema root
+			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
+		return globalTypeNode.getNodes(); // should not cause NPE
 	}
 
 	@Override /* handle type reference */
 	public final boolean isComplex() {
 		
 		if (getGlobalType() == null) return super.isComplex();
-		if (globaltypenode == null) // not bound yet, so get it from the schema root
-			globaltypenode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
-		return globaltypenode.isComplex(); // should never cause NPE
+		if (globalTypeNode == null) // not bound yet, so get it from the schema root
+			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
+		return globalTypeNode.isComplex(); // should not cause NPE
 	}
 
 	@Override /* handle type reference */
 	public final boolean isParent() {
 		
 		if (getGlobalType() == null) return super.isParent();
-		if (globaltypenode == null) // not bound yet, so get it from the schema root
-			globaltypenode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
-		return globaltypenode.isParent(); // should never cause NPE
+		if (globalTypeNode == null) // not bound yet, so get it from the schema root
+			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
+		return globalTypeNode.isParent(); // should not cause NPE
 	}
 	
 	
+	@Override
 	public Node toNode() {
 		
 		Node node = new Node(Component.NODE.tag);
@@ -172,6 +225,7 @@ public class NodeType extends ComponentType {
 	}
 
 
+	@Override
 	public String toString() {
 		return toNode().toString();
 	}

@@ -54,11 +54,11 @@ public final class Schema extends Node {
 
 	
 	/**
-	 * Returns an SDA node structure that represents this schema. In other words,
-	 * this is what an SDA parser would return upon processing an input stream
-	 * describing the schema in SDS notation.
+	 * Returns an SDA node representing this schema. In other words, what an SDA
+	 * parser would return upon processing an input stream describing the schema in
+	 * SDS notation.
 	 * 
-	 * @returns an SDA node representing the schema 
+	 * @returns an SDA node
 	 */
 	public Node toNode() {
 		
@@ -75,8 +75,7 @@ public final class Schema extends Node {
 	
 	
 	/**
-	 * Returns the string representation of this schema in SDS notation. For
-	 * example:
+	 * Returns the string representing this schema in SDS notation. For example:
 	 * 
 	 * <pre>
 	 * <code>schema { node "greeting" { node "message" { type "string" } } }</code>
