@@ -33,7 +33,7 @@ public enum Content {
 	 * content type with the specified name is known.
 	 * 
 	 * @param type a type name
-	 * @return a content type
+	 * @return a content type, may be null
 	 */
 	public static Content get(String type) {
 		for (Content c : values()) 

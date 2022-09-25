@@ -14,9 +14,9 @@ public abstract class ComponentType extends Node {
 	private String globalTypeName = null; 			// name of the global type this component refers to.
 	private NaturalInterval multiplicity = null; 	// default multiplicity (mandatory and singular).
 
-	/** Creates a component. */
+	/** Creates a component with the specified name. */
 	public ComponentType(String name) {
-		super(name); // extends Node so it must have a tag, even if we do not really need or use it
+		super(name);
 	}
 
 	
@@ -37,7 +37,7 @@ public abstract class ComponentType extends Node {
 	 * defined in the root section of the schema. This method cannot be used to
 	 * re(set) an existing reference as this is likely to cause a problem.
 	 * 
-	 * @param type the name of the referenced type
+	 * @param type the name of the referenced type, null is ignored
 	 */
 	public void setGlobalType(String type) {
 		if (type != null) this.globalTypeName = type;

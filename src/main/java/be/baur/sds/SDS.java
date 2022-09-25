@@ -5,7 +5,9 @@ import be.baur.sds.serialization.SDSParser;
 import be.baur.sds.validation.SDAValidator;
 import be.baur.sds.validation.Validator;
 
-/** This is a general class to define some constants and static convenience methods. */
+/**
+ * This class defines static constants and utility methods.
+ */
 public final class SDS {
 	
 	private SDS() {} // cannot construct this

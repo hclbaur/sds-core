@@ -3,16 +3,24 @@ package be.baur.sds.content;
 import be.baur.sds.common.Content;
 
 /**
- * A <code>DecimalType</code> is a {@link RangedType} representing an SDA node with decimal content.
+ * A <code>DecimalType</code> represents an SDA node with decimal content.<br>
+ * See also {@link IntegerType}.
  */
 public final class DecimalType extends RangedType<Double> {
 
 
-	/** Creates a decimal type with the supplied <code>name</code>. */
+	/**
+	 * Creates the type with the specified name.
+	 * 
+	 * @param name a valid node name
+	 * @throws IllegalArgumentException if the name is invalid
+	 */
 	public DecimalType(String name) {
 		super(name);
 	}
 	
+	
+	@Override
 	public Content getContentType() { 
 		return Content.DECIMAL; 
 	}

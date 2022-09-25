@@ -6,7 +6,7 @@ import be.baur.sds.common.Attribute;
 import be.baur.sds.serialization.SDSParser;
 
 /**
- * A <code>Schema</code> represents an SDA document definition, that is, a
+ * A <code>Schema</code> node represents an SDA document definition, that is, a
  * structure that defines SDA content. It is a container for "components" like
  * node types and model groups. Schema is usually not created "by hand" but read
  * and parsed from input in SDS notation.<br>
@@ -21,8 +21,8 @@ public final class Schema extends Node {
 
 	/** Creates a schema node. */
 	public Schema() {
-		super(TAG); // extends Node so it must have a tag, even if we do not really need or use it
-		add(null);  // a schema should have child nodes so we initialize it with an empty node set
+		super(TAG); // extends Node so it must have a tag, even if we do not really use it
+		add(null);  // all schema have child nodes so initialize it with an empty node set
 	}
 
 

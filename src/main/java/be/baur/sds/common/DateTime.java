@@ -14,7 +14,7 @@ public final class DateTime implements Comparable<Object> {
 	private static DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 	
-	/** Creates a DateTime from a string in extended ISO 8601 format. */
+	/** Creates a date and time from a string in extended ISO 8601 format. */
 	public DateTime(String date) {
 		value = ZonedDateTime.parse(date, formatter);
 	}

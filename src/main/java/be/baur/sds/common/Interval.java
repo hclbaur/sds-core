@@ -4,9 +4,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class models a generic interval, with a lower and an upper limit point.
- * If a limit point is included (or excluded), the interval is called closed (or
- * open) on that particular side. Or, in interval notation:
+ * An {@code Interval} represents a generic interval, with a lower and an upper
+ * limiting value. If a limit is inclusive, the interval is called <i>closed</i>
+ * on that particular side, and <i>open</i> when it is exclusive. In interval
+ * notation, parentheses are used for open intervals, and square brackets for
+ * closed ones.
  * 
  * <pre>
  * <code>
@@ -19,9 +21,11 @@ import java.util.regex.Pattern;
  * (*..b)	Right open, left unbounded
  * (*..b]	Left unbounded
  * (*..*)	Unbounded
- *   a  	Closed, equivalent to [a..a]
+ *   a  	Degenerate, equivalent to [a..a]
  * </code>
  * </pre>
+ * 
+ * See also {@link NaturalInterval}.
  */
 @SuppressWarnings("rawtypes")
 public final class Interval <T extends Comparable> {
@@ -47,12 +51,12 @@ public final class Interval <T extends Comparable> {
 
 	
 	/**
-	 * Creates an <code>Interval</code> from two limit points and a type. The
-	 * minimum should never exceed the maximum value. A null value for a limit
-	 * means that the interval is unbounded (and open) on that side.
+	 * Creates an interval from two limit points and a type. The minimum should
+	 * never exceed the maximum value. A null value for a limit means that the
+	 * interval is unbounded (and open) on that side.
 	 * 
-	 * @param min  the lower limit
-	 * @param max  the upper limit
+	 * @param min  the lower limit, may be null
+	 * @param max  the upper limit, may be null
 	 * @param type the interval type
 	 * @throws IllegalArgumentException if the lower exceeds the upper limit
 	 */
@@ -73,11 +77,10 @@ public final class Interval <T extends Comparable> {
 
 	
 	/**
-	 * Creates an <code>Interval</code> from a string in interval notation, for a
-	 * specific class.
+	 * Creates an interval from a string in interval notation, for a specific class.
 	 * 
-	 * @param interval a valid interval notation
-	 * @param cls      the value class
+	 * @param interval a valid interval notation, not null or empty
+	 * @param cls      the value class, not null
 	 * @throws IllegalArgumentException in case of an invalid interval
 	 */
 	public static <T extends Comparable> Interval<T> from(String interval, Class<T> cls) {
@@ -127,11 +130,15 @@ public final class Interval <T extends Comparable> {
 
 	
 	/**
-	 * Returns 0 if the supplied value lies within the interval, -1 if it subceeds
-	 * the lower interval limit, and 1 if it exceeds the upper limit. The value must
-	 * never be <code>null</code>.
+	 * Checks if a value lies within this interval. This method returns 0 if the
+	 * specified value is contained within the interval limits, -1 if it subceeds
+	 * the lower limit, and 1 if it exceeds the upper limit. The value must not be
+	 * null.
+	 * 
+	 * @param value the value to be evaluated, not null
+	 * @return -1, 0 or 1
 	 */
-	@SuppressWarnings({ "unchecked", "hiding" })
+	@SuppressWarnings({ "unchecked", "hiding" }) // add illegal argument exception later
 	public <T extends Comparable> int contains(T value) {
 		
 		int comp;
@@ -147,7 +154,11 @@ public final class Interval <T extends Comparable> {
 	}
 	
 	
-	/** Returns the interval as a string in interval notation. */
+	/**
+	 * Returns this interval as a string in interval notation.
+	 * 
+	 * @return interval notation
+	 */
 	public String toString() {
 		
 		if (min == max && min != null) return min.toString(); // fixed value

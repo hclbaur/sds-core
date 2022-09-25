@@ -13,8 +13,9 @@ import be.baur.sds.common.Attribute;
  */
 public abstract class ModelGroup extends ComponentType {
 
+	/** Creates a component with the specified name. */
 	public ModelGroup(String name) {
-		super(name);
+		super(name); add(null); // all groups must have child nodes
 	}
 
 	
@@ -25,12 +26,14 @@ public abstract class ModelGroup extends ComponentType {
 	 * all of the alternatives are optional. For example, given a schema like
 	 * 
 	 * <pre>
+	 * <code>
 	 * node "person" {
 	 *     group { 
 	 *         node "firstname" { type "string" occurs "0..1" } 
 	 *         node "lastname" { type "string" occurs "0..1" } 
 	 *     }
 	 * }
+	 * </code>
 	 * </pre>
 	 * 
 	 * the instance below is valid since both nodes may be omitted.
@@ -50,6 +53,7 @@ public abstract class ModelGroup extends ComponentType {
 	}
 	
 
+	@Override
 	public final Node toNode() {
 		
 		Node node = new Node(getName()); // group, choice or unordered
@@ -73,6 +77,7 @@ public abstract class ModelGroup extends ComponentType {
 	}
 
 
+	@Override
 	public final String toString() {
 		return toNode().toString();
 	}

@@ -10,25 +10,31 @@ import be.baur.sds.ComponentType;
 import be.baur.sds.common.Component;
 
 /**
- * A choice group defines two (or more) mutually exclusive nodes or content models, for example:
+ * A {@code ChoiceGroup} defines two (or more) mutually exclusive nodes or
+ * content models, for example:
+ * 
  * <pre>
+ * <code>
  * choice {
  *     node "firstname" { type "string" }
  *     node "lastname" { type "string" }
  * }
+ * </code>
  * </pre>
- * Which means that either a first name is expected, or a last name, but not both.
+ * 
+ * Which means that either a first name is expected, or a last name, but not
+ * both.
  */
 public final class ChoiceGroup extends ModelGroup {
 
-	/** Creates a choice. */
+	/** Creates a choice group. */
 	public ChoiceGroup() {
-		super(Component.CHOICE.tag);
+		super(Component.CHOICE.tag); // extends Node so must have a tag, even if not really used
 	}
 	
 	
 	/**
-	 * This method overrides the super method, to return the effective minimum
+	 * Returns the effective minimum
 	 * number of times that a choice group must occur within its context. Even when
 	 * the formal multiplicity states that it is mandatory, empty content is valid
 	 * if at least one of the alternatives is optional. For example, given a schema

@@ -32,7 +32,7 @@ public enum Component {
 	 * component with the specified tag is known.
 	 * 
 	 * @param tag a name tag
-	 * @return a component
+	 * @return a component, may be null
 	 */
 	public static Component get(String tag) {
 		for (Component m : values()) 

@@ -33,7 +33,7 @@ public enum Attribute {
 	 * attribute with the specified tag is known.
 	 * 
 	 * @param tag a name tag
-	 * @return an attribute
+	 * @return an attribute, may be null
 	 */
 	public static Attribute get(String tag) {
 		for (Attribute a : values())

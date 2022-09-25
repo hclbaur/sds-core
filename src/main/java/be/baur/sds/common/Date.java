@@ -13,7 +13,7 @@ public final class Date implements Comparable<Object> {
 	private static DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 	
 	
-	/** Creates a Date from a string in YYYY-MM-DD format. */
+	/** Creates a date from a string in YYYY-MM-DD format. */
 	public Date(String date) {
 		value = LocalDate.parse(date, formatter);
 	}
