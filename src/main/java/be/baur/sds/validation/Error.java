@@ -3,9 +3,9 @@ package be.baur.sds.validation;
 import be.baur.sda.Node;
 
 /**
- * An <code>Error</code> is returned if an SDA document violates the constraints
- * imposed by an SDS definition. The node that caused the error can be accessed
- * through {@link Error#getErrorNode()}.
+ * An <code>Error</code> occurs if an SDA document violates the constraints
+ * imposed by a schema. The node that caused the error can be accessed from
+ * {@link Error#getErrorNode()}.
  */
 public final class Error {
 

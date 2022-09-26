@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.text.ParseException;
 
+import be.baur.sds.SDS;
 import be.baur.sds.Schema;
 
 /**
@@ -28,13 +29,18 @@ public interface Parser {
 
 
 	/**
-	 * Verifies a schema. This method can be used to verify a schema. This can be
-	 * used to to validate schema not created by the default {@code SDSParser}, but
-	 * assembled "manually" or created by another parser. The default implementation
-	 * serializes the schema to SDS format, which is then parsed to reveal any
-	 * issues.
+	 * Verifies a schema. This method can be used used to to validate schema which
+	 * was not created by the default {@code SDSParser}, but assembled "manually" or
+	 * created by some other parser. The default implementation serializes the
+	 * schema to SDS format, which is then parsed back to reveal any issues.
+	 * 
+	 * @param schema the schema to be verified
+	 * @throws IOException     if an input exception occurs
+	 * @throws ParseException  if a parse exception occurs
+	 * @throws SchemaException if a schema exception occurs
+	 * 
 	 */
 	default void verify(Schema schema) throws IOException, ParseException, SchemaException {
-		parse(new StringReader(schema.toString()));   //must use SDS parser???
+		SDS.parser().parse(new StringReader(schema.toString()));
 	}
 }

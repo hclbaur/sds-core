@@ -36,15 +36,15 @@ import be.baur.sds.model.UnorderedGroup;
 
 
 /**
- * The default SDS parser. Converts SDS input into a {@link Schema}. For
- * example, when processing the following SDS definition:<br>
+ * This is the default SDS parser; used to read and parse SDS content to create
+ * a {@code Schema}. For example, when processing the following input:
  * 
  * <pre>
  * <code>
  * schema { 
- * 	  node "greeting" { 
- * 		 node "message" { type "string" } 
- * 	  } 
+ *    node "greeting" { 
+ *       node "message" { type "string" } 
+ *    }
  * }
  * </code>
  * </pre>
@@ -55,9 +55,22 @@ import be.baur.sds.model.UnorderedGroup;
  * <pre>
  * <code>
  * greeting { 
- *	  message "hello world" 
+ *    message "hello world" 
  * }
  * </pre></code>
+ * 
+ * The internal representation of the schema would be:
+ * 
+ * <pre>
+ * <code>
+ * Schema { 
+ *    NodeType("greeting") { 
+ *       StringType("message") 
+ *   } 
+ * }
+ * </code>
+ * </pre>
+ * See also {@link Schema}.
  */
 public final class SDSParser implements Parser {
 
@@ -80,9 +93,7 @@ public final class SDSParser implements Parser {
 	private static final String NODE_NAME_INVALID = "'%s' is not a valid node name";
 	private static final String NAME_NOT_ALLOWED = "name '%s' is not allowed here";
 	
-	/**
-	 * Parses a character stream with SDS content and return a <code>Schema</code>.
-	 */
+	
 	public Schema parse(Reader input) throws IOException, ParseException, SchemaException  {
 
 		Node sds = SDA.parser().parse(input);
@@ -95,8 +106,12 @@ public final class SDSParser implements Parser {
 
 
 	/**
-	 * Creates a {@link Schema} from an SDA node representing an SDS definition.
-	 * @throws SchemaException
+	 * Creates a schema from an SDA node obtained by parsing a schema in SDS
+	 * notation.
+	 * 
+	 * @param sds a node with a schema definition
+	 * @return a schema
+	 * @throws SchemaException if a schema exception occurs
 	 */
 	public static Schema parse(Node sds) throws SchemaException {
 		
