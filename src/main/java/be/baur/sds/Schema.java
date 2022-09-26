@@ -58,7 +58,7 @@ public final class Schema extends Node {
 	 * parser would return upon processing an input stream describing the schema in
 	 * SDS notation.
 	 * 
-	 * @returns an SDA node
+	 * @return an SDA node
 	 */
 	public Node toNode() {
 		

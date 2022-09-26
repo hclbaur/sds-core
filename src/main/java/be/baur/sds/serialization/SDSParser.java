@@ -57,7 +57,8 @@ import be.baur.sds.model.UnorderedGroup;
  * greeting { 
  *    message "hello world" 
  * }
- * </pre></code>
+ * </code>
+ * </pre>
  * 
  * The internal representation of the schema would be:
  * 
@@ -70,6 +71,7 @@ import be.baur.sds.model.UnorderedGroup;
  * }
  * </code>
  * </pre>
+ * 
  * See also {@link Schema}.
  */
 public final class SDSParser implements Parser {

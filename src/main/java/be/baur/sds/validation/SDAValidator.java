@@ -25,7 +25,32 @@ import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
 
 /**
- * The default {@link Validator} to validate an SDA document against a schema.
+ * This is the default SDA validator. It is used to validate an SDA document
+ * against a {@code Schema}. For example, when the schema (in SDS notation)
+ * looks like this:
+ * 
+ * <pre>
+ * <code>
+ * schema { 
+ *    node "greeting" { 
+ *       node "message" { type "string" } 
+ *    }
+ * }
+ * </code>
+ * </pre>
+ * 
+ * and the validator is presented with the following node:
+ * 
+ * <pre>
+ * <code>
+ * greeting { 
+ *    text "hello world" 
+ * }
+ * </code>
+ * </pre>
+ * 
+ * An error would be returned, reporting an unexpected 'text' node in
+ * 'greeting'.
  */
 public final class SDAValidator implements Validator {
 
@@ -47,7 +72,7 @@ public final class SDAValidator implements Validator {
 	private static final String VALUE_NOT_INCLUSIVE = "value '%s' is not inclusive";
 	
 	
-	public ErrorList validate(Node document, Schema schema, String type) {
+	public ErrorList validate(Node node, Schema schema, String type) {
 
 		ComponentType component = null;
 		
@@ -67,8 +92,8 @@ public final class SDAValidator implements Validator {
 		
 		// Recursively validate the entire document.
 		ErrorList errors = new ErrorList();	
-		if (! matchNode(document, component, errors))
-			errors.add(new Error(document, GOT_NODE_BUT_EXPECTED, document.getName(), quoteName((Node) component)));
+		if (! matchNode(node, component, errors))
+			errors.add(new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName((Node) component)));
 		
 		return errors;
 	}
@@ -82,7 +107,7 @@ public final class SDAValidator implements Validator {
 	 * component could be optional, and node match the next component.<br>
 	 * If there is a match, we assert that the node content is valid, or add an
 	 * error to the list otherwise.<br>
-	 * This does not apply to "any" type components; those are never validated.
+	 * This does not apply to the "any" type components; those are never validated.
 	 */
 	private static boolean matchNode(Node node, ComponentType component, ErrorList errors) {
 		

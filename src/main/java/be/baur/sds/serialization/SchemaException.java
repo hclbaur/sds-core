@@ -10,7 +10,7 @@ import be.baur.sda.Node;
 @SuppressWarnings("serial")
 public final class SchemaException extends Exception {
 
-	private Node node; // node that caused the exception to be thrown
+	private Node errorNode; // node that caused the exception to be thrown
 	
 	/**
 	 * Creates an SDS schema exception.
@@ -20,7 +20,7 @@ public final class SchemaException extends Exception {
 	 */
 	public SchemaException(Node node, String message) {
 		super("SDS syntax violation at " + node.path() + ": " + message);
-		this.node = node;
+		this.errorNode = node;
 	}
 
 	
@@ -30,6 +30,6 @@ public final class SchemaException extends Exception {
 	 * @return the error node
 	 */
 	public Node getErrorNode() {
-		return node;
+		return errorNode;
 	}
 }

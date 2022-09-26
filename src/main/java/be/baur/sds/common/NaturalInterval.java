@@ -48,6 +48,7 @@ public final class NaturalInterval {
 	 * Creates an interval from a string in natural interval notation.
 	 * 
 	 * @param interval a valid interval notation, not null or empty
+	 * @return a natural interval
 	 * @throws IllegalArgumentException in case of an invalid interval
 	 */
 	public static NaturalInterval from(String interval)  {

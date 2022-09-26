@@ -39,7 +39,7 @@ public abstract class RangedType <T extends Comparable<?>> extends NodeType {
 	 * Sets the the interval of allowed values. An interval of null means any length
 	 * is allowed.
 	 * 
-	 * @param length an interval, may be null
+	 * @param range an interval, may be null
 	 */
 	public void setRange(Interval<?> range) {
 		this.range = range;

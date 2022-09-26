@@ -77,10 +77,13 @@ public final class Interval <T extends Comparable> {
 
 	
 	/**
-	 * Creates an interval from a string in interval notation, for a specific class.
+	 * Creates an interval from a string in interval notation, for a specific type
+	 * of value.
 	 * 
+	 * @param <T>      a value type
 	 * @param interval a valid interval notation, not null or empty
 	 * @param cls      the value class, not null
+	 * @return an interval
 	 * @throws IllegalArgumentException in case of an invalid interval
 	 */
 	public static <T extends Comparable> Interval<T> from(String interval, Class<T> cls) {
@@ -135,6 +138,7 @@ public final class Interval <T extends Comparable> {
 	 * the lower limit, and 1 if it exceeds the upper limit. The value must not be
 	 * null.
 	 * 
+	 * @param <T>   a value type
 	 * @param value the value to be evaluated, not null
 	 * @return -1, 0 or 1
 	 */
