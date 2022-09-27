@@ -76,8 +76,8 @@ import be.baur.sds.model.UnorderedGroup;
  */
 public final class SDSParser implements Parser {
 
-	private static final String SCHEMA_NODE_EXPECTED = "a complex '%s' node is expected";
-	private static final String SCHEMA_NODE_EMPTY = "a '%s' node cannot be empty";
+	private static final String A_NODE_IS_EXPECTED = "a '%s' node is expected";
+	private static final String A_NODE_IS_EMPTY = "a '%s' node cannot be empty";
 
 	private static final String COMPONENT_NOT_ALLOWED = "component '%s' is not allowed here";
 	private static final String COMPONENT_INCOMPLETE = "component '%s' is incomplete";
@@ -100,8 +100,8 @@ public final class SDSParser implements Parser {
 
 		Node sds = SDA.parser().parse(input);
 		
-		if (! sds.isComplex())  // A schema node must have complex content.
-			throw new SchemaException(sds, String.format(SCHEMA_NODE_EXPECTED, Schema.TAG));
+//		if (! sds.isComplex())  // A schema node must have complex content.
+//			throw new SchemaException(sds, String.format(SCHEMA_NODE_EXPECTED, Schema.TAG));
 
 		return SDSParser.parse(sds);
 	}
@@ -118,10 +118,10 @@ public final class SDSParser implements Parser {
 	public static Schema parse(Node sds) throws SchemaException {
 		
 		if (! sds.getName().equals(Schema.TAG))
-			throw new SchemaException(sds, String.format(SCHEMA_NODE_EXPECTED, Schema.TAG));
+			throw new SchemaException(sds, String.format(A_NODE_IS_EXPECTED, Schema.TAG));
 		
 		if (! sds.isParent()) // A schema must have child nodes.
-			throw new SchemaException(sds, String.format(SCHEMA_NODE_EMPTY, sds.getName()));
+			throw new SchemaException(sds, String.format(A_NODE_IS_EMPTY, sds.getName()));
 		
 		// Schema nodes must not have any attributes, except for an optional type reference.
 		Optional<Node> att = sds.getNodes().get(n -> ! n.isComplex()).stream()
