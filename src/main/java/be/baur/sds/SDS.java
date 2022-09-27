@@ -26,7 +26,7 @@ public final class SDS {
 	/**
 	 * Returns a new instance of the default SDS validator.
 	 * 
-	 * @return an {@link SDSValidator}
+	 * @return an {@link SDAValidator}
 	 */
 	public static Validator validator() {
 		return new SDAValidator();

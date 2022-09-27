@@ -3,7 +3,7 @@ package be.baur.sds.model;
 import java.util.Optional;
 
 import be.baur.sda.Node;
-import be.baur.sds.ComponentType;
+import be.baur.sds.Component;
 import be.baur.sds.common.Attribute;
 
 /**
@@ -11,9 +11,14 @@ import be.baur.sds.common.Attribute;
  * See also {@link SequenceGroup}, {@link ChoiceGroup} and
  * {@link UnorderedGroup}.
  */
-public abstract class ModelGroup extends ComponentType {
+public abstract class ModelGroup extends Component {
 
-	/** Creates a component with the specified name. */
+	/**
+	 * Creates a model group with the specified name.
+	 * 
+	 * @param name a valid node name, see also {@link Node}
+	 * @throws IllegalArgumentException if the name is invalid
+	 */
 	public ModelGroup(String name) {
 		super(name); add(null); // all groups must have child nodes
 	}
@@ -46,7 +51,7 @@ public abstract class ModelGroup extends ComponentType {
 	public int minOccurs() {
 		
 		Optional<Node> man = this.getNodes().stream()
-			.filter(n -> (n instanceof ComponentType) && ((ComponentType) n).minOccurs() > 0)
+			.filter(n -> (n instanceof Component) && ((Component) n).minOccurs() > 0)
 			.findFirst(); // if a group contains no mandatory components, it is optional.
 		if (man.isPresent()) return super.minOccurs();
 		return 0;
@@ -71,7 +76,7 @@ public abstract class ModelGroup extends ComponentType {
 			node.add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		//if (getGlobalType() == null) // Render children, unless we are a type reference.
-		for (Node child : getNodes()) node.add(((ComponentType) child).toNode());
+		for (Node child : getNodes()) node.add(((Component) child).toNode());
 
 		return node;
 	}

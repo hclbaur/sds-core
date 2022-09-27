@@ -6,8 +6,8 @@ package be.baur.sds.model;
 import java.util.Optional;
 
 import be.baur.sda.Node;
-import be.baur.sds.ComponentType;
-import be.baur.sds.common.Component;
+import be.baur.sds.Component;
+import be.baur.sds.common.Components;
 
 /**
  * A {@code ChoiceGroup} defines two (or more) mutually exclusive nodes or
@@ -29,7 +29,7 @@ public final class ChoiceGroup extends ModelGroup {
 
 	/** Creates a choice group. */
 	public ChoiceGroup() {
-		super(Component.CHOICE.tag); // extends Node so must have a tag, even if not really used
+		super(Components.CHOICE.tag); // extends Node so must have a tag, even if not really used
 	}
 	
 	
@@ -61,7 +61,7 @@ public final class ChoiceGroup extends ModelGroup {
 	public int minOccurs() {
 		
 		Optional<Node> opt = this.getNodes().stream()
-			.filter(n -> (n instanceof ComponentType) && ((ComponentType) n).minOccurs() == 0)
+			.filter(n -> (n instanceof Component) && ((Component) n).minOccurs() == 0)
 			.findFirst(); // if a choice contains at least one optional component, it is optional.
 		if (opt.isPresent()) return 0;
 		return super.minOccurs();

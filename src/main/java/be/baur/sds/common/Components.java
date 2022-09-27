@@ -5,14 +5,14 @@ package be.baur.sds.common;
  * ("node", "choice", etc) can be accessed using the {@code toString()} method
  * or the {@code tag} field.
  */
-public enum Component {
+public enum Components {
 
 	NODE("node"), CHOICE("choice"), GROUP("group"), UNORDERED("unordered");
 
 	/** The (lower-case) name tag. */
 	public final String tag;
 	
-	Component(String tag) {
+	Components(String tag) {
 		this.tag = tag;
 	}
 	
@@ -34,8 +34,8 @@ public enum Component {
 	 * @param tag a name tag
 	 * @return a component, may be null
 	 */
-	public static Component get(String tag) {
-		for (Component m : values()) 
+	public static Components get(String tag) {
+		for (Components m : values()) 
 			if (m.tag.equals(tag)) return m;
 		return null;
 	}

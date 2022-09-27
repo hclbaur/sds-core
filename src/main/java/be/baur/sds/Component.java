@@ -9,13 +9,18 @@ import be.baur.sds.model.ModelGroup;
  * The abstract superclass of schema components. <br>
  * See also {@link NodeType} and {@link ModelGroup}
  */
-public abstract class ComponentType extends Node {
+public abstract class Component extends Node {
 
 	private String globalTypeName = null; 			// name of the global type this component refers to.
 	private NaturalInterval multiplicity = null; 	// default multiplicity (mandatory and singular).
 
-	/** Creates a component with the specified name. */
-	public ComponentType(String name) {
+	/**
+	 * Creates a component with the specified name.
+	 * 
+	 * @param name a valid node name, see also {@link Node}
+	 * @throws IllegalArgumentException if the name is invalid
+	 */
+	public Component(String name) {
 		super(name);
 	}
 
@@ -61,7 +66,7 @@ public abstract class ComponentType extends Node {
 	 * reference, which means the component must occur exactly once (and which is
 	 * equivalent to {@code [1,1]}).
 	 * 
-	 * @param a natural interval, may be null
+	 * @param multiplicity a natural interval, may be null
 	 */
 	public void setMultiplicity(NaturalInterval multiplicity) {
 		this.multiplicity = multiplicity;
@@ -95,7 +100,7 @@ public abstract class ComponentType extends Node {
 	 * parser would return upon processing an input stream describing the component
 	 * in SDS notation.
 	 * 
-	 * @returns an SDA node
+	 * @return an SDA node
 	 */
 	public abstract Node toNode();
 

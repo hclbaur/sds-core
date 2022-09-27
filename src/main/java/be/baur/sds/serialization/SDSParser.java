@@ -9,11 +9,11 @@ import java.util.regex.PatternSyntaxException;
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
 import be.baur.sda.SDA;
-import be.baur.sds.ComponentType;
+import be.baur.sds.Component;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
 import be.baur.sds.common.Attribute;
-import be.baur.sds.common.Component;
+import be.baur.sds.common.Components;
 import be.baur.sds.common.Content;
 import be.baur.sds.common.Date;
 import be.baur.sds.common.DateTime;
@@ -141,10 +141,10 @@ public final class SDSParser implements Parser {
 		// Parse global types, and add them to the schema (if all is in order).
 		for (Node node : sds.getNodes().get(n -> n.isComplex())) {
 			
-			if (Component.get(node.getName()) == null) // component is unknown
+			if (Components.get(node.getName()) == null) // component is unknown
 				throw new SchemaException(node, String.format(COMPONENT_UNKNOWN, node.getName()));
 			
-			if (! node.getName().equals(Component.NODE.tag)) // only node definitions are allowed here
+			if (! node.getName().equals(Components.NODE.tag)) // only node definitions are allowed here
 				throw new SchemaException(node, String.format(COMPONENT_NOT_ALLOWED, node.getName()));
 			
 			// Global types must not have a multiplicity attribute
@@ -175,14 +175,14 @@ public final class SDSParser implements Parser {
 	 * entire schema. A <code>shallow</code> parse means that no child nodes are
 	 * parsed, which is used in the parsing of type references.
 	 */
-	private static ComponentType parseComponent(Node sds, boolean shallow) throws SchemaException {
+	private static Component parseComponent(Node sds, boolean shallow) throws SchemaException {
 
 		/*
 		 * Whatever we get must be a valid component, and contain attributes, types
 		 * and/or model groups. This method is called recursively and must deal with
 		 * every possible component.
 		 */
-		if (Component.get(sds.getName()) == null) // component must have a known name tag
+		if (Components.get(sds.getName()) == null) // component must have a known name tag
 			throw new SchemaException(sds, String.format(COMPONENT_UNKNOWN, sds.getName()));
 
 		for (Node node : sds.getNodes().get(n -> ! n.isComplex()))
@@ -198,8 +198,8 @@ public final class SDSParser implements Parser {
 		 * either a simple type or a reference, which looks like a simple type but
 		 * refers to a global type rather than a string, integer, boolean, etc.
 		 */
-		ComponentType component; // the component to be returned at the end of this method
-		boolean isNodeType = sds.getName().equals(Component.NODE.tag); // will be false for a model group
+		Component component; // the component to be returned at the end of this method
+		boolean isNodeType = sds.getName().equals(Components.NODE.tag); // will be false for a model group
 		NodeSet complexChildren = sds.getNodes().get(n -> n.isComplex()); // empty if simple type or reference
 		
 		if (isNodeType && complexChildren.isEmpty()) {
@@ -252,7 +252,7 @@ public final class SDSParser implements Parser {
 	 * @param sds a schema node
 	 * @returns a {@link SequenceGroup}, {@link ChoiceGroup} or {@link UnorderedGroup}, 
 	 */
-	private static ComponentType parseModelGroup(Node sds) throws SchemaException {
+	private static Component parseModelGroup(Node sds) throws SchemaException {
 		/*
 		 * Preconditions: the caller (parseComponent) has already verified that this
 		 * component has a valid tag, attributes with valid tags only, and one or more
@@ -279,7 +279,7 @@ public final class SDSParser implements Parser {
 
 		ModelGroup mgroup;
 
-		switch (Component.get(sds.getName())) {
+		switch (Components.get(sds.getName())) {
 			case GROUP		: mgroup = new SequenceGroup(); break;
 			case CHOICE		: mgroup = new ChoiceGroup(); break;
 			case UNORDERED	: mgroup = new UnorderedGroup(); break;
@@ -302,7 +302,7 @@ public final class SDSParser implements Parser {
 	 * <br>
 	 * assuming that <code>phone</code> was defined as a global type.
 	 */
-	private static ComponentType parseTypeReference(Node sds, Node type) throws SchemaException {
+	private static Component parseTypeReference(Node sds, Node type) throws SchemaException {
 		/*
 		 * A reference is not a real component, but just a convenient shorthand way to
 		 * refer to a global type in SDS notation. When we encounter one, we create a
@@ -331,7 +331,7 @@ public final class SDSParser implements Parser {
 		
 		// Search all node declarations in the schema root for the referenced type.
 		Node refNode = null;
-		for (Node cnode : root.getNodes().get(n -> n.isComplex()).get(Component.NODE.tag)) {
+		for (Node cnode : root.getNodes().get(n -> n.isComplex()).get(Components.NODE.tag)) {
 //			for (Node snode : cnode.getNodes().get(n -> ! n.isComplex()).get(Attribute.NAME.tag)) {
 //				if ( snode.getValue().equals(type.getValue()) ) refNode = cnode; break;
 //			}
@@ -349,7 +349,7 @@ public final class SDSParser implements Parser {
 		 * parse any child nodes in the global type, but use a late binding technique to
 		 * return them when they are referenced. For details see ComplexType.getNodes().
 		 */
-		ComponentType refComp = parseComponent(refNode, true);
+		Component refComp = parseComponent(refNode, true);
 		refComp.setGlobalType(type.getValue());  // set the type we were created from
 		
 		// If a name is specified (different or equal to the type name) we set it

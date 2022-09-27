@@ -3,7 +3,7 @@
  */
 package be.baur.sds.model;
 
-import be.baur.sds.common.Component;
+import be.baur.sds.common.Components;
 
 /**
  * A sequence group defines two or more interdependent nodes or content
@@ -25,6 +25,6 @@ public final class SequenceGroup extends ModelGroup {
 
 	/** Creates a sequence group. */
 	public SequenceGroup() {
-		super(Component.GROUP.tag); // extends Node so must have a tag, even if not really used
+		super(Components.GROUP.tag); // extends Node so must have a tag, even if not really used
 	}
 }

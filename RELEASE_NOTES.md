@@ -5,12 +5,13 @@ validation of SDA documents, syntax version 2. !!! Work In Proress !!!
 
 ## [2.1.0] - 2022-xx-xx
 - `Added` NodeType to replace SimpleType and ComplexType.
-- `Changed` ComponentType to an abstract class (was an interface).
+- `Changed` ComponentType (interface) to Component (abstract class).
 - `Changed` AbstractGroup to extend ComponentType (was ComplexType).
 - `Changed` Parser.parse() to throw ParseException (was SyntaxException).
 - `Renamed` AbstractGroup to ModelGroup, Group to SequenceGroup.
 - `Renamed` Schema.getRootType() to Schema.getDefaultType().
 - `Renamed` SchemaException.getNode() to SchemaException.getErrorNode().
+- `Renamed` Component (Enum) to Components to prevent name clash.
 - `Removed` SimpleType and ComplexType (replaced with NodeType).
 
 ## Compatibility

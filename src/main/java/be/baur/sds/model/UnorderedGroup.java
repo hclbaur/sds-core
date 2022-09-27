@@ -3,7 +3,7 @@
  */
 package be.baur.sds.model;
 
-import be.baur.sds.common.Component;
+import be.baur.sds.common.Components;
 
 /**
  * An unordered group defines two or more nodes or content models that may occur
@@ -24,6 +24,6 @@ public final class UnorderedGroup extends ModelGroup {
 
 	/** Creates an unordered group. */
 	public UnorderedGroup() {
-		super(Component.UNORDERED.tag); // extends Node so must have a tag, even if not really used
+		super(Components.UNORDERED.tag); // extends Node so must have a tag, even if not really used
 	}
 }

@@ -10,7 +10,7 @@ import be.baur.sds.serialization.SDSParser;
  * structure that defines SDA content. It is a container for "components" like
  * node types and model groups. Schema is usually not created "by hand" but read
  * and parsed from input in SDS notation.<br>
- * See also {@link ComponentType}, {@link SDSParser}.
+ * See also {@link Component}, {@link SDSParser}.
  */
 public final class Schema extends Node {
 
@@ -68,7 +68,7 @@ public final class Schema extends Node {
 			node.add(new Node(Attribute.TYPE.tag, defaultType));
 
 		for (Node component : this.getNodes()) // Render all components.
-			node.add(((ComponentType) component).toNode());
+			node.add(((Component) component).toNode());
 
 		return node;
 	}

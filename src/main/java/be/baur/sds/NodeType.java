@@ -6,7 +6,7 @@ import java.util.regex.PatternSyntaxException;
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
 import be.baur.sds.common.Attribute;
-import be.baur.sds.common.Component;
+import be.baur.sds.common.Components;
 import be.baur.sds.common.Content;
 import be.baur.sds.content.AbstractStringType;
 import be.baur.sds.content.AnyType;
@@ -22,7 +22,7 @@ import be.baur.sds.content.RangedType;
  * like {@code StringType}, {@code IntegerType}, {@code BooleanType}, etc.
  * Subsequently, you can create a <i>mixed type</i> by adding child components.
  */
-public class NodeType extends ComponentType {
+public class NodeType extends Component {
 
 	private String pattexp = null; 		// the regular expression defining the pattern.
 	private Pattern pattern = null;		// the pre-compiled (from pattexp) pattern.
@@ -175,7 +175,7 @@ public class NodeType extends ComponentType {
 	@Override
 	public Node toNode() {
 		
-		Node node = new Node(Component.NODE.tag);
+		Node node = new Node(Components.NODE.tag);
 		
 		// Omit the name for an unnamed any type, and for a type
 		// reference with the same name as the referenced type.
@@ -216,7 +216,7 @@ public class NodeType extends ComponentType {
 		
 		// Finally, render any children, unless we are a type reference.
 		if (isParent() && getGlobalType() == null)
-			for (Node child : getNodes()) node.add(((ComponentType) child).toNode());
+			for (Node child : getNodes()) node.add(((Component) child).toNode());
 		
 		return node;
 	}

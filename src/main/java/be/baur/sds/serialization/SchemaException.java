@@ -5,7 +5,7 @@ import be.baur.sda.Node;
 /**
  * A {@code SchemaException} is thrown by the <code>SDSParser</code> if the SDS
  * syntax is violated. The node where the error occurred during parsing is
- * available from {@link #getNode()}.
+ * available from {@link #getErrorNode()}.
  */
 @SuppressWarnings("serial")
 public final class SchemaException extends Exception {
