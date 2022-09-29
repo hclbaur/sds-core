@@ -92,7 +92,7 @@ public final class TestSDSParser
 		System.out.print("\n              ");
 		String s = "SDS syntax violation at ";
 		t.ts1("F01", "node{ type \"string\" }", s + "/node: a 'schema' node is expected");
-		t.ts1("F02", "schema{ }", s + "/schema: a 'schema' node cannot be empty");
+		t.ts1("F02", "schema{ }", s + "/schema: a 'schema' node must have components");
 		t.ts1("F03", "schema{ test \"\" }", s + "/schema/test: attribute 'test' is unknown");
 		t.ts1("F04", "schema{ type \"\" }", s + "/schema/type: attribute 'type' is empty");
 		t.ts1("F05", "schema{ type \"string\" }", s + "/schema: type 'string' is invalid; no such global type (string)");

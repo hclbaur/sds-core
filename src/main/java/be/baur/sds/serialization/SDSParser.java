@@ -77,7 +77,7 @@ import be.baur.sds.model.UnorderedGroup;
 public final class SDSParser implements Parser {
 
 	private static final String A_NODE_IS_EXPECTED = "a '%s' node is expected";
-	private static final String A_NODE_IS_EMPTY = "a '%s' node cannot be empty";
+	private static final String A_NODE_MUST_HAVE = "a '%s' node must have %s";
 
 	private static final String COMPONENT_NOT_ALLOWED = "component '%s' is not allowed here";
 	private static final String COMPONENT_INCOMPLETE = "component '%s' is incomplete";
@@ -120,10 +120,10 @@ public final class SDSParser implements Parser {
 		if (! sds.getName().equals(Schema.TAG))
 			throw new SchemaException(sds, String.format(A_NODE_IS_EXPECTED, Schema.TAG));
 		
-		if (! sds.isParent()) // A schema must have child nodes.
-			throw new SchemaException(sds, String.format(A_NODE_IS_EMPTY, sds.getName()));
+		if (! sds.isParent()) // a schema must have components
+			throw new SchemaException(sds, String.format(A_NODE_MUST_HAVE, sds.getName(), "components"));
 		
-		// Schema nodes must not have any attributes, except for an optional type reference.
+		// a schema must not have attributes, except for an optional type reference
 		Optional<Node> att = sds.getNodes().get(n -> ! n.isComplex()).stream()
 			.filter(n -> ! n.getName().equals(Attribute.TYPE.tag)).findFirst();
 			
@@ -133,12 +133,10 @@ public final class SDSParser implements Parser {
 			throw new SchemaException(att.get(), String.format(ATTRIBUTE_NOT_ALLOWED, att.get().getName()));
 		}
 		
-		//if (sds.getNodes().isEmpty()) // A schema can never be empty.
-		//	throw new SchemaException(sds, String.format(SCHEMA_NODE_EMPTY, sds.getName()));
-		
+		// build the schema
 		Schema schema = new Schema();
 
-		// Parse global types, and add them to the schema (if all is in order).
+		// parse global types, and add them to the schema (if all is in order).
 		for (Node node : sds.getNodes().get(n -> n.isComplex())) {
 			
 			if (Components.get(node.getName()) == null) // component is unknown
@@ -147,13 +145,13 @@ public final class SDSParser implements Parser {
 			if (! node.getName().equals(Components.NODE.tag)) // only node definitions are allowed here
 				throw new SchemaException(node, String.format(COMPONENT_NOT_ALLOWED, node.getName()));
 			
-			// Global types must not have a multiplicity attribute
+			// global types must not have a multiplicity attribute
 			getAttribute(node, Attribute.OCCURS, null);
 			
 			schema.add((Node) parseComponent(node, false));
 		}
 
-		// When done, set the designated root type reference (if specified and valid).
+		// set the designated root type reference (if specified and valid)
 		Node type = getAttribute(sds, Attribute.TYPE, false);
 		
 		if (type != null) try {
@@ -170,10 +168,10 @@ public final class SDSParser implements Parser {
 
 	/**
 	 * This parses an SDA node representing an SDS component, and returns a
-	 * {@link NodeType} or {@link ComplexType} which in turn may contain other
-	 * components or model groups. It is called by <code>parse()</code> to parse an
-	 * entire schema. A <code>shallow</code> parse means that no child nodes are
-	 * parsed, which is used in the parsing of type references.
+	 * {@link NodeType} or {@link ModelGroup} which may contain other components or
+	 * model groups. It is called by <code>parse()</code> to parse a schema. A
+	 * <code>shallow</code> parse means that no child nodes are parsed, which is
+	 * used in the parsing of type references.
 	 */
 	private static Component parseComponent(Node sds, boolean shallow) throws SchemaException {
 
