@@ -25,9 +25,8 @@ import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
 
 /**
- * This is the default SDA validator. It is used to validate an SDA document
- * against a {@code Schema}. For example, when the schema (in SDS notation)
- * looks like this:
+ * This is the default SDA validator; used to validate an SDA document against a
+ * {@code Schema}. For example, when a schema (in SDS notation) looks like this:
  * 
  * <pre>
  * <code>
@@ -39,7 +38,7 @@ import be.baur.sds.model.UnorderedGroup;
  * </code>
  * </pre>
  * 
- * and the validator is presented with the following node:
+ * and the validator is presented with the following SDA input
  * 
  * <pre>
  * <code>
@@ -49,13 +48,13 @@ import be.baur.sds.model.UnorderedGroup;
  * </code>
  * </pre>
  * 
- * An error would be returned, reporting an unexpected 'text' node in
- * 'greeting'.
+ * an error is returned, reporting an unexpected 'text' node in 'greeting'.
  */
 public final class SDAValidator implements Validator {
 
+	private static final String NO_DEFAULT_TYPE_FOUND = "no default type found";
 	private static final String GLOBAL_TYPE_NOT_FOUND = "global type '%s' not found";
-	private static final String EXPECTING_NODE_OF_TYPE = "expecting '%s' to be a %s type";
+	private static final String EXPECTING_CONTENT_TYPE = "expecting '%s' to be a %s type";
 	private static final String CONTENT_MISSING_AT_END = "content missing at end of '%s'; expected %s";
 	private static final String GOT_NODE_BUT_EXPECTED = "got '%s', but %s was expected";
 	private static final String NODE_NOT_EXPECTED_IN = "'%s' was not expected in '%s'";
@@ -77,20 +76,17 @@ public final class SDAValidator implements Validator {
 		Component component = null;
 		
 		if (type == null || type.isEmpty()) {
-			
-			if (schema.getNodes().size() == 1)
-				component = (Component) schema.getNodes().get(1);
-			else if (schema.getDefaultType() != null) 
-				component = (Component) schema.getNodes().get(schema.getDefaultType()).get(1);
-			// else throw something like "schema has no designated type"
-			// to prevent:  global type 'null' not found
+			// if no type was supplied we take the default type (if there is one)
+			if (schema.getDefaultType() == null) 
+				throw new IllegalArgumentException(String.format(NO_DEFAULT_TYPE_FOUND));
+			component = (Component) schema.getNodes().get(schema.getDefaultType());
 		}	
-		else component = (Component) schema.getNodes().get(type).get(1);
+		else component = (Component) schema.getNodes().get(type);
 			
 		if (component == null)
 			throw new IllegalArgumentException(String.format(GLOBAL_TYPE_NOT_FOUND, type));
 		
-		// Recursively validate the entire document.
+		// recursively validate the entire document
 		ErrorList errors = new ErrorList();	
 		if (! matchNode(node, component, errors))
 			errors.add(new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName((Node) component)));
@@ -104,10 +100,9 @@ public final class SDAValidator implements Validator {
 	 * against its corresponding schema component by comparing the name tags. If
 	 * there is no match, we return false and it is up to the caller of this method
 	 * to decide if that constitutes a validation error. After all, the current
-	 * component could be optional, and node match the next component.<br>
+	 * component could be optional, and node might match the next component.<br>
 	 * If there is a match, we assert that the node content is valid, or add an
-	 * error to the list otherwise.<br>
-	 * This does not apply to the "any" type components; those are never validated.
+	 * error to the list otherwise. This does not apply to "any" type components.
 	 */
 	private static boolean matchNode(Node node, Component component, ErrorList errors) {
 		
@@ -124,7 +119,7 @@ public final class SDAValidator implements Validator {
 		if (! node.isComplex()) { // simple content
 			
 			if (component.isComplex()) {  // but we were expecting complex content
-				errors.add(new Error(node, EXPECTING_NODE_OF_TYPE, nodename, "complex"));
+				errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "complex"));
 				return true;
 			}
 			errors.add(validateSimpleNode(node, (NodeType) component));
@@ -132,7 +127,7 @@ public final class SDAValidator implements Validator {
 		}
 		
 		if (! component.isComplex()) {  // we were expecting simple content
-			errors.add(new Error(node, EXPECTING_NODE_OF_TYPE, nodename, "simple"));
+			errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "simple"));
 			return true;
 		}
 		
@@ -562,7 +557,7 @@ public final class SDAValidator implements Validator {
 			 * anymore (and an error was already reported).
 			 */
 			if (invoked) {
-				NodeSet required = components.get(n -> ((Component) n).minOccurs() > 0);
+				NodeSet required = components.find(n -> ((Component) n).minOccurs() > 0);
 				if (! required.isEmpty()) {
 					Error error = new Error(node, GOT_NODE_BUT_EXPECTED, 
 						node.getName(), quoteNames(expectedTypes(required)) );
@@ -593,7 +588,7 @@ public final class SDAValidator implements Validator {
 		 * that there are no more required components and add an error otherwise.
 		 */
 		if (invoked) {
-			NodeSet required = components.get(n -> ((Component) n).minOccurs() > 0);
+			NodeSet required = components.find(n -> ((Component) n).minOccurs() > 0);
 			if (! required.isEmpty()) {
 				Error error = new Error(parent, CONTENT_MISSING_AT_END, 
 					parent.getName(), quoteNames(expectedTypes(required)) );

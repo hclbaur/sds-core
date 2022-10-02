@@ -149,7 +149,7 @@ public class NodeType extends Component {
 		
 		if (getGlobalType() == null) return super.getNodes();
 		if (globalTypeNode == null) // not bound yet, so get it from the schema root
-			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
+			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType());
 		return globalTypeNode.getNodes(); // should not cause NPE
 	}
 
@@ -158,7 +158,7 @@ public class NodeType extends Component {
 		
 		if (getGlobalType() == null) return super.isComplex();
 		if (globalTypeNode == null) // not bound yet, so get it from the schema root
-			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
+			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType());
 		return globalTypeNode.isComplex(); // should not cause NPE
 	}
 
@@ -167,7 +167,7 @@ public class NodeType extends Component {
 		
 		if (getGlobalType() == null) return super.isParent();
 		if (globalTypeNode == null) // not bound yet, so get it from the schema root
-			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType()).get(1);
+			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType());
 		return globalTypeNode.isParent(); // should not cause NPE
 	}
 	

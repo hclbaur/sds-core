@@ -26,10 +26,10 @@ public class demo {
 			for (Error error : errors) System.out.println(error.toString()); return;
 		}
 		
-		for (Node contact : root.getNodes().get("contact")) {
+		for (Node contact : root.getNodes().find("contact")) {
 			
-			Node name = contact.getNodes().get("firstname").get(1);
-			NodeSet numbers = contact.getNodes().get("phonenumber");
+			Node name = contact.getNodes().get("firstname");
+			NodeSet numbers = contact.getNodes().find("phonenumber");
 			
 			System.out.println(name.getValue() + " has " + numbers.size() + " phone number(s).");
 			

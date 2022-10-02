@@ -31,8 +31,8 @@ public final class Contacts {
 		InputStream sds = Contacts.class.getResourceAsStream("/contacts.sds");
 		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
 
-		SDS.validator().validate(document, schema, "contacts");
-		ErrorList errors = SDS.validator().validate(document, schema, null);
+		//SDS.validator().validate(document, schema, null);
+		ErrorList errors = SDS.validator().validate(document, schema, "contacts");
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<Error> e = errors.iterator();
 		
