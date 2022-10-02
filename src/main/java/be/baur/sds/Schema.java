@@ -2,7 +2,7 @@ package be.baur.sds;
 
 import be.baur.sda.Node;
 import be.baur.sda.serialization.SDAFormatter;
-import be.baur.sds.common.Attribute;
+import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.SDSParser;
 
 /**

@@ -1,4 +1,4 @@
-package be.baur.sds.common;
+package be.baur.sds.serialization;
 
 /**
  * Attributes allowed by the SDS syntax. The lower-case name of an attribute

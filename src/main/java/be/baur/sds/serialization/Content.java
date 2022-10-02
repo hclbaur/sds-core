@@ -1,4 +1,4 @@
-package be.baur.sds.common;
+package be.baur.sds.serialization;
 
 /**
  * Content types allowed by the SDS syntax. The lower-case name of a content

@@ -5,12 +5,12 @@ import java.util.regex.PatternSyntaxException;
 
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
-import be.baur.sds.common.Attribute;
-import be.baur.sds.common.Components;
-import be.baur.sds.common.Content;
 import be.baur.sds.content.AbstractStringType;
 import be.baur.sds.content.AnyType;
 import be.baur.sds.content.RangedType;
+import be.baur.sds.serialization.Attribute;
+import be.baur.sds.serialization.Components;
+import be.baur.sds.serialization.Content;
 
 
 /**

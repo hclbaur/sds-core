@@ -1,7 +1,7 @@
 package be.baur.sds.content;
 
-import be.baur.sds.common.Content;
 import be.baur.sds.common.DateTime;
+import be.baur.sds.serialization.Content;
 
 /**
  * A <code>DateTimeType</code> represents an SDA node with temporal content

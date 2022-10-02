@@ -8,6 +8,7 @@ validation of SDA documents, syntax version 2. !!! Work In Proress !!!
 - `Changed` ComponentType (interface) to Component (abstract class).
 - `Changed` AbstractGroup to extend ComponentType (was ComplexType).
 - `Changed` Parser.parse() to throw ParseException (was SyntaxException).
+- `Changed` Syntax Enums moved to package be.baur.sds.serialization.
 - `Renamed` AbstractGroup to ModelGroup, Group to SequenceGroup.
 - `Renamed` Schema.getRootType() to Schema.getDefaultType().
 - `Renamed` SchemaException.getNode() to SchemaException.getErrorNode().

@@ -12,9 +12,6 @@ import be.baur.sda.SDA;
 import be.baur.sds.Component;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
-import be.baur.sds.common.Attribute;
-import be.baur.sds.common.Components;
-import be.baur.sds.common.Content;
 import be.baur.sds.common.Date;
 import be.baur.sds.common.DateTime;
 import be.baur.sds.common.Interval;
@@ -210,8 +207,12 @@ public final class SDSParser implements Parser {
 			else // otherwise it must be a reference
 				component = parseTypeReference(sds, type);
 		}
-		else if (isNodeType) // a complex or mixed type
+		else if (isNodeType) { // a complex or mixed type
+			if (content == Content.ANY) // any type cannot contain type definitions
+				throw new SchemaException(sds, String.format(ATTRIBUTE_INVALID, 
+					Attribute.TYPE.tag, Content.ANY.type, "node defines content"));
 			component = parseNodeType(sds, content);
+		}
 		else // a model group
 			component = parseModelGroup(sds);
 		

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import be.baur.sda.Node;
 import be.baur.sds.Component;
-import be.baur.sds.common.Attribute;
+import be.baur.sds.serialization.Attribute;
 
 /**
  * The abstract superclass of all model groups. <br>

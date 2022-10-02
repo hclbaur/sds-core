@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import be.baur.sda.Node;
 import be.baur.sds.Component;
-import be.baur.sds.common.Components;
+import be.baur.sds.serialization.Components;
 
 /**
  * A {@code ChoiceGroup} defines two (or more) mutually exclusive nodes or

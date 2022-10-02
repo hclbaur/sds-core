@@ -79,10 +79,10 @@ public final class TestSDSParser
 		t.ts1("S22", "schema { node \"today\" { type \"datetime\" value \"[2020-08-11T00:00:00+02:00..2020-08-12T00:00:00+02:00)\" } }", null);
 		t.ts1("S23", "schema { node \"today\" { type \"date\" value \"2020-08-11\" } }", null);
 		t.ts1("S24", "schema { node \"august\" { type \"date\" value \"[2020-08-01..2020-09-01)\" } }", null);
-		t.ts1("S25", "schema { node \"anything\" { type \"any\" } }", null);
-		t.ts1("S26", "schema { node { type \"any\" } }", null);
-		t.ts1("S27", "schema { node \"x\" { type \"string\" node \"y\" { type \"string\" } } }", null);
-		t.ts1("S28", "schema { node \"x\" { type \"any\" node \"y\" { type \"string\" } } }", null); // ????
+		t.ts1("S25", "schema { node { type \"any\" } }", null);
+		t.ts1("S26", "schema { node \"anything\" { type \"any\" } }", null);
+		t.ts1("S27", "schema { node \"anything\" { node { type \"any\" } } }", null);
+		t.ts1("S28", "schema { node \"x\" { type \"string\" node \"y\" { type \"string\" } } }", null);
 		
 		/* test invalid SDS */
 		try { 
@@ -113,8 +113,8 @@ public final class TestSDSParser
 		t.ts1("F18", "schema{ node \"x\" { node{} } }", s + "/schema/node/node: component 'node' is incomplete");
 		t.ts1("F19", "schema{ node \"x\" { schema{} } }", s + "/schema/node/schema: component 'schema' is unknown");
 		t.ts1("F20", "schema{ node{ test \"\" } }", s + "/schema/node/test: attribute 'test' is unknown");
-		System.out.print("\n              ");
 		t.ts1("F21", "schema{ node{ type \"\" } }", s + "/schema/node/type: attribute 'type' is empty");
+		System.out.print("\n              ");
 		t.ts1("F22", "schema{ node{ type \"string\" } }", s + "/schema/node: a name is expected");
 		t.ts1("F23", "schema{ node{ type \"string\" node{} } }", s + "/schema/node: a name is expected");
 		t.ts1("F24", "schema{ node{ type \"string\" type \"\" } }", s + "/schema/node/type[1]: attribute 'type' can occur only once");
@@ -135,6 +135,7 @@ public final class TestSDSParser
 		t.ts1("F39", "schema{ node { type \"any\" nullable \"true\" } }", s + "/schema/node: attribute 'nullable' is not allowed here");
 		t.ts1("F40", "schema{ node \"123\" { type \"string\" } }", s + "/schema/node: '123' is not a valid node name");
 		t.ts1("F41", "schema{ node \"phone\" { type \"string\" } node \"123\" { type \"phone\" } }", s + "/schema/node[2]: '123' is not a valid node name");
+		t.ts1("F42", "schema { node \"x\" { type \"any\" node \"y\" { type \"string\" } } }", s + "/schema/node: type 'any' is invalid; node defines content");
 	}
 
 }

@@ -1,6 +1,6 @@
 package be.baur.sds.content;
 
-import be.baur.sds.common.Content;
+import be.baur.sds.serialization.Content;
 
 /**
  * A <code>BinaryType</code> is a string type representing an SDA node with

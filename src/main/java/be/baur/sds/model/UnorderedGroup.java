@@ -3,7 +3,7 @@
  */
 package be.baur.sds.model;
 
-import be.baur.sds.common.Components;
+import be.baur.sds.serialization.Components;
 
 /**
  * An unordered group defines two or more nodes or content models that may occur
