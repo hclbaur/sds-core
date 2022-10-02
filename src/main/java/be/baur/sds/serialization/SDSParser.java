@@ -82,7 +82,6 @@ public final class SDSParser implements Parser {
 	private static final String COMPONENT_NOT_ALLOWED = "component '%s' is not allowed here";
 	private static final String COMPONENT_INCOMPLETE = "component '%s' is incomplete";
 	private static final String COMPONENT_UNKNOWN = "component '%s' is unknown";
-//	private static final String COMPONENT_EMPTY = "component '%s' is empty";
 
 	private static final String ATTRIBUTE_NOT_SINGULAR = "attribute '%s' can occur only once";
 	private static final String ATTRIBUTE_NOT_ALLOWED = "attribute '%s' is not allowed here";
@@ -93,8 +92,8 @@ public final class SDSParser implements Parser {
 
 	private static final String CONTENT_TYPE_UNKNOWN = "content type '%s' is unknown";
 	private static final String NODE_NAME_INVALID = "'%s' is not a valid node name";
-	private static final String NAME_NOT_ALLOWED = "name '%s' is not allowed here";
-	
+	private static final String NAME_NOT_EXPECTED = "name '%s' is not expected";
+	private static final String NAME_IS_EXPECTED = "a name is expected";
 	
 	public Schema parse(Reader input) throws IOException, ParseException, SchemaException  {
 
@@ -174,12 +173,12 @@ public final class SDSParser implements Parser {
 	 * in the parsing of type references.
 	 */
 	private static Component parseComponent(Node sds, boolean shallow) throws SchemaException {
-
 		/*
 		 * Whatever we get must be a valid component, and contain attributes, types
 		 * and/or model groups. This method is called recursively and must deal with
 		 * every possible component.
 		 */
+
 		if (Components.get(sds.getName()) == null) // component must have a known name tag
 			throw new SchemaException(sds, String.format(COMPONENT_UNKNOWN, sds.getName()));
 
@@ -212,7 +211,6 @@ public final class SDSParser implements Parser {
 				component = parseTypeReference(sds, type);
 		}
 		else if (isNodeType) // a complex or mixed type
-			//component = parseComplexType(sds);
 			component = parseNodeType(sds, content);
 		else // a model group
 			component = parseModelGroup(sds);
@@ -239,8 +237,8 @@ public final class SDSParser implements Parser {
 
 
 	/**
-	 * This method is called by <code>parseComponent</code> to parse a node
-	 * representing a model group in SDS syntax. For example, a choice group:
+	 * This method is called by parseComponent() to parse a node representing a
+	 * model group in SDS syntax. For example, a choice group:
 	 * 
 	 * <pre>
 	 * choice {
@@ -250,7 +248,8 @@ public final class SDSParser implements Parser {
 	 * </pre>
 	 * 
 	 * @param sds a schema node
-	 * @returns a {@link SequenceGroup}, {@link ChoiceGroup} or {@link UnorderedGroup}, 
+	 * @returns a {@link SequenceGroup}, {@link ChoiceGroup} or
+	 *          {@link UnorderedGroup},
 	 */
 	private static Component parseModelGroup(Node sds) throws SchemaException {
 		/*
@@ -268,12 +267,12 @@ public final class SDSParser implements Parser {
 		if (attribute.isPresent())
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
 
-		// Model groups are not allowed to have names (maybe in the future).
+		// model groups are not allowed to have names (maybe in the future)
 		String name = sds.getValue();
-		if (! name.isEmpty()) // but for model groups it is not allowed
-			throw new SchemaException(sds, String.format(NAME_NOT_ALLOWED, name));
+		if (! name.isEmpty())
+			throw new SchemaException(sds, String.format(NAME_NOT_EXPECTED, name));
 
-		// Within a model group, there must be at least two components.
+		// in a model group, there must be at least two components
 		if (sds.getNodes().get(n -> n.isComplex()).size() < 2)
 			throw new SchemaException(sds, String.format(COMPONENT_INCOMPLETE, sds.getName()));
 
@@ -293,11 +292,11 @@ public final class SDSParser implements Parser {
 
 	/**
 	 * A reference refers to a previously defined global type. If the name is
-	 * omitted, it is assumed to be equal to the name of the referenced type.
-	 * In terms of SDS, the difference is this:<br>
+	 * omitted, it is assumed to be equal to the name of the referenced type. In
+	 * terms of SDS, the difference is this:<br>
 	 * <br>
-	 * <code>node "mobile" { type "phone" }</code> (explicitly named "mobile")
-	 * <br>versus<br>
+	 * <code>node "mobile" { type "phone" }</code> (explicitly named "mobile") <br>
+	 * versus<br>
 	 * <code>node { type "phone" }</code> (name will be "phone" as well)<br>
 	 * <br>
 	 * assuming that <code>phone</code> was defined as a global type.
@@ -308,10 +307,9 @@ public final class SDSParser implements Parser {
 		 * refer to a global type in SDS notation. When we encounter one, we create a
 		 * component from the global type it refers to and set its name (if explicitly
 		 * named). We also set the global type on this component, so that when rendering
-		 * back to SDS, we can recreate the correct reference.
-		 * Preconditions: the caller (parseComponentType) has already verified that this
-		 * node has no complex child types, and that all simple child types have valid
-		 * attribute tags.
+		 * back to SDS, we can recreate the correct reference. 
+		 * Preconditions: the caller (parseComponentType) has already verified that this 
+		 * node has a valid tag, no child components, and only attributes with valid tags. 
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
 		
@@ -329,13 +327,9 @@ public final class SDSParser implements Parser {
 		if (root.equals(sds)) // if we are the root ourself, we bail out right away.
 			throw new SchemaException(type, String.format(CONTENT_TYPE_UNKNOWN, type.getValue()));
 		
-		// Search all node declarations in the schema root for the referenced type.
+		// search all node declarations in the schema root for the referenced type
 		Node refNode = null;
 		for (Node cnode : root.getNodes().get(n -> n.isComplex()).get(Components.NODE.tag)) {
-//			for (Node snode : cnode.getNodes().get(n -> ! n.isComplex()).get(Attribute.NAME.tag)) {
-//				if ( snode.getValue().equals(type.getValue()) ) refNode = cnode; break;
-//			}
-//			if (refNode != null) break;
 			if ( cnode.getValue().equals(type.getValue()) ) refNode = cnode;
 		}
 		if (refNode == null || refNode.equals(sds)) // if we found nothing or ourself, we raise an error.
@@ -352,16 +346,10 @@ public final class SDSParser implements Parser {
 		Component refComp = parseComponent(refNode, true);
 		refComp.setGlobalType(type.getValue());  // set the type we were created from
 		
-		// If a name is specified (different or equal to the type name) we set it
-//		Node name = getAttribute(sds, Attribute.NAME, false);
-//		if (name != null) {
-//			if (! SDA.isName(name.getValue())) 
-//				throw new SchemaException(name, String.format(NODE_NAME_INVALID, name.getValue()));
-//			refComp.setName(name.getValue());
-//		}
+		// if a valid name is specified (different or equal to the type name) we set it
 		String name = sds.getValue();
 		if (! name.isEmpty()) {
-			if (! SDA.isName(name)) // MUST BE IMPROVED, LOOKS STRANGE FOR EMPTY NAMES
+			if (! SDA.isName(name))
 				throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
 			refComp.setName(name);
 		}
@@ -369,82 +357,65 @@ public final class SDSParser implements Parser {
 		return refComp;
 	}
 
-	
-	/**
-	 * This creates a {@link ComplexType} from an SDS node defining a complex SDA
-	 * node or a {@link ModelGroup}. This method is called by parseComponent.
-	 */
-	private static NodeType parseComplexType(Node sds) throws SchemaException {
-
-		/*
-		 * Preconditions: the caller (parseComponentType) has already verified that this
-		 * node has a valid tag, one or more complex child nodes, and that all of the
-		 * simple child nodes have valid attribute tags. Postcondition: the caller will
-		 * set the multiplicity on the returned type.
-		 */
-
-		// Complex types should not have attributes other than TYPE and OCCURS.
-		Optional<Node> attribute = sds.getNodes().get(n -> ! n.isComplex()).stream()
-			.filter(n -> ! (n.getName().equals(Attribute.TYPE.tag) 
-				|| n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
-				
-		if (attribute.isPresent())
-			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
-
-		// A valid name is required
-		String name = sds.getValue();
-		if (! SDA.isName(name))  // MUST BE IMPROVED, LOOKS STRANGE FOR EMPTY NAMES
-			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
-
-		return new NodeType(name);
-	}
-	
 
 	/**
-	 * This creates a NodeType from an SDS type definition. This method is called by
-	 * parseComponent(). Note that this method is called for both simple and complex
+	 * This method is called from parseComponent() to create a NodeType from an SDS
+	 * type definition. Note that this method is called for both simple and complex
 	 * (or mixed) types. For complex types, the content (type) will be null, whereas
 	 * for simple and mixed types, it will be a known simple content type.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <T extends Comparable> NodeType parseNodeType(Node sds, Content content) throws SchemaException {
-
+	private static <T extends Comparable> 
+		NodeType parseNodeType(Node sds, Content content) throws SchemaException {
 		/*
-		 * Preconditions: the caller (parseComponentType) has already verified that this
-		 * node has a valid tag, and all attributes have valid tags as well.
+		 * Preconditions: the caller has already verified this node has a valid tag, 
+		 * and that all attributes have valid tags as well. 
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
+		
 		boolean isAnyType = (content == Content.ANY); // we need this a few times
 
-		String name = sds.getValue(); // MUST BE IMPROVED, LOOKS STRANGE FOR EMPTY NAMES
-		if ((! isAnyType || ! name.isEmpty()) && ! SDA.isName(name))
-			throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
-
-		NodeType nodeType;	// the node type returned at the end of this method
+		/*
+		 * A name is required for regular types only, and optional for the "any" type,
+		 * but if there IS a name, it should always be a valid node name.
+		 */
+		String name = sds.getValue();
+		if (! isAnyType || ! name.isEmpty()) {
+			if (name.isEmpty())
+				throw new SchemaException(sds, String.format(NAME_IS_EXPECTED));
+			if (! SDA.isName(name))
+				throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
+		}
 		
-		if (content != null)
-			switch (content) { // simple or mixed type
-				case STRING   : nodeType = new StringType(name); break;
-				case BINARY   : nodeType = new BinaryType(name); break;
-				case BOOLEAN  : nodeType = new BooleanType(name); break;
-				case INTEGER  : nodeType = new IntegerType(name); break;
-				case DECIMAL  : nodeType = new DecimalType(name); break;
-				case DATETIME : nodeType = new DateTimeType(name); break;
-				case DATE     : nodeType = new DateType(name); break;
-				case ANY      : nodeType = new AnyType(name); break;
-				default: // will never get here, unless we forgot to implement something...
-					throw new RuntimeException("SDS type '" + content + "' not implemented!");
-			}	
-		else { // content is null, so a complex type  MUST REFORMAT A LITTLE
-		
-		Optional<Node> attribute = sds.getNodes().get(n -> ! n.isComplex()).stream()
-				.filter(n -> ! (n.getName().equals(Attribute.TYPE.tag) 
-					|| n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
-					
+		/*
+		 * If content type is null, it is a complex type definition and the rest of the
+		 * validations do not apply. The only attribute allowed in a complex type is
+		 * OCCURS, so we do check that before we return a node type.
+		 */
+		if (content == null) {
+			
+			Optional<Node> attribute = sds.getNodes().get(n -> ! n.isComplex()).stream()
+				.filter(n -> ! n.getName().equals(Attribute.OCCURS.tag) ).findFirst();
+						
 			if (attribute.isPresent())
 				throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, attribute.get().getName()));
-		
+			
 			return new NodeType(name); // remaining code does not apply
+		}
+		
+		NodeType nodeType;	// the (simple or mixed) type returned at the end of this method
+		
+		switch (content) {
+			case STRING   : nodeType = new StringType(name); break;
+			case BINARY   : nodeType = new BinaryType(name); break;
+			case BOOLEAN  : nodeType = new BooleanType(name); break;
+			case INTEGER  : nodeType = new IntegerType(name); break;
+			case DECIMAL  : nodeType = new DecimalType(name); break;
+			case DATETIME : nodeType = new DateTimeType(name); break;
+			case DATE     : nodeType = new DateType(name); break;
+			case ANY      : nodeType = new AnyType(name); break;
+			default: // will never get here, unless we forgot to implement something...
+				throw new RuntimeException("SDS type '" + content + "' not implemented!");
 		}	
 			
 		// Handle remaining attributes, some of which are forbidden on the "any" type !

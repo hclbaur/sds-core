@@ -81,6 +81,8 @@ public final class TestSDSParser
 		t.ts1("S24", "schema { node \"august\" { type \"date\" value \"[2020-08-01..2020-09-01)\" } }", null);
 		t.ts1("S25", "schema { node \"anything\" { type \"any\" } }", null);
 		t.ts1("S26", "schema { node { type \"any\" } }", null);
+		t.ts1("S27", "schema { node \"x\" { type \"string\" node \"y\" { type \"string\" } } }", null);
+		t.ts1("S28", "schema { node \"x\" { type \"any\" node \"y\" { type \"string\" } } }", null); // ????
 		
 		/* test invalid SDS */
 		try { 
@@ -113,24 +115,25 @@ public final class TestSDSParser
 		t.ts1("F20", "schema{ node{ test \"\" } }", s + "/schema/node/test: attribute 'test' is unknown");
 		System.out.print("\n              ");
 		t.ts1("F21", "schema{ node{ type \"\" } }", s + "/schema/node/type: attribute 'type' is empty");
-		t.ts1("F22", "schema{ node{ type \"string\" } }", s + "/schema/node: '' is not a valid node name");
-		t.ts1("F23", "schema{ node{ type \"string\" node{} } }", s + "/schema/node: '' is not a valid node name");
+		t.ts1("F22", "schema{ node{ type \"string\" } }", s + "/schema/node: a name is expected");
+		t.ts1("F23", "schema{ node{ type \"string\" node{} } }", s + "/schema/node: a name is expected");
 		t.ts1("F24", "schema{ node{ type \"string\" type \"\" } }", s + "/schema/node/type[1]: attribute 'type' can occur only once");
 		t.ts1("F25", "schema{ node \"m\" { node \"x\" { type \"string\" occurs \"\" } } }", s + "/schema/node/node/occurs: attribute 'occurs' is empty");
 		t.ts1("F26", "schema{ node \"m\" { node \"x\" { type \"string\" occurs \"-1\" } } }", s + "/schema/node/node/occurs: occurs '-1' is invalid; negative values are not allowed");
 		t.ts1("F27", "schema{ node \"m\" { node \"x\" { type \"string\" occurs \"a\" } } }", s + "/schema/node/node/occurs: occurs 'a' is invalid; missing or non-integer value(s)");
-		t.ts1("F28", "schema{ node \"c\" { choice{ node{ name \"x\" type \"string\" } } } }", s + "/schema/node/choice: component 'choice' is incomplete");
+		t.ts1("F28", "schema{ node \"c\" { choice{ node \"x\" { type \"string\" } } } }", s + "/schema/node/choice: component 'choice' is incomplete");
 		t.ts1("F29", "schema{ node \"c\" { choice{ name \"x\" } } }", s + "/schema/node/choice/name: attribute 'name' is unknown");
-		t.ts1("F30", "schema{ node \"c\" { choice{ nullable \"true\" } } }", s + "/schema/node/choice: attribute 'nullable' is not allowed here");
-		t.ts1("F31", "schema{ node \"x\" { type \"string\" length \"\" } }", s + "/schema/node/length: attribute 'length' is empty");
-		t.ts1("F32", "schema{ node \"x\"{ type \"binary\" length \"-1\" } }", s + "/schema/node/length: length '-1' is invalid; negative values are not allowed");
-		t.ts1("F33", "schema{ node \"x\" { type \"boolean\" length \"5\" } }", s + "/schema/node: attribute 'length' is not allowed here");
-		t.ts1("F34", "schema{ node \"x\" { type \"boolean\" nullable \"maybe\" } }", s + "/schema/node/nullable: nullable 'maybe' is invalid; must be 'true' or 'false'");
-		t.ts1("F35", "schema{ node \"x\" { type \"integer\" value \"\" } }", s + "/schema/node/value: attribute 'value' is empty");
-		t.ts1("F36", "schema{ node \"x\" { type \"decimal\" value \"[1..-1]\" } }", s + "/schema/node/value: value '[1..-1]' is invalid; lower limit exceeds upper limit");
-		t.ts1("F37", "schema{ node \"x\" { type \"boolean\" value \"5\" } }", s + "/schema/node: attribute 'value' is not allowed here");
-		t.ts1("F38", "schema{ node { type \"any\" nullable \"true\" } }", s + "/schema/node: attribute 'nullable' is not allowed here");
-		t.ts1("F39", "schema{ node \"123\" { type \"string\" } }", s + "/schema/node: '123' is not a valid node name");
+		t.ts1("F30", "schema{ node \"c\" { choice \"123\" { node{} } } }", s + "/schema/node/choice: name '123' is not expected");		
+		t.ts1("F31", "schema{ node \"c\" { choice{ nullable \"true\" } } }", s + "/schema/node/choice: attribute 'nullable' is not allowed here");
+		t.ts1("F32", "schema{ node \"x\" { type \"string\" length \"\" } }", s + "/schema/node/length: attribute 'length' is empty");
+		t.ts1("F33", "schema{ node \"x\"{ type \"binary\" length \"-1\" } }", s + "/schema/node/length: length '-1' is invalid; negative values are not allowed");
+		t.ts1("F34", "schema{ node \"x\" { type \"boolean\" length \"5\" } }", s + "/schema/node: attribute 'length' is not allowed here");
+		t.ts1("F35", "schema{ node \"x\" { type \"boolean\" nullable \"maybe\" } }", s + "/schema/node/nullable: nullable 'maybe' is invalid; must be 'true' or 'false'");
+		t.ts1("F36", "schema{ node \"x\" { type \"integer\" value \"\" } }", s + "/schema/node/value: attribute 'value' is empty");
+		t.ts1("F37", "schema{ node \"x\" { type \"decimal\" value \"[1..-1]\" } }", s + "/schema/node/value: value '[1..-1]' is invalid; lower limit exceeds upper limit");
+		t.ts1("F38", "schema{ node \"x\" { type \"boolean\" value \"5\" } }", s + "/schema/node: attribute 'value' is not allowed here");
+		t.ts1("F39", "schema{ node { type \"any\" nullable \"true\" } }", s + "/schema/node: attribute 'nullable' is not allowed here");
+		t.ts1("F40", "schema{ node \"123\" { type \"string\" } }", s + "/schema/node: '123' is not a valid node name");
 		t.ts1("F41", "schema{ node \"phone\" { type \"string\" } node \"123\" { type \"phone\" } }", s + "/schema/node[2]: '123' is not a valid node name");
 	}
 
