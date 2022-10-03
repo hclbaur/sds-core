@@ -76,17 +76,24 @@ public final class SDAValidator implements Validator {
 		Component component = null;
 		
 		if (type == null || type.isEmpty()) {
-			// if no type was supplied we take the default type (if there is one)
-			if (schema.getDefaultType() == null) 
+			
+			if (schema.getDefaultType() != null) // if we have a default type, we take that
+				component = (Component) schema.getNodes().get(schema.getDefaultType());
+			
+			// otherwise if there is only one (node type), that must be the one
+			else if (schema.getNodes().size() == 1)
+				component = (Component) schema.getNodes().get(1);
+			
+			else // otherwise we do not know nor guess
 				throw new IllegalArgumentException(String.format(NO_DEFAULT_TYPE_FOUND));
-			component = (Component) schema.getNodes().get(schema.getDefaultType());
 		}	
-		else component = (Component) schema.getNodes().get(type);
+		else // get the specified type (or null if not found)
+			component = (Component) schema.getNodes().get(type);
 			
 		if (component == null)
 			throw new IllegalArgumentException(String.format(GLOBAL_TYPE_NOT_FOUND, type));
 		
-		// recursively validate the entire document
+		// we are all set, now recursively validate the entire document
 		ErrorList errors = new ErrorList();	
 		if (! matchNode(node, component, errors))
 			errors.add(new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName((Node) component)));
@@ -118,11 +125,11 @@ public final class SDAValidator implements Validator {
 		
 		if (! node.isComplex()) { // simple content
 			
-			if (component.isComplex()) {  // but we were expecting complex content
+			if (component.isComplex()) {  // but we were expecting complex or mixed content
 				errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "complex"));
 				return true;
 			}
-			errors.add(validateSimpleNode(node, (NodeType) component));
+			errors.add(validateSimpleContent(node, (NodeType) component));
 			return true;
 		}
 		
@@ -131,20 +138,46 @@ public final class SDAValidator implements Validator {
 			return true;
 		}
 		
-		errors.add(validateComplexNode(node, (NodeType) component, errors));
+		errors.add(validateComplexContent(node, (NodeType) component, errors));
 		return true;
+		
+//		if (((NodeType) component).getContentType() == null) { 
+//			
+//			// we are expecting complex content ONLY
+//			if (! node.isComplex() || ! node.getValue().isEmpty()) {  // but we got simple or mixed content
+//				errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "complex"));
+//				//return true;
+//			}
+//			errors.add(validateComplexContent(node, (NodeType) component, errors));
+//			return true;
+//		}
+//		
+//		// we are expecting simple or mixed content
+//		if (node.isComplex() && node.getValue().isEmpty()) {  // but we get complex only
+//			errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "simple or mixed"));
+//			//return true;
+//		}
+//		else // validate simple content
+//			errors.add(validateSimpleContent(node, (NodeType) component));
+//		
+//		if (node.isComplex()) // and complex if we have it
+//			errors.add(validateComplexContent(node, (NodeType) component, errors));
+//		return true;
+		
 	}
 
 
 	/**
-	 * Validating a simple node means we have to check if its value is appropriate
-	 * with respect to the components content type, and any facets that may apply.
-	 * This method returns a validation error, or null otherwise.
+	 * Validating simple node content means we have to check if the node value is
+	 * appropriate with respect to this components content type, and any facets that
+	 * may apply. This method returns a validation error, or null otherwise.
 	 */
-	private static Error validateSimpleNode(Node node, NodeType component) {
+	private static Error validateSimpleContent(Node node, NodeType component) {
 		
-		// Empty values are allowed only for null-able types.
-		if (node.getValue().isEmpty() && ! component.isNullable())
+		String value = node.getValue(); // need this a few times times
+		
+		// empty values are allowed only for null-able types.
+		if (value.isEmpty() && ! component.isNullable())
 			return new Error(node, EMPTY_VALUE_NOT_ALLOWED, node.getName());
 		
 		if (component instanceof AbstractStringType) {
@@ -158,13 +191,13 @@ public final class SDAValidator implements Validator {
 		}
 		
 		if (component instanceof BooleanType) {
-			if (! (node.getValue().equals(BooleanType.TRUE) || node.getValue().equals(BooleanType.FALSE)) )
-				return new Error(node, INVALID_BOOLEAN_VALUE, node.getValue());
+			if (! (value.equals(BooleanType.TRUE) || value.equals(BooleanType.FALSE)) )
+				return new Error(node, INVALID_BOOLEAN_VALUE, value);
 		}
 			
 		Pattern pattern = component.getPattern();
-		if (pattern != null && ! pattern.matcher(node.getValue()).matches())
-			return new Error(node, VALUE_DOES_NOT_MATCH, node.getValue(), component.getPatternExpr());
+		if (pattern != null && ! pattern.matcher(value).matches())
+			return new Error(node, VALUE_DOES_NOT_MATCH, value, component.getPatternExpr());
 		
 		return null;
 	}
@@ -255,7 +288,7 @@ public final class SDAValidator implements Validator {
 	 * a validation error. If we run out of nodes while there is still mandatory
 	 * content expected, that is also a validation error.
 	 */
-	private static Error validateComplexNode(Node node, NodeType component, ErrorList errors) {
+	private static Error validateComplexContent(Node node, NodeType component, ErrorList errors) {
 		
 		NodeIterator inode = new NodeIterator(node.getNodes()); // iterator for child nodes
 		Node childnode = inode.hasNext() ? inode.next() : null; // first child node (or none)
