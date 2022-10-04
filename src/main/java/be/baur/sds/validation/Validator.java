@@ -12,16 +12,16 @@ public interface Validator {
 
 	/**
 	 * Validates an SDA document (node). This method validates a node (and its child
-	 * nodes) against a global type within the schema. The type may be null or empty
-	 * if the schema has a default type. An exception is thrown if no appropriate
-	 * type can be found.
+	 * nodes) against a global type within the schema. The global type name may be
+	 * null or empty if the schema has a default type. An exception is thrown if no
+	 * appropriate type can be found.
 	 * 
-	 * @param node   the node to be validated
-	 * @param schema the schema to be used for validation
-	 * @param type   a global type, may be null
+	 * @param node       the node to be validated
+	 * @param schema     the schema to be used for validation
+	 * @param globaltype a global type name, may be null
 	 * @return an error list, empty if no validation errors were found
 	 * @throws IllegalArgumentException - if the type is not found
 	 */
-	public ErrorList validate(Node node, Schema schema, String type);
+	public ErrorList validate(Node node, Schema schema, String globaltype);
 	
 }
