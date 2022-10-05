@@ -161,8 +161,11 @@ public final class SDAValidator implements Validator {
 		else // validate simple content
 			errors.add(validateSimpleContent(node, type));
 		
-		if (node.isComplex() &&  type.isComplex()) // and complex if we have it AND expect it
-			errors.add(validateComplexContent(node, type, errors));
+		if (type.isComplex()) { // and complex content if we expect it		
+			if (! node.isComplex())
+				errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "complex"));	
+			else errors.add(validateComplexContent(node, type, errors));
+		}
 		
 		return true;
 	}
@@ -275,7 +278,7 @@ public final class SDAValidator implements Validator {
 	
 	/**
 	 * Validating a complex node against a complex type implies validating all child
-	 * nodes against the children of the type. Which is easier said than done,
+	 * nodes against the child components of the type. Which is easier said than done,
 	 * because there is more than one way to do this, depending on how smart we want
 	 * the validation process to be.<br>
 	 * For now, we iterate through all child components and try to match each one to
@@ -289,20 +292,20 @@ public final class SDAValidator implements Validator {
 	 * a validation error. If we run out of nodes while there is still mandatory
 	 * content expected, that is also a validation error.
 	 */
-	private static Error validateComplexContent(Node node, NodeType component, ErrorList errors) {
+	private static Error validateComplexContent(Node node, NodeType type, ErrorList errors) {
 		
 		NodeIterator inode = new NodeIterator(node.getNodes()); // iterator for child nodes
 		Node childnode = inode.hasNext() ? inode.next() : null; // first child node (or none)
 		
 		//System.out.println("validateComplex: matching children of " + node.getName()+"{}");
-		Iterator<Node> icomp = component.getNodes().iterator();
+		Iterator<Node> icomp = type.getNodes().iterator();
 		while (icomp.hasNext()) {
 			
 			Component childcomp = (Component) icomp.next(); 
 			int curmatches = 0;  // number of matches so far for this child component
 			int maxmatches = childcomp.maxOccurs(); // maximum number of matches allowed
 			
-			// Start matching the current child component as many times as possible
+			// start matching the current child component as many times as possible
 			while (curmatches < maxmatches) {
 			
 				if (childnode == null) { // oops, we have run out of nodes
@@ -484,10 +487,10 @@ public final class SDAValidator implements Validator {
 	
 	
 	/**
-	 * Matching nodes to an unordered group is less straight-forward. Like a
+	 * Matching nodes to an unordered group is less straight-forward. Just like a
 	 * sequence group, an unordered one is considered an overall match ("invoked")
 	 * once we encounter a matching component.<br>
-	 * The difference is that components may occur in any order, so we cannot just
+	 * The difference is that the nodes may occur in any order, so we cannot just
 	 * iterate the components in order and check if they match up with subsequent
 	 * nodes. Instead, we must keep a list of components that are to be matched, and
 	 * cross each off after a successful match, until we have run out of nodes or
@@ -503,7 +506,7 @@ public final class SDAValidator implements Validator {
 		boolean invoked = false; // whether this group was invoked, initially false
 		Node parent = node.getParent(); // save the parent of the node(s)
 		
-		// Make a list (set) of components to be matched (by definition at least two)
+		// make a list (set) of components to be matched (by definition at least two)
 		NodeSet components =  new NodeSet(); components.addAll(group.getNodes());
 
 		node_loop:
@@ -709,6 +712,7 @@ public final class SDAValidator implements Validator {
 	 * component types based on a collection of (equally applicable) types.
 	 */
 	private static NodeSet expectedTypes(NodeSet collection) {
+		
 		NodeSet result = collection.stream()
 			.flatMap(n -> expectedTypes((Component)n).stream())
 			.collect(Collectors.toCollection(NodeSet::new));
@@ -718,6 +722,7 @@ public final class SDAValidator implements Validator {
 
 	/** This returns an error specifying a missing node at the end of a context node. */
 	private static Error missingNodeError(Node context, Component comp) {
+		
 		if (comp instanceof ModelGroup)
 			return new Error(context, CONTENT_MISSING_AT_END, context.getName(), quoteNames(expectedTypes(comp)));
 		else return new Error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((Node) comp));
@@ -726,6 +731,7 @@ public final class SDAValidator implements Validator {
 
 	/** This returns an error specifying an unexpected node. */
 	private static Error unexpectedNodeError(Node node, Component comp) {
+		
 		if (comp instanceof ModelGroup)
 			return new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteNames(expectedTypes(comp)));
 		else return new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName((Node) comp));

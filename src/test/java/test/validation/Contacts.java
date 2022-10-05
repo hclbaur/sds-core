@@ -37,7 +37,7 @@ public final class Contacts {
 		Iterator<Error> e = errors.iterator();
 		
 		t.ts1("F01", e.next() + "", "/contacts/contact[6]: expecting 'contact' to be a complex type");
-		t.ts1("F02", e.next() + "", "/contacts/contact[7]: content missing at end of 'contact'; expected 'id'");
+		t.ts1("F02", e.next() + "", "/contacts/contact[7]: content missing at end of 'contact'; expected 'name'");
 		t.ts1("F03", e.next() + "", "/contacts/contact[8]/name: empty value not allowed; 'name' is not nullable");
 		t.ts1("F04", e.next() + "", "/contacts/contact[9]/name[2]: 'name' was not expected in 'contact'");
 		t.ts1("F05", e.next() + "", "/contacts/contact[10]/name[2]: 'name' was not expected in 'contact'");
@@ -55,9 +55,12 @@ public final class Contacts {
 		t.ts1("F17", e.next() + "", "/contacts/contact[21]/birthdate: value '1870-02-28' subceeds the minimum of 1900-01-01");
 		t.ts1("F18", e.next() + "", "/contacts/contact[22]/star: value 'yes' is not a valid boolean");
 		t.ts1("F19", e.next() + "", "/contacts/contact[23]/icon: 'icon' has an invalid binary value: Input byte[] should at least have 2 bytes for base64 bytes");
-		t.ts1("F20", e.next() + "", "/contacts/contact[24]/id: value '0' is not inclusive");
-		t.ts1("F21", e.next() + "", "/contacts/contact[25]/id: value '24' is not inclusive");
-		t.ts1("F22", e.next() + "", "/contacts/compact: 'compact' was not expected in 'contacts'");
+		t.ts1("F20", e.next() + "", "/contacts/contact[24]: value '24' is not inclusive");
+		t.ts1("F21", e.next() + "", "/contacts/contact[25]: value '0' is not inclusive");
+		t.ts1("F22", e.next() + "", "/contacts/contact[26]: empty value not allowed; 'contact' is not nullable");
+		t.ts1("F23", e.next() + "", "/contacts/contact[26]: expecting 'contact' to be a complex type");
+		t.ts1("F24", e.next() + "", "/contacts/contact[27]: duh1");
+		t.ts1("F25", e.next() + "", "/contacts/contact[27]: duh2");
 		t.ts1("F99", e.hasNext() + "", "false");
 	}
 }

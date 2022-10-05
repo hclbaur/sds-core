@@ -1,8 +1,7 @@
 schema {
 	node "contacts" {
 		node "contact" {
-			occurs "0..*"
-			node "id" { type "integer" value "(0..24)" }
+			type "integer" occurs "0..*" value "(0..24)" 
 			node "name" { type "string" nullable "false" }
 			node "phone" { type "string" occurs "0..1" length "11" pattern "\\d{2,4}-\\d{6,8}" }
 			node "birthdate" { type "date" occurs "0..1" value "[1900-01-01..*)" }
