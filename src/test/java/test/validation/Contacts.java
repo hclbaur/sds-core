@@ -31,7 +31,7 @@ public final class Contacts {
 		InputStream sds = Contacts.class.getResourceAsStream("/contacts.sds");
 		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
 
-		SDS.validator().validate(document, schema, null);
+		//SDS.validator().validate(document, schema, null);
 		ErrorList errors = SDS.validator().validate(document, schema, "contacts");
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<Error> e = errors.iterator();
@@ -57,10 +57,14 @@ public final class Contacts {
 		t.ts1("F19", e.next() + "", "/contacts/contact[23]/icon: 'icon' has an invalid binary value: Input byte[] should at least have 2 bytes for base64 bytes");
 		t.ts1("F20", e.next() + "", "/contacts/contact[24]: value '24' is not inclusive");
 		t.ts1("F21", e.next() + "", "/contacts/contact[25]: value '0' is not inclusive");
-		t.ts1("F22", e.next() + "", "/contacts/contact[26]: empty value not allowed; 'contact' is not nullable");
-		t.ts1("F23", e.next() + "", "/contacts/contact[26]: expecting 'contact' to be a complex type");
-		t.ts1("F24", e.next() + "", "/contacts/contact[27]: duh1");
-		t.ts1("F25", e.next() + "", "/contacts/contact[27]: duh2");
+		t.ts1("F22", e.next() + "", "/contacts/contact[26]: value 'x' is invalid for type integer: For input string: \"x\"");
+		t.ts1("F23", e.next() + "", "/contacts/contact[27]: empty value not allowed; 'contact' is not nullable");
+		t.ts1("F24", e.next() + "", "/contacts/contact[27]: expecting 'contact' to be a complex type");
+		t.ts1("F25", e.next() + "", "/contacts/contact[28]: expecting 'contact' to be a mixed type");
+		t.ts1("F26", e.next() + "", "/contacts/contact[28]: content missing at end of 'contact'; expected 'name'");
+		t.ts1("F27", e.next() + "", "/contacts/contact[29]: expecting 'contact' to be a mixed type");
+		t.ts1("F28", e.next() + "", "/contacts/contact[29]: content missing at end of 'contact'; expected 'name'");
+		t.ts1("F29", e.next() + "", "/contacts/compact: 'compact' was not expected in 'contacts'");
 		t.ts1("F99", e.hasNext() + "", "false");
 	}
 }

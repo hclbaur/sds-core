@@ -164,7 +164,8 @@ public final class SDAValidator implements Validator {
 		if (type.isComplex()) { // and complex content if we expect it		
 			if (! node.isComplex())
 				errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "complex"));	
-			else errors.add(validateComplexContent(node, type, errors));
+			else // and actually have it
+				errors.add(validateComplexContent(node, type, errors));
 		}
 		
 		return true;
@@ -341,7 +342,7 @@ public final class SDAValidator implements Validator {
 			errors.add(new Error(childnode, 
 				NODE_NOT_EXPECTED_IN, childnode.getName(), childnode.getParent().getName()));
 
-			// and in ABUNDANT mode each remaining node is also a validation error
+			// each remaining node is also a validation error, but maybe thats for ABUNDANT mode.
 //			inode.forEachRemaining( n -> { 
 //				errors.add(new Error(n, NODE_NOT_EXPECTED_IN, n.getName(), n.getParent().getName())); 
 //			});

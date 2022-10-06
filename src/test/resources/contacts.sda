@@ -24,6 +24,9 @@ contacts {
 	contact "23" { name "Q" icon "*" }
 	contact "24" { name "exceeds" }
 	contact "0" { name "subceeds" }
+	contact "x" { name "invalid" }
 	contact ""
-	contact { }
+	contact {}
+	contact "" {}
+	compact ""
 }
