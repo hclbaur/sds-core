@@ -195,26 +195,30 @@ public class NodeType extends Component {
 		if (getMultiplicity() != null && (getMultiplicity().min != 1 || getMultiplicity().max != 1)) 
 			node.add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
-		boolean stringType = (this instanceof AbstractStringType);
-		if (stringType) {
-			AbstractStringType t = (AbstractStringType) this;
-			if (t.minLength() != 0 || t.maxLength() != Integer.MAX_VALUE)
-				node.add(new Node(Attribute.LENGTH.tag, t.getLength().toString()));
-		}
+		// facets are rendered ONLY if we are not a type reference!
+		if (getGlobalType() == null) {
 
-		if (this instanceof RangedType) {
-			RangedType<?> t = (RangedType<?>) this;
-			if (t.getRange() != null)
-				node.add(new Node(Attribute.VALUE.tag, t.getRange().toString()));
+			boolean stringType = (this instanceof AbstractStringType);
+			if (stringType) {
+				AbstractStringType t = (AbstractStringType) this;
+				if (t.minLength() != 0 || t.maxLength() != Integer.MAX_VALUE)
+					node.add(new Node(Attribute.LENGTH.tag, t.getLength().toString()));
+			}
+	
+			if (this instanceof RangedType) {
+				RangedType<?> t = (RangedType<?>) this;
+				if (t.getRange() != null)
+					node.add(new Node(Attribute.VALUE.tag, t.getRange().toString()));
+			}
+			
+			if (pattern != null)
+				node.add(new Node(Attribute.PATTERN.tag, pattexp));
+			
+			if (stringType == !nullable)
+				node.add(new Node(Attribute.NULLABLE.tag, String.valueOf(nullable)));
 		}
 		
-		if (pattern != null)
-			node.add(new Node(Attribute.PATTERN.tag, pattexp));
-		
-		if (stringType == !nullable)
-			node.add(new Node(Attribute.NULLABLE.tag, String.valueOf(nullable)));
-		
-		// Finally, render any children, unless we are a type reference.
+		// Finally, render any children, unless we are a type reference
 		if (isParent() && getGlobalType() == null)
 			for (Node child : getNodes()) node.add(((Component) child).toNode());
 		

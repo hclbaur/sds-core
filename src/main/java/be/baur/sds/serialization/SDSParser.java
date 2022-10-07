@@ -117,7 +117,7 @@ public final class SDSParser implements Parser {
 			throw new SchemaException(sds, String.format(A_NODE_IS_EXPECTED, Schema.TAG));
 		
 		if (! sds.isParent()) // a schema must have components
-			throw new SchemaException(sds, String.format(A_NODE_MUST_HAVE, sds.getName(), "components"));
+			throw new SchemaException(sds, String.format(A_NODE_MUST_HAVE, sds.getName(), "content"));
 		
 		// a schema must not have attributes, except for an optional type reference
 		Optional<Node> att = sds.getNodes().find(n -> ! n.isComplex()).stream()
