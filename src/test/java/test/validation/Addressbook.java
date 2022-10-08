@@ -52,9 +52,8 @@ public final class Addressbook {
 		t.ts1("F13", e.next() + "", "/addressbook/contact[5]/phone[3]: 'phone' was not expected in 'contact'");
 		t.ts1("F14", e.next() + "", "/addressbook/contact[6]/address/postalcode: got 'postalcode', but 'housenumber' was expected");
 		t.ts1("F15", e.next() + "", "/addressbook/contact[6]: content missing at end of 'contact'; expected 'phone' or 'email'");
-		t.ts1("F16", e.next() + "", "/addressbook/contact[7]/person/firstname: empty value not allowed; 'firstname' is not nullable");
+		t.ts1("F16", e.next() + "", "/addressbook/contact[7]/person: empty value not allowed; 'person' is not nullable");
 		t.ts1("F16", e.next() + "", "/addressbook/contact[7]/address: value 'nowhere' does not match pattern 'home|work'");
-		//t.ts1("F16", e.next() + "", "/addressbook/contact[7]: duh3");
 		t.ts1("F99", e.hasNext() + "", "false");
 	}
 }

@@ -1,7 +1,7 @@
 schema {
 	type "addressbook"
 	node "person" {
-		node "firstname" { type "string" nullable "false" }
+		type "string" nullable "false"
 		node "lastname" { type "string" occurs "0..1" }
 		node "birthdate" { type "date" occurs "0..1" }
 		node "about" {
