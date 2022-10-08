@@ -10,7 +10,6 @@ import be.baur.sda.Node;
 import be.baur.sda.SDA;
 import be.baur.sds.Schema;
 import be.baur.sds.serialization.SDSParser;
-import be.baur.sds.serialization.SchemaException;
 
 public final class TestSDSParser 
 {

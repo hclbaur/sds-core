@@ -54,7 +54,7 @@ public final class SDAValidator implements Validator {
 
 	private static final String NO_DEFAULT_TYPE_FOUND = "no default type found";
 	private static final String GLOBAL_TYPE_NOT_FOUND = "global type '%s' not found";
-	private static final String EXPECTING_CONTENT_TYPE = "expecting '%s' to be a %s type";
+	private static final String CONTENT_EXPECTED_FOR_NODE = "%s is expected for node '%s'";
 	private static final String CONTENT_MISSING_AT_END = "content missing at end of '%s'; expected %s";
 	private static final String GOT_NODE_BUT_EXPECTED = "got '%s', but %s was expected";
 	private static final String NODE_NOT_EXPECTED_IN = "'%s' was not expected in '%s'";
@@ -123,51 +123,31 @@ public final class SDAValidator implements Validator {
 		}
 		if (! namesmatch) return false; // specific type; if names differ, there is no match
 		
-//		if (! node.isComplex()) { // simple content
-//			
-//			if (type.isComplex()) {  // but we were expecting complex or mixed content
-//				errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "complex"));
-//				return true;
-//			}
-//			errors.add(validateSimpleContent(node, type));
-//			return true;
-//		}
-//		
-//		if (! type.isComplex()) {  // we were expecting simple content
-//			errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "simple"));
-//			return true;
-//		}
-//		
-//		errors.add(validateComplexContent(node, type, errors));
-//		return true;
+		// we have a match, now proceed to check the content
 		
-		if (type.getContentType() == null) {   // TOO COMPLICATED ??
+		if (type.getContentType() == null) { // we are expecting complex content ONLY
 			
-			// we are expecting complex content ONLY
-			if (! node.isComplex() || ! node.getValue().isEmpty()) {  // but we got simple or mixed content
-				errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "complex"));
-				//return true;
-			}
+			if (! node.isComplex() || ! node.getValue().isEmpty())  // but we got simple or mixed content
+				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
+
 			if (node.isComplex()) // validate complex content if we have it
 				errors.add(validateComplexContent(node, type, errors));
+
 			return true;
 		}
 		
-		// we are expecting simple or mixed content
-		if (node.isComplex() && node.getValue().isEmpty()) {  // but we get complex only
-			errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, type.isComplex() ? "mixed" : "simple"));
-			//return true;
-		}
-		else // validate simple content
-			errors.add(validateSimpleContent(node, type));
-		
-		if (type.isComplex()) { // and complex content if we expect it		
-			if (! node.isComplex())
-				errors.add(new Error(node, EXPECTING_CONTENT_TYPE, nodename, "complex"));	
-			else // and actually have it
+		// we are expecting simple content or mixed content
+		if (node.isComplex()) {
+			if (! type.isComplex()) // no complex content is expected
+				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
+			else // validate complex content if we have it
 				errors.add(validateComplexContent(node, type, errors));
-		}
-		
+		} 
+		else if (type.isComplex()) // report missing complex content
+			errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
+	
+		// validate the simple content we were expecting
+		errors.add(validateSimpleContent(node, type));
 		return true;
 	}
 

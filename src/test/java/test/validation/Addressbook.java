@@ -37,7 +37,7 @@ public final class Addressbook {
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<Error> e = errors.iterator();
 		
-		t.ts1("F02", e.next() + "", "/addressbook/contact[1]/person/about: expecting 'about' to be a complex type");
+		t.ts1("F02", e.next() + "", "/addressbook/contact[1]/person/about: only complex content is expected for node 'about'");
 		t.ts1("F03", e.next() + "", "/addressbook/contact[1]/address/housenumber: got 'housenumber', but 'streetname' or 'postalcode' was expected");
 		t.ts1("F04", e.next() + "", "/addressbook/contact[1]/email[2]: 'email' was not expected in 'contact'");
 		t.ts1("F05", e.next() + "", "/addressbook/contact[2]/person/about: content missing at end of 'about'; expected any node");
