@@ -7,10 +7,9 @@ import java.util.stream.Collectors;
 
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
-import be.baur.sds.ComplexType;
-import be.baur.sds.ComponentType;
+import be.baur.sds.Component;
+import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
-import be.baur.sds.SimpleType;
 import be.baur.sds.common.Date;
 import be.baur.sds.common.DateTime;
 import be.baur.sds.common.Interval;
@@ -20,18 +19,42 @@ import be.baur.sds.content.AnyType;
 import be.baur.sds.content.BinaryType;
 import be.baur.sds.content.BooleanType;
 import be.baur.sds.content.RangedType;
-import be.baur.sds.model.AbstractGroup;
 import be.baur.sds.model.ChoiceGroup;
-import be.baur.sds.model.Group;
+import be.baur.sds.model.ModelGroup;
+import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
 
 /**
- * The default {@link Validator} to validate an SDA document against a schema.
+ * This is the default SDA validator; used to validate an SDA document against a
+ * {@code Schema}. For example, when a schema (in SDS notation) looks like this:
+ * 
+ * <pre>
+ * <code>
+ * schema { 
+ *    node "greeting" { 
+ *       node "message" { type "string" } 
+ *    }
+ * }
+ * </code>
+ * </pre>
+ * 
+ * and the validator is presented with the following SDA input
+ * 
+ * <pre>
+ * <code>
+ * greeting { 
+ *    text "hello world" 
+ * }
+ * </code>
+ * </pre>
+ * 
+ * an error is returned, reporting an unexpected 'text' node in 'greeting'.
  */
 public final class SDAValidator implements Validator {
 
+	private static final String NO_DEFAULT_TYPE_FOUND = "no default type found";
 	private static final String GLOBAL_TYPE_NOT_FOUND = "global type '%s' not found";
-	private static final String EXPECTING_NODE_OF_TYPE = "expecting '%s' to be a %s type";
+	private static final String CONTENT_EXPECTED_FOR_NODE = "%s is expected for node '%s'";
 	private static final String CONTENT_MISSING_AT_END = "content missing at end of '%s'; expected %s";
 	private static final String GOT_NODE_BUT_EXPECTED = "got '%s', but %s was expected";
 	private static final String NODE_NOT_EXPECTED_IN = "'%s' was not expected in '%s'";
@@ -48,28 +71,32 @@ public final class SDAValidator implements Validator {
 	private static final String VALUE_NOT_INCLUSIVE = "value '%s' is not inclusive";
 	
 	
-	public ErrorList validate(Node document, Schema schema, String type) {
+	public ErrorList validate(Node node, Schema schema, String globaltype) {
 
-		ComponentType component = null;
+		NodeType type = null;  // the type to validate the node against
 		
-		if (type == null || type.isEmpty()) {
+		if (globaltype == null || globaltype.isEmpty()) {
 			
-			if (schema.getNodes().size() == 1)
-				component = (ComponentType) schema.getNodes().get(1);
-			else if (schema.getRootType() != null) 
-				component = (ComponentType) schema.getNodes().get(schema.getRootType()).get(1);
-			// else throw something like "schema has no designated type"
-			// to prevent:  global type 'null' not found
+			if (schema.getDefaultType() != null) // if we have a default type, we take that
+				type = (NodeType) schema.getNodes().get(schema.getDefaultType());
+			
+			// otherwise if there is only one (node type), that must be the one
+			else if (schema.getNodes().size() == 1)
+				type = (NodeType) schema.getNodes().get(1);
+			
+			else // otherwise we do not know nor guess
+				throw new IllegalArgumentException(String.format(NO_DEFAULT_TYPE_FOUND));
 		}	
-		else component = (ComponentType) schema.getNodes().get(type).get(1);
+		else // get the specified type (or null if not found)
+			type = (NodeType) schema.getNodes().get(globaltype);
 			
-		if (component == null)
-			throw new IllegalArgumentException(String.format(GLOBAL_TYPE_NOT_FOUND, type));
+		if (type == null)
+			throw new IllegalArgumentException(String.format(GLOBAL_TYPE_NOT_FOUND, globaltype));
 		
-		// Recursively validate the entire document.
+		// we have a type, now recursively validate the entire document
 		ErrorList errors = new ErrorList();	
-		if (! matchNode(document, component, errors))
-			errors.add(new Error(document, GOT_NODE_BUT_EXPECTED, document.getName(), quoteName((Node) component)));
+		if (! matchNodeType(node, type, errors))
+			errors.add(new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName((Node) type)));
 		
 		return errors;
 	}
@@ -80,72 +107,82 @@ public final class SDAValidator implements Validator {
 	 * against its corresponding schema component by comparing the name tags. If
 	 * there is no match, we return false and it is up to the caller of this method
 	 * to decide if that constitutes a validation error. After all, the current
-	 * component could be optional, and node match the next component.<br>
+	 * component could be optional, and node might match the next component.<br>
 	 * If there is a match, we assert that the node content is valid, or add an
-	 * error to the list otherwise.<br>
-	 * This does not apply to "any" type components; those are never validated.
+	 * error to the list otherwise. This does not apply to "any" type components.
 	 */
-	private static boolean matchNode(Node node, ComponentType component, ErrorList errors) {
+	private static boolean matchNodeType(Node node, NodeType type, ErrorList errors) {
 		
 		String nodename = node.getName();
-		boolean namesmatch = nodename.equals(component.getName());
+		boolean namesmatch = nodename.equals(type.getName());
 		
-		if (component instanceof AnyType) {
+		if (type instanceof AnyType) {
 			// if the name is no match for an explicitly named "any" type, we return false
-			if (! namesmatch && ((AnyType) component).isNamed()) return false;
+			if (! namesmatch && ((AnyType) type).isNamed()) return false;
 			return true;  // otherwise we return true without further validation
 		}
 		if (! namesmatch) return false; // specific type; if names differ, there is no match
 		
-		if (node.getNodes() == null) { // simple content
+		// we have a match, now proceed to check the content
+		
+		if (type.getContentType() == null) { // we are expecting complex content ONLY
 			
-			if (! (component instanceof SimpleType)) {  // but we were expecting complex content
-				errors.add(new Error(node, EXPECTING_NODE_OF_TYPE, nodename, "complex"));
-				return true;
-			}
-			errors.add(validateSimpleNode(node, (SimpleType) component));
+			if (! node.isComplex() || ! node.getValue().isEmpty())  // but we got simple or mixed content
+				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
+
+			if (node.isComplex()) // validate complex content if we have it
+				errors.add(validateComplexContent(node, type, errors));
+
 			return true;
 		}
 		
-		if (! (component instanceof ComplexType)) {  // we were expecting simple content
-			errors.add(new Error(node, EXPECTING_NODE_OF_TYPE, nodename, "simple"));
-			return true;
-		}
-		
-		errors.add(validateComplexNode(node, (ComplexType) component, errors));
+		// we are expecting simple content or mixed content
+		if (node.isComplex()) {
+			if (! type.isComplex()) // no complex content is expected
+				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
+			else // validate complex content if we have it
+				errors.add(validateComplexContent(node, type, errors));
+		} 
+		else if (type.isComplex()) // report missing complex content
+			errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
+	
+		// validate the simple content we were expecting
+		errors.add(validateSimpleContent(node, type));
 		return true;
 	}
 
 
 	/**
-	 * Validating a simple node means we have to check if its value is appropriate
-	 * with respect to the components content type, and any facets that may apply.
-	 * This method returns a validation error, or null otherwise.
+	 * Validating simple node content means we have to check if the node value is
+	 * appropriate with respect to this components content type, and any facets that
+	 * may apply. This method returns a validation error, or null otherwise.
 	 */
-	private static Error validateSimpleNode(Node node, SimpleType component) {
+	private static Error validateSimpleContent(Node node, NodeType type) {
 		
-		// Empty values are allowed only for null-able types.
-		if (node.getValue().isEmpty() && ! component.isNullable())
+		String value = node.getValue(); // need this a few times times
+		
+		// empty values are allowed only for null-able types.
+		if (value.isEmpty() && ! type.isNullable())
 			return new Error(node, EMPTY_VALUE_NOT_ALLOWED, node.getName());
 		
-		if (component instanceof AbstractStringType) {
-			Error error = validateStringValue(node, (AbstractStringType) component);
+		if (type instanceof AbstractStringType) {
+			Error error = validateStringValue(node, (AbstractStringType) type);
 			if (error != null) return error;
 		}
 		
-		if (component instanceof RangedType) {
-			Error error = validateRangedValue(node, (RangedType<?>) component);
+		if (type instanceof RangedType) {
+			Error error = validateRangedValue(node, (RangedType<?>) type);
 			if (error != null) return error;
 		}
 		
-		if (component instanceof BooleanType) {
-			if (! (node.getValue().equals(BooleanType.TRUE) || node.getValue().equals(BooleanType.FALSE)) )
-				return new Error(node, INVALID_BOOLEAN_VALUE, node.getValue());
+		if (type instanceof BooleanType) {
+			if (! (value.equals(BooleanType.TRUE) || value.equals(BooleanType.FALSE)) )
+				return new Error(node, INVALID_BOOLEAN_VALUE, value);
 		}
 			
-		Pattern pattern = component.getPattern();
-		if (pattern != null && ! pattern.matcher(node.getValue()).matches())
-			return new Error(node, VALUE_DOES_NOT_MATCH, node.getValue(), component.getPatternExpr());
+		Pattern pattern = type.getPattern();
+		if (pattern != null && ! pattern.matcher(value).matches())
+			return new Error(node, VALUE_DOES_NOT_MATCH, value, type.getPatternExpr());
 		
 		return null;
 	}
@@ -155,13 +192,13 @@ public final class SDAValidator implements Validator {
 	 * However, this may not be true for a binary string type. Also, we check the
 	 * length (in characters for a string and bytes for a binary).
 	 */
-	private static Error validateStringValue(Node node, AbstractStringType component) {
+	private static Error validateStringValue(Node node, AbstractStringType type) {
 		
 		int length;
 
 		// The easiest way (probably not the most efficient) to validate a binary string
 		// is to decode it - and we need to determine its length anyway.
-		if (component instanceof BinaryType) {
+		if (type instanceof BinaryType) {
 			try {
 				length = Base64.getDecoder().decode(node.getValue()).length;
 			} catch (IllegalArgumentException e) {
@@ -171,12 +208,12 @@ public final class SDAValidator implements Validator {
 		else length = node.getValue().length();   // otherwise it is a regular string
 		
 		// Check if the length is within the acceptable range.
-		NaturalInterval range = component.getLength();
+		NaturalInterval range = type.getLength();
 		if (range != null) {
 			String val = node.getValue().length() > 32 ? node.getValue().substring(0,32) + "..." : node.getValue();
-			if (length < component.minLength()) 
+			if (length < type.minLength()) 
 				return new Error(node, LENGTH_SUBCEEDS_MIN, val, length, range.min);
-			if (length > component.maxLength()) 
+			if (length > type.maxLength()) 
 				return new Error(node, LENGTH_EXCEEDS_MAX, val, length, range.max);
 		}
 		return null;
@@ -186,23 +223,23 @@ public final class SDAValidator implements Validator {
 	 * We assert that the node value is a valid string representation of this
 	 * content type by creating an instance, and check whether it is in range.
 	 */
-	private static Error validateRangedValue(Node node, RangedType<?> component) {
+	private static Error validateRangedValue(Node node, RangedType<?> type) {
 
 		Comparable<?> value = null;
 		try {
-			switch (component.getContentType()) {
+			switch (type.getContentType()) {
 				case INTEGER  : value = new Integer(node.getValue()); break;
 				case DECIMAL  : value = new Double(node.getValue()); break;
 				case DATETIME : value = new DateTime(node.getValue()); break;
 				case DATE     : value = new Date(node.getValue()); break;
 				default: // we will never get here, unless we forgot to implement something
-					throw new RuntimeException("validation of '" + component.getContentType() + "' not implemented!");
+					throw new RuntimeException("validation of '" + type.getContentType() + "' not implemented!");
 			}
 		} catch (Exception e) {
-			return new Error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), component.getContentType(), e.getMessage());
+			return new Error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getContentType(), e.getMessage());
 		}
 		
-		Interval<?> range = component.getRange(); 
+		Interval<?> range = type.getRange(); 
 		if (range != null) {
 			int contains = range.contains(value);
 			if (contains < 0) {
@@ -222,7 +259,7 @@ public final class SDAValidator implements Validator {
 	
 	/**
 	 * Validating a complex node against a complex type implies validating all child
-	 * nodes against the children of the type. Which is easier said than done,
+	 * nodes against the child components of the type. Which is easier said than done,
 	 * because there is more than one way to do this, depending on how smart we want
 	 * the validation process to be.<br>
 	 * For now, we iterate through all child components and try to match each one to
@@ -236,20 +273,20 @@ public final class SDAValidator implements Validator {
 	 * a validation error. If we run out of nodes while there is still mandatory
 	 * content expected, that is also a validation error.
 	 */
-	private static Error validateComplexNode(Node node, ComplexType component, ErrorList errors) {
+	private static Error validateComplexContent(Node node, NodeType type, ErrorList errors) {
 		
 		NodeIterator inode = new NodeIterator(node.getNodes()); // iterator for child nodes
 		Node childnode = inode.hasNext() ? inode.next() : null; // first child node (or none)
 		
 		//System.out.println("validateComplex: matching children of " + node.getName()+"{}");
-		Iterator<Node> icomp = component.getNodes().iterator();
+		Iterator<Node> icomp = type.getNodes().iterator();
 		while (icomp.hasNext()) {
 			
-			ComponentType childcomp = (ComponentType) icomp.next(); 
+			Component childcomp = (Component) icomp.next(); 
 			int curmatches = 0;  // number of matches so far for this child component
 			int maxmatches = childcomp.maxOccurs(); // maximum number of matches allowed
 			
-			// Start matching the current child component as many times as possible
+			// start matching the current child component as many times as possible
 			while (curmatches < maxmatches) {
 			
 				if (childnode == null) { // oops, we have run out of nodes
@@ -261,12 +298,12 @@ public final class SDAValidator implements Validator {
 				}
 
 				boolean match;
-				//System.out.println("validateComplex: matching " + ((childnode.getNodes() == null) ? childnode : childnode.getName() + "{}") + " to " + childcomp.getName());
-				if (childcomp instanceof AbstractGroup)
-					match = matchGroup(inode, childnode, (AbstractGroup) childcomp, errors);
-				else match = matchNode(childnode, childcomp, errors);
+				//System.out.println("validateComplex: matching " + (childnode.isComplex() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
+				if (childcomp instanceof ModelGroup)
+					match = matchGroup(inode, childnode, (ModelGroup) childcomp, errors);
+				else match = matchNodeType(childnode, (NodeType) childcomp, errors);
 				
-				//System.out.println("validateComplex: " + ((childnode.getNodes() == null) ? childnode : childnode.getName()+"{}") + (match ? " == " : " <> ") + "component " + childcomp.getName());
+				//System.out.println("validateComplex: " + (childnode.isComplex() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
 				if (match) { // count match and get the next node (or none) to match against this component
 					childnode = inode.hasNext() ? inode.next() : null;
 					++curmatches; continue;
@@ -285,7 +322,7 @@ public final class SDAValidator implements Validator {
 			errors.add(new Error(childnode, 
 				NODE_NOT_EXPECTED_IN, childnode.getName(), childnode.getParent().getName()));
 
-			// and in ABUNDANT mode each remaining node is also a validation error
+			// each remaining node is also a validation error, but maybe thats for ABUNDANT mode.
 //			inode.forEachRemaining( n -> { 
 //				errors.add(new Error(n, NODE_NOT_EXPECTED_IN, n.getName(), n.getParent().getName())); 
 //			});
@@ -300,12 +337,12 @@ public final class SDAValidator implements Validator {
 	 * against nested model groups. When matching a model group we may consider more
 	 * than one node, so this method accepts an iterator to access subsequent nodes.
 	 */
-	private static boolean matchGroup(NodeIterator inode, Node node, AbstractGroup group, ErrorList errors) {
+	private static boolean matchGroup(NodeIterator inode, Node node, ModelGroup group, ErrorList errors) {
 
 		if (group instanceof ChoiceGroup) 
 			return matchChoice(inode, node, (ChoiceGroup) group, errors);
-		if (group instanceof Group) 
-			return matchSequence(inode, node, (Group) group, errors);
+		if (group instanceof SequenceGroup) 
+			return matchSequence(inode, node, (SequenceGroup) group, errors);
 		if (group instanceof UnorderedGroup) 
 			return matchUnordered(inode, node, (UnorderedGroup) group, errors);
 		 // Should never happen, unless we forgot a model group
@@ -325,12 +362,12 @@ public final class SDAValidator implements Validator {
 		//System.out.println("matchChoice: matching children of " + choice.getName()+"{}");
 		for (Node child : choice.getNodes()) {
 			
-			ComponentType component = (ComponentType) child; 
+			Component component = (Component) child; 
 			boolean match;
 			//System.out.println("matchChoice: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
-			if (component instanceof AbstractGroup)
-				match = matchGroup(inode, node, (AbstractGroup) component, errors);
-			else match = matchNode(node, component, errors);
+			if (component instanceof ModelGroup)
+				match = matchGroup(inode, node, (ModelGroup) component, errors);
+			else match = matchNodeType(node, (NodeType) component, errors);
 			//System.out.println("matchChoice: " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + (match ? " == " : " <> ") + "component " + component.getName());
 			if (match) return true;  // return true at the first match
 		}
@@ -350,7 +387,7 @@ public final class SDAValidator implements Validator {
 	 * that just marks the end of the group and we return, causing the remaining
 	 * nodes to be matched against the parent component context.
 	 */
-	private static boolean matchSequence(NodeIterator inode, Node node, Group group, ErrorList errors) {
+	private static boolean matchSequence(NodeIterator inode, Node node, SequenceGroup group, ErrorList errors) {
 
 		boolean invoked = false; // overall match for this group, initially false
 		Node parent = node.getParent(); // save the parent of the node(s)
@@ -361,7 +398,7 @@ public final class SDAValidator implements Validator {
 		
 		while (icomp.hasNext()) { // main / outer component loop
 			
-			ComponentType component = (ComponentType) icomp.next();
+			Component component = (Component) icomp.next();
 			int curmatches = 0; // number of matches so far for this component
 			int maxmatches = component.maxOccurs();  // maximum number of matches allowed
 			
@@ -378,9 +415,9 @@ public final class SDAValidator implements Validator {
 				}
 				
 				//System.out.println("matchSequence: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
-				if (component instanceof AbstractGroup)
-					match = matchGroup(inode, node, (AbstractGroup) component, errors);
-				else match = matchNode(node, component, errors);
+				if (component instanceof ModelGroup)
+					match = matchGroup(inode, node, (ModelGroup) component, errors);
+				else match = matchNodeType(node, (NodeType) component, errors);
 				
 				//System.out.println("matchSequence: " + node + (match ? " == " : " <> ") + "component " + component.getName());
 				if (match) { 
@@ -431,10 +468,10 @@ public final class SDAValidator implements Validator {
 	
 	
 	/**
-	 * Matching nodes to an unordered group is less straight-forward. Like a
+	 * Matching nodes to an unordered group is less straight-forward. Just like a
 	 * sequence group, an unordered one is considered an overall match ("invoked")
 	 * once we encounter a matching component.<br>
-	 * The difference is that components may occur in any order, so we cannot just
+	 * The difference is that the nodes may occur in any order, so we cannot just
 	 * iterate the components in order and check if they match up with subsequent
 	 * nodes. Instead, we must keep a list of components that are to be matched, and
 	 * cross each off after a successful match, until we have run out of nodes or
@@ -450,19 +487,19 @@ public final class SDAValidator implements Validator {
 		boolean invoked = false; // whether this group was invoked, initially false
 		Node parent = node.getParent(); // save the parent of the node(s)
 		
-		// Make a list (set) of components to be matched (by definition at least two)
+		// make a list (set) of components to be matched (by definition at least two)
 		NodeSet components =  new NodeSet(); components.addAll(group.getNodes());
 
 		node_loop:
 		while (node != null) { // while there are still nodes
 
 			boolean matchinlist = false;
-			ComponentType component = null;
+			Component component = null;
 			Iterator<Node> icomp = components.iterator();
 				
 			while (icomp.hasNext()) { // outer component loop (while the list is not empty)
 			
-				component = (ComponentType) icomp.next(); 
+				component = (Component) icomp.next(); 
 				int curmatches = 0; // number of matches so far for this component
 				int maxmatches = component.maxOccurs();  // maximum number of matches allowed
 				
@@ -471,9 +508,9 @@ public final class SDAValidator implements Validator {
 				
 					boolean match;
 					//System.out.println("matchUnordered: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
-					if (component instanceof AbstractGroup)
-						match = matchGroup(inode, node, (AbstractGroup) component, errors);
-					else match = matchNode(node, component, errors);
+					if (component instanceof ModelGroup)
+						match = matchGroup(inode, node, (ModelGroup) component, errors);
+					else match = matchNodeType(node, (NodeType) component, errors);
 	
 					/*
 					 * If we have a match, count it. If there are more nodes to be matched, resume
@@ -538,7 +575,7 @@ public final class SDAValidator implements Validator {
 			 * anymore (and an error was already reported).
 			 */
 			if (invoked) {
-				NodeSet required = components.get(n -> ((ComponentType) n).minOccurs() > 0);
+				NodeSet required = components.find(n -> ((Component) n).minOccurs() > 0);
 				if (! required.isEmpty()) {
 					Error error = new Error(node, GOT_NODE_BUT_EXPECTED, 
 						node.getName(), quoteNames(expectedTypes(required)) );
@@ -569,7 +606,7 @@ public final class SDAValidator implements Validator {
 		 * that there are no more required components and add an error otherwise.
 		 */
 		if (invoked) {
-			NodeSet required = components.get(n -> ((ComponentType) n).minOccurs() > 0);
+			NodeSet required = components.find(n -> ((Component) n).minOccurs() > 0);
 			if (! required.isEmpty()) {
 				Error error = new Error(parent, CONTENT_MISSING_AT_END, 
 					parent.getName(), quoteNames(expectedTypes(required)) );
@@ -611,12 +648,12 @@ public final class SDAValidator implements Validator {
 	 * nesting (model groups within model groups). This recursive method returns a
 	 * set of candidate component types.
 	 */
-	private static NodeSet expectedTypes(ComponentType comp) {
+	private static NodeSet expectedTypes(Component comp) {
 		
 		// If not a group, just return the component itself, ending the recursion.
-		if (! (comp instanceof AbstractGroup)) return NodeSet.of((Node)comp);
+		if (! (comp instanceof ModelGroup)) return NodeSet.of((Node)comp);
 
-		AbstractGroup group = (AbstractGroup) comp;
+		ModelGroup group = (ModelGroup) comp;
 		
 		/*
 		 * For a choice, any one of the alternatives may follow, so we recursively
@@ -626,7 +663,7 @@ public final class SDAValidator implements Validator {
 		 */
 		if (group instanceof ChoiceGroup || group instanceof UnorderedGroup) {
 			NodeSet result = group.getNodes().stream()
-				.flatMap(n -> expectedTypes((ComponentType)n).stream())
+				.flatMap(n -> expectedTypes((Component)n).stream())
 				.collect(Collectors.toCollection(NodeSet::new));
 			return result;
 		}
@@ -637,11 +674,11 @@ public final class SDAValidator implements Validator {
 		 * that. So we recursively return anything up to and including the first
 		 * mandatory component.
 		 */
-		if (group instanceof Group) {
+		if (group instanceof SequenceGroup) {
 			NodeSet result = new NodeSet();
 			for (Node n : group.getNodes()) {
-				for (Node e : expectedTypes((ComponentType)n)) result.add(e); // is this is correct?
-				if (((ComponentType) n).minOccurs() > 0) break;
+				for (Node e : expectedTypes((Component)n)) result.add(e); // is this is correct?
+				if (((Component) n).minOccurs() > 0) break;
 			}
 			return result;
 		}
@@ -656,24 +693,27 @@ public final class SDAValidator implements Validator {
 	 * component types based on a collection of (equally applicable) types.
 	 */
 	private static NodeSet expectedTypes(NodeSet collection) {
+		
 		NodeSet result = collection.stream()
-			.flatMap(n -> expectedTypes((ComponentType)n).stream())
+			.flatMap(n -> expectedTypes((Component)n).stream())
 			.collect(Collectors.toCollection(NodeSet::new));
 		return result;
 	}
 
 
 	/** This returns an error specifying a missing node at the end of a context node. */
-	private static Error missingNodeError(Node context, ComponentType comp) {
-		if (comp instanceof AbstractGroup)
+	private static Error missingNodeError(Node context, Component comp) {
+		
+		if (comp instanceof ModelGroup)
 			return new Error(context, CONTENT_MISSING_AT_END, context.getName(), quoteNames(expectedTypes(comp)));
 		else return new Error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((Node) comp));
 	}
 
 
 	/** This returns an error specifying an unexpected node. */
-	private static Error unexpectedNodeError(Node node, ComponentType comp) {
-		if (comp instanceof AbstractGroup)
+	private static Error unexpectedNodeError(Node node, Component comp) {
+		
+		if (comp instanceof ModelGroup)
 			return new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteNames(expectedTypes(comp)));
 		else return new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName((Node) comp));
 	}

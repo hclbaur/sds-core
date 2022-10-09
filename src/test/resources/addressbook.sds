@@ -1,7 +1,7 @@
 schema {
 	type "addressbook"
 	node "person" {
-		node "firstname" { type "string" }
+		type "string" nullable "false"
 		node "lastname" { type "string" occurs "0..1" }
 		node "birthdate" { type "date" occurs "0..1" }
 		node "about" {
@@ -10,7 +10,7 @@ schema {
 		}
 	}
 	node "address" {
-		node "type" { type "string" pattern "home|work" }
+		type "string" pattern "home|work"
 		choice {
 			node "streetname" { type "string" }
 			node "postalcode" { type "string" pattern "\\d{4} [A-Z]{2}" }
@@ -26,7 +26,7 @@ schema {
 		}
 	}
 	node "contact" {
-		node "id" { type "integer" value "[0..*)" }
+		type "integer" value "[0..*)"
 		node { type "person" }
 		node { type "address" occurs "0..2" }
 		unordered {

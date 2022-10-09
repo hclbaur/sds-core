@@ -1,69 +1,93 @@
 package be.baur.sds;
 
 import be.baur.sda.Node;
-import be.baur.sds.common.Attribute;
+import be.baur.sda.serialization.SDAFormatter;
+import be.baur.sds.serialization.Attribute;
+import be.baur.sds.serialization.SDSParser;
 
 /**
- * A <code>Schema</code> represents a entire SDA schema definition, converted
- * from (for example) SDS notation into schema components. It acts as a
- * container for global node definitions or types (of {@link ComponentType}).
+ * A <code>Schema</code> node represents an SDA document definition, that is, a
+ * structure that defines SDA content. It is a container for "components" like
+ * node types and model groups. Schema is usually not created "by hand" but read
+ * and parsed from input in SDS notation.<br>
+ * See also {@link Component}, {@link SDSParser}.
  */
 public final class Schema extends Node {
 
-
-	public static final String TAG = "schema";
+	public static final String TAG = "schema";	
 	
-	private String rootType = null; // The designated root type.
-	// rename to defaultType?
+	private String defaultType = null; // the designated root node
+	
 
 	/** Creates a schema node. */
 	public Schema() {
-		super(TAG); addNode(null); // by definition, a schema has child nodes.
+		super(TAG); // extends Node so it must have a tag, even if we do not really use it
+		add(null);  // all schema have child nodes so initialize it with an empty node set
 	}
 
-	// Should override addNode() to accept only NodeType?
 
-	/** Returns the designated root type or <code>null</code> if not set. */
-	public String getRootType() {
-		return rootType;
-	}
-
-	
 	/**
-	 * Sets the designated root <code>type</code>. The argument must refer to an
-	 * existing global type, or an exception will be thrown. A <code>null</code>
-	 * value is allowed, and will effectively clear the root type attribute.
-	 * @throws IllegalArgumentException if the referenced type is unknown.
-	 */
-	public void setRootType(String type) {
- 
-		if (type != null && this.getNodes().get(type).isEmpty())
-			throw new IllegalArgumentException("no such global type (" + type + ")");
-		this.rootType = type; 
-	}
-
-	
-	/**
-	 * Returns an SDA node structure that represents this schema. In other words,
-	 * what an SDA parser would return upon processing an input stream describing
-	 * the schema in SDS notation.
+	 * Returns the default type for this schema. This method returns null if no
+	 * default type has been set.
 	 * 
+	 * @return the name of the default type, may be null
+	 */
+	public String getDefaultType() {
+		return defaultType;
+	}
+
+	
+	/**
+	 * Sets the default type for this schema. The argument must refer to an existing
+	 * global type, or an exception will be thrown. A null value is allowed, and
+	 * will effectively clear the default type.
+	 * 
+	 * @param type the name of the default type, may be null
+	 * @throws IllegalArgumentException if the referenced type is unknown
+	 */
+	public void setDefaultType(String type) {
+ 
+		if (type != null && this.getNodes().get(type) == null)
+			throw new IllegalArgumentException("no such global type (" + type + ")");
+		this.defaultType = type; 
+	}
+
+	
+	/**
+	 * Returns an SDA node representing this schema. In other words, what an SDA
+	 * parser would return upon processing an input stream describing the schema in
+	 * SDS notation.
+	 * 
+	 * @return an SDA node
 	 */
 	public Node toNode() {
 		
 		Node node = new Node(TAG);
 		
-		if (rootType != null) // Render the type attribute if we have one.
-			node.addNode(new Node(Attribute.TYPE.tag, rootType));
+		if (defaultType != null) // Render the type attribute if we have one.
+			node.add(new Node(Attribute.TYPE.tag, defaultType));
 
 		for (Node component : this.getNodes()) // Render all components.
-			node.addNode(((ComponentType) component).toNode());
+			node.add(((Component) component).toNode());
 
 		return node;
 	}
 	
 	
-	/** Returns the string representation of this schema in SDS syntax. */
+	/**
+	 * Returns the string representing this schema in SDS notation. For example:
+	 * 
+	 * <pre>
+	 * <code>schema { node "greeting" { node "message" { type "string" } } }</code>
+	 * </pre>
+	 * 
+	 * Note that the returned string is formatted as a single line of text. For a
+	 * more readable output, use the {@link #toNode} method and render the output
+	 * node using an {@link SDAFormatter}.
+	 * 
+	 * @return an SDS representation of this node
+	 */
+	@Override
 	public String toString() {
 		return toNode().toString();
 	}

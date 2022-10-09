@@ -1,11 +1,11 @@
 schema {
 	type "russian_dolls"
 	node "male_doll" {
-		node "id" { type "string" }
+		type "string"
 		node { type "female_doll" occurs "0..1" }
 	}
 	node "female_doll" {
-		node "id" { type "string" }
+		type "string"
 		node { type "male_doll" occurs "0..1" }
 	}
 	node "russian_dolls" {

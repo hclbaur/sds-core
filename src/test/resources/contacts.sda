@@ -1,28 +1,32 @@
 contacts {
-	contact { id "1" name "Alice" }
-	contact { id "2" name "Bertha" star "true" }
-	contact { id "3" name "Bob" phone "06-11111111" about "has a dog" }
-	contact { id "4" name "Claire" birthdate "1970-01-01" about { likes "cats" hates "dogs" } }
-	contact { id "5" name "Donald" phone "06-22222222"  birthdate "1970-01-02" }
+	contact "1" { name "Alice" }
+	contact "2" { name "Bertha" star "true" }
+	contact "3" { name "Bob" phone "06-11111111" about "has a dog" }
+	contact "4" { name "Claire" birthdate "1970-01-01" about { likes "cats" hates "dogs" } }
+	contact "5" { name "Donald" phone "06-22222222"  birthdate "1970-01-02" }
+	contact "6"
+	contact "7" { }
+	contact "8" { name "" }
+	contact "9" { name "Eve" name "" }
+	contact "10" { name "Frank" name "Drebin" }
+	contact "11" { firstname "Georgia" phone "06-44444444" }
+	contact "12" { phone "06-55555555" }
+	contact "13" { name "Harry" phonenumber "06-66666666" birthdate "1970-01-03" }
+	contact "14" { name "Isis" birthdate "1970-01-04" phone "06-66666666" }
+	contact "15" { name "John" birthdate { date "1970-01-05" } }	
+	contact "16" { name { first "Karen" last "Douglas" } }
+	contact "17" { name "Leonard" phone "06-123456" }
+	contact "18" { name "Maya" phone "0-012345678" }
+	contact "19" { name "Neo" phone "066-01234567" }
+	contact "20" { name "Olive" birthdate "1970-02-29" }
+	contact "21" { name "Otto" birthdate "1870-02-28" }
+	contact "22" { name "Paula" star "yes" }
+	contact "23" { name "Q" icon "*" }
+	contact "24" { name "exceeds" }
+	contact "0" { name "subceeds" }
+	contact "x" { name "invalid" }
 	contact ""
-	contact { }
-	contact { id "8" name "" }
-	contact { id "9" name "Eve" name "" }
-	contact { id "10" name "Frank" name "Drebin" }
-	contact { id "11" firstname "Georgia" phone "06-44444444" }
-	contact { id "12" phone "06-55555555" }
-	contact { id "13" name "Harry" phonenumber "06-66666666" birthdate "1970-01-03" }
-	contact { id "14" name "Isis" birthdate "1970-01-04" phone "06-66666666" }
-	contact { id "15" name "John" birthdate { date "1970-01-05" } }	
-	contact { id "16" name { first "Karen" last "Douglas" } }
-	contact { id "17" name "Leonard" phone "06-123456" }
-	contact { id "18" name "Maya" phone "0-012345678" }
-	contact { id "19" name "Neo" phone "066-01234567" }
-	contact { id "20" name "Olive" birthdate "1970-02-29" }
-	contact { id "21" name "Otto" birthdate "1870-02-28" }
-	contact { id "22" name "Paula" star "yes" }
-	contact { id "23" name "Q" icon "*" }
-	contact { id "0" name "First" }
-	contact { id "24" name "Last" }
-	compact { }
+	contact {}
+	contact "" {}
+	compact ""
 }

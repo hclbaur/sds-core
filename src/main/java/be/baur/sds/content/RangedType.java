@@ -1,31 +1,46 @@
 package be.baur.sds.content;
 
-import be.baur.sds.SimpleType;
+import be.baur.sds.NodeType;
 import be.baur.sds.common.Interval;
 
 /**
- * A <code>RangedType</code> is an abstract simple type representing an SDA node
- * with a value that lies within a particular {@link Interval}, like an integer,
- * a decimal, a date, etc..
+ * A <code>RangedType</code> represents an SDA node with a value that lies
+ * within an interval, like an integer, a decimal or a date(time).<br>
+ * See also {@link Interval}.
  */
-public abstract class RangedType <T extends Comparable<?>> extends SimpleType {
+public abstract class RangedType <T extends Comparable<?>> extends NodeType {
 
 	private Interval<?> range = null; // Range null means: any value is allowed.
 	
 	
-	/** Creates the ranged type with the supplied <code>name</code>. */
+	/**
+	 * Creates the type with the specified name.
+	 * 
+	 * @param name a valid node name
+	 * @throws IllegalArgumentException if the name is invalid
+	 */
 	public RangedType(String name) {
 		super(name);
 	}
 	
 	
-	/** Returns the range interval. Default value is <code>null</code>. */
+	/**
+	 * Returns the interval of allowed values. This method returns null if any value
+	 * is allowed.
+	 * 
+	 * @return an interval, may be null
+	 */
 	public Interval<?> getRange() {
 		return range;
 	}
 
-	
-	/** Sets the range interval. */
+
+	/**
+	 * Sets the the interval of allowed values. An interval of null means any length
+	 * is allowed.
+	 * 
+	 * @param range an interval, may be null
+	 */
 	public void setRange(Interval<?> range) {
 		this.range = range;
 	}

@@ -1,21 +1,28 @@
 package be.baur.sds.content;
 
-import be.baur.sds.common.Content;
 import be.baur.sds.common.DateTime;
+import be.baur.sds.serialization.Content;
 
 /**
- * A <code>DateTimeType</code> is a {@link RangedType} representing an SDA node with
- * temporal content (date, time and time zone).
+ * A <code>DateTimeType</code> represents an SDA node with temporal content
+ * (date, time and time zone).<br>
+ * See also {@link DateType}.
  */
 public final class DateTimeType extends RangedType<DateTime> {
 
 
-	/** Creates a date-time type with the supplied <code>name</code>. */
+	/**
+	 * Creates the type with the specified name.
+	 * 
+	 * @param name a valid node name
+	 * @throws IllegalArgumentException if the name is invalid
+	 */
 	public DateTimeType(String name) {
 		super(name);
 	}
 	
 	
+	@Override
 	public Content getContentType() { 
 		return Content.DATETIME; 
 	}

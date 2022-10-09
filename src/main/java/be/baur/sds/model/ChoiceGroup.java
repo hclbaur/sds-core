@@ -6,29 +6,35 @@ package be.baur.sds.model;
 import java.util.Optional;
 
 import be.baur.sda.Node;
-import be.baur.sds.ComponentType;
-import be.baur.sds.common.Component;
+import be.baur.sds.Component;
+import be.baur.sds.serialization.Components;
 
 /**
- * A choice group defines two (or more) mutually exclusive nodes or content models, for example:
+ * A {@code ChoiceGroup} defines two (or more) mutually exclusive nodes or
+ * content models, for example:
+ * 
  * <pre>
+ * <code>
  * choice {
- *     node { name "firstname" type "string" }
- *     node { name "lastname" type "string" }
+ *     node "firstname" { type "string" }
+ *     node "lastname" { type "string" }
  * }
+ * </code>
  * </pre>
- * Which means that either a first name is expected, or a last name, but not both.
+ * 
+ * Which means that either a first name is expected, or a last name, but not
+ * both.
  */
-public final class ChoiceGroup extends AbstractGroup {
+public final class ChoiceGroup extends ModelGroup {
 
-	/** Creates a choice. */
+	/** Creates a choice group. */
 	public ChoiceGroup() {
-		super(Component.CHOICE.tag);
+		super(Components.CHOICE.tag); // extends Node so must have a tag, even if not really used
 	}
 	
 	
 	/**
-	 * This method overrides the super method, to return the effective minimum
+	 * Returns the effective minimum
 	 * number of times that a choice group must occur within its context. Even when
 	 * the formal multiplicity states that it is mandatory, empty content is valid
 	 * if at least one of the alternatives is optional. For example, given a schema
@@ -55,7 +61,7 @@ public final class ChoiceGroup extends AbstractGroup {
 	public int minOccurs() {
 		
 		Optional<Node> opt = this.getNodes().stream()
-			.filter(n -> (n instanceof ComponentType) && ((ComponentType) n).minOccurs() == 0)
+			.filter(n -> (n instanceof Component) && ((Component) n).minOccurs() == 0)
 			.findFirst(); // if a choice contains at least one optional component, it is optional.
 		if (opt.isPresent()) return 0;
 		return super.minOccurs();

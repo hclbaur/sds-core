@@ -45,7 +45,6 @@ class NodeIterator implements Iterator<Node>{
 	 * iteration, and <code>revert()</code> it if processing should be resumed at a
 	 * later time. Calling this method prior to <code>next()</code> or calling it
 	 * more than once has no effect.
-	 * 
 	 */
     public void revert() {
     	reverted = true;

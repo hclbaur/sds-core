@@ -1,29 +1,36 @@
 package be.baur.sds.common;
 
 /**
- * This class models an interval, with limits that are natural numbers (e.g.
- * non-negative integers). It is used for multiplicity and length. The limits
- * are inclusive, so the interval is closed by definition. The notation is as
- * follows:
+ * A {@code NaturalInterval} represents an interval with limits that are natural
+ * numbers (that is non-negative integers). Lower and upper limiting values are
+ * considered inclusive. In natural interval notation, no brackets are used:
  * 
  * <pre>
- * a..b	: where both a and b are non-negative integers and a <= b
- * a..*	: "unbounded", but equivalent to a..MAX_INT in practice
- * a	: fixed value, equivalent to "a..a"	(degenerate interval)
+ * <code>
+ * a..b	Closed
+ * a..*	Right unbounded, but a..Integer.MAX_VALUE in practice
+ *   a	Degenerate, equivalent to a..a
+ * </code>
  * </pre>
+ * 
+ * See also {@link Interval}.
  */
 public final class NaturalInterval {
 
-	/** Lower limit */
+	/** Lower interval limit */
 	public final int min;
-	/** Upper limit */
+	/** Upper interval limit */
 	public final int max;
 
-	
+
 	/**
-	 * Creates the interval from a lower and upper limit.
+	 * Creates an interval from two integer limit points. The minimum should never
+	 * exceed the maximum value, and neither can be negative.
 	 * 
-	 * @throws IllegalArgumentException
+	 * @param min the lower limit
+	 * @param max the upper limit
+	 * @throws IllegalArgumentException if the lower exceeds the upper limit or
+	 *                                  either limit is invalid
 	 */
 	public NaturalInterval(int min, int max) {
 
@@ -35,12 +42,14 @@ public final class NaturalInterval {
 		this.min = min;
 		this.max = max;
 	}
-	
+
 	
 	/**
-	 * Creates an interval from a string in interval notation.
+	 * Creates an interval from a string in natural interval notation.
 	 * 
-	 * @throws IllegalArgumentException
+	 * @param interval a valid interval notation, not null or empty
+	 * @return a natural interval
+	 * @throws IllegalArgumentException in case of an invalid interval
 	 */
 	public static NaturalInterval from(String interval)  {
 	
@@ -68,11 +77,15 @@ public final class NaturalInterval {
 		return new NaturalInterval(min, max);	
 
 	}
-	
 
+	
 	/**
-	 * Returns 0 if the supplied value lies within the interval, -1 if it subceeds
-	 * the lower interval limit, and 1 if it exceeds the upper limit.
+	 * Checks whether a value lies within this interval. This method returns 0 if
+	 * the specified value is contained within the interval limits, -1 if it
+	 * subceeds the lower limit, and 1 if it exceeds the upper limit.
+	 * 
+	 * @param value the value to be evaluated
+	 * @return -1, 0 or 1
 	 */
 	public int contains(int value) {
 
@@ -80,7 +93,11 @@ public final class NaturalInterval {
 	}
 
 	
-	/** Returns the interval as a string in interval notation. */
+	/**
+	 * Returns this interval as a string in natural interval notation.
+	 * 
+	 * @return natural interval notation
+	 */
 	public String toString() {
 		return (min == max) ? "" + min
 			: min + ".." + ((max == Integer.MAX_VALUE) ? "*" : "" + max);

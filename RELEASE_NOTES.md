@@ -1,11 +1,23 @@
 # Release Notes
 
-This release supports SDS 2 syntax. Note that the SDS 1 syntax is no longer 
-supported, so you will need to update your schema. Also, the validation of
-mixed types is not yet supported. 
+This release includes full SDS 2 schema support, for specification and 
+validation of SDA documents, syntax version 2. You will have to update 
+existing schema files, as SDS 2 is not backwards compatible with SDS 1.
+Also, the library itself has changed quite a bit, but unless you have
+been writing an SDS parser, there will be little impact when upgrading.
 
-## [2.0.0] - 2022-09-14
-- `Removed` the *name* attribute from the SDS syntax.
+## [2.0.0] - 2022-10-09
+- `Added` NodeType to replace SimpleType and ComplexType.
+- `Changed` ComponentType (interface) to Component (abstract class).
+- `Changed` AbstractGroup to extend ComponentType (was ComplexType).
+- `Changed` Parser.parse() to throw ParseException (was SyntaxException).
+- `Changed` Syntax Enums moved to package be.baur.sds.serialization.
+- `Renamed` AbstractGroup to ModelGroup, Group to SequenceGroup.
+- `Renamed` Schema.getRootType() to Schema.getDefaultType().
+- `Renamed` SchemaException.getNode() to SchemaException.getErrorNode().
+- `Renamed` Component (Enum) to Components to prevent name clash.
+- `Removed` SimpleType and ComplexType (replaced with NodeType).
+- `Removed` Attribute.NAME (there is no *name* attribute in SDS 2).
 
 ## Compatibility
 

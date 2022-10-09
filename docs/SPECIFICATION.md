@@ -195,7 +195,7 @@ build the bigger structure(s) in your document.
 
 This pattern is called “Salami Slice” or “Venetian Blind”, depending on whether 
 your building blocks are declared as elements or types. In SDS, that distinction 
-is not explicit; a node declared in the main schema section is a re-useable type, 
+is implicit; a node declared in the main schema section is a re-useable type, 
 that can be referred to by other nodes. I will liberally use the terms node and 
 type interchangeably.
 
@@ -269,8 +269,8 @@ When moving out types to the main schema section, this is no longer apparent,
 because each of them could – at least in theory - act as a root node.
 
 Depending on the number of nodes in the main section that may be a problem, or at 
-least confusing. If you feel that it is imperative to designate the root node (or 
-default type), you can do so by using the `type` attribute in the schema node:
+least confusing. If you want to designate the root node (or default type), you can 
+do so by adding the `type` attribute in the schema node:
 	
 	schema {
 		type "addressbook"

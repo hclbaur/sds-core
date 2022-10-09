@@ -1,7 +1,7 @@
 schema {
 	type "russian_dolls"
 	node "doll" {
-		node "id" { type "integer" value "[1..*)" }
+		type "integer" value "[1..*)"
 		node { type "doll" occurs "0..1" }
 	}
 	node "russian_dolls" {

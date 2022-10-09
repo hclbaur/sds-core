@@ -1,7 +1,7 @@
 schema {
 	type "russian_dolls"
 	node "doll" {
-		node "id" { type "string" }
+		type "string"
 		choice {
 			occurs "0..1"
 			node { type "male_doll" }

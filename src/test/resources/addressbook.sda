@@ -1,60 +1,67 @@
 addressbook {
-	owner { id "0"
-		person { 
-			firstname "Harold" lastname "Baur" birthdate "1968-02-28" 
+	owner "0" {
+		person "Harold" { 
+			lastname "Baur" birthdate "1968-02-28" 
 			about { nickname "Bo" }
 		}
-		address { 
-			type "home" postalcode "5611 XG" housenumber "261" 
+		address "home" { 
+			postalcode "5611 XG" housenumber "261" 
 			city "EINDHOVEN" latitude "51.430" longitude "5.470" altitude "4"
 		}
 		phone "06-11111111" email "harold@home" email "harold@work"
 	}
-	contact { id "1"
-		person { firstname "Alice" about "" }
-		address { 
-			type "home" housenumber "1" sub "A" 
+	contact "1" {
+		person "Alice" { about "" }
+		address "home" { 
+			housenumber "1" sub "A" 
 			city "EINDHOVEN" latitude "51.431" longitude "5.471"
 		}
 		email "alice@home" 	phone "06-22222222" phone "06-33333333" email "alice@work"
 	}
-	contact { id "2"
-		person { firstname "Bob" about {} }
-		address { 
-			type "home" streetname "Lichtstraat" housenumber "2" 
+	contact "2"{
+		person "Bob" { about {} }
+		address "home" { 
+			streetname "Lichtstraat" housenumber "2" 
 			city "EINDHOVEN" latitude "51.432" longitude "5.472" height "5"
 		}
 		twitter "@bob" email "bob@home"
 	}
-	contact { id "3"
-		person { firstname "Charlene" }
-		address { 
-			type "work" streetname "Lichtstraat" housenumber "3" 
+	contact "3" {
+		person "Charlene" { }
+		address "work" { 
+			streetname "Lichtstraat" housenumber "3" 
 			city "EINDHOVEN" longitude "5.473" latitude "51.433"
 		}
 		email "charlene@work" twitter "@charlene" 
 	}
-	contact { id "4"
-		person { firstname "Dennis" }
-		address { 
-			type "home" streetname "Lichtstraat" housenumber "4" 
+	contact "4" {
+		person "Dennis" { }
+		address "home" { 
+			streetname "Lichtstraat" housenumber "4" 
 			city "EINDHOVEN" longitude "5.474"
 		}
 		email "dennis@home" email "dennis@work"
 	}
-	contact { id "5"
-		person { firstname "Edward" }
-		address { 
-			type "home" streetname "Lichtstraat" housenumber "5" 
+	contact "5" {
+		person "Edward" { }
+		address "home" { 
+			streetname "Lichtstraat" housenumber "5" 
 			city "EINDHOVEN" latitude "51.434"
 		}
 		phone "06-44444444" phone "06-55555555" phone "06-66666666"
 	}
-	contact { id "6"
-		person { firstname "Ferdy" }
-		address { 
-			type "home" streetname "Lichtstraat" postalcode "5611 XG" housenumber "6" 
+	contact "6" {
+		person "Ferdy" { }
+		address "home" { 
+			streetname "Lichtstraat" postalcode "5611 XG" housenumber "6" 
 			city "EINDHOVEN"
 		}
+	}
+	contact "7" {
+		person { }
+		address "nowhere" { 
+			streetname "Diagon Ally" housenumber "7" city "EINDHOVEN"
+		}
+		phone "06-77777777"
 	}
 }
