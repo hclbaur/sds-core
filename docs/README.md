@@ -21,7 +21,7 @@ Which, naturally, would have to include Structured (Simple) Data Schema.
 
 ---
 
-# Rationale 2
+# Version 2
 
 After changing the SDA syntax to allow nodes to have both simple *and* complex 
 content, I obviously needed to change the SDS core library to support validation 
