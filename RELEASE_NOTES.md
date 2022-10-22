@@ -1,12 +1,24 @@
 # Release Notes
 
+This release introducdes a few refactoring changes with limited impact.
+
+## [2.1.0] - 2022-??-??
+- `Added` abstract superclass MixedType for types with simple content.
+- `Changed` Content Enum moved to package be.baur.sds.content.
+
+## Compatibility
+- Requires at least Java 8 and SDA 2.0.0.
+
+## Previous releases
+
+### [2.0.0] - 2022-10-09 (requires at least SDA v2.0.0)
+
 This release includes full SDS 2 schema support, for specification and 
 validation of SDA documents, syntax version 2. You will have to update 
 existing schema files, as SDS 2 is not backwards compatible with SDS 1.
 Also, the library itself has changed quite a bit, but unless you have
 been writing an SDS parser, there will be little impact when upgrading.
 
-## [2.0.0] - 2022-10-09
 - `Added` NodeType to replace SimpleType and ComplexType.
 - `Changed` ComponentType (interface) to Component (abstract class).
 - `Changed` AbstractGroup to extend ComponentType (was ComplexType).
@@ -18,12 +30,6 @@ been writing an SDS parser, there will be little impact when upgrading.
 - `Renamed` Component (Enum) to Components to prevent name clash.
 - `Removed` SimpleType and ComplexType (replaced with NodeType).
 - `Removed` Attribute.NAME (there is no *name* attribute in SDS 2).
-
-## Compatibility
-
-- Requires at least Java 8 and SDA 2.0.0.
-
-## Previous releases
 
 ### [1.2.4] - 2022-08-12 (requires at least SDA v1.6.2)
 - `Removed` references to SimpleNode/ComplexNode classes.

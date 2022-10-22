@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
 import be.baur.sds.Component;
+import be.baur.sds.MixedType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
 import be.baur.sds.common.Date;
@@ -125,7 +126,7 @@ public final class SDAValidator implements Validator {
 		
 		// we have a match, now proceed to check the content
 		
-		if (type.getContentType() == null) { // we are expecting complex content ONLY
+		if (! (type instanceof MixedType)) { // we are expecting complex content ONLY
 			
 			if (! node.isComplex() || ! node.getValue().isEmpty())  // but we got simple or mixed content
 				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
@@ -136,7 +137,7 @@ public final class SDAValidator implements Validator {
 			return true;
 		}
 		
-		// we are expecting simple content or mixed content
+		// we are expecting simple content or mixed content, type must be instance of MixedType
 		if (node.isComplex()) {
 			if (! type.isComplex()) // no complex content is expected
 				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
@@ -147,7 +148,7 @@ public final class SDAValidator implements Validator {
 			errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
 	
 		// validate the simple content we were expecting
-		errors.add(validateSimpleContent(node, type));
+		errors.add(validateSimpleContent(node, (MixedType) type));
 		return true;
 	}
 
@@ -157,7 +158,7 @@ public final class SDAValidator implements Validator {
 	 * appropriate with respect to this components content type, and any facets that
 	 * may apply. This method returns a validation error, or null otherwise.
 	 */
-	private static Error validateSimpleContent(Node node, NodeType type) {
+	private static Error validateSimpleContent(Node node, MixedType type) {
 		
 		String value = node.getValue(); // need this a few times times
 		

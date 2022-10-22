@@ -1,7 +1,5 @@
 package be.baur.sds.content;
 
-import be.baur.sds.serialization.Content;
-
 /**
  * A <code>StringType</code> represents an SDA node with string content. When
  * setting an allowed length interval, note that length is counted in number of
@@ -21,8 +19,7 @@ public final class StringType extends AbstractStringType {
 		super(name);
 	}
 	
-	
-	@Override
+
 	public Content getContentType() { 
 		return Content.STRING; 
 	}

@@ -1,7 +1,5 @@
 package be.baur.sds.content;
 
-import be.baur.sds.serialization.Content;
-
 /**
  * A <code>BinaryType</code> is a string type representing an SDA node with
  * binary content (in MIME base64 encoding). When setting an allowed length
@@ -22,8 +20,7 @@ public final class BinaryType extends AbstractStringType {
 		super(name);
 	}
 	
-	
-	@Override
+
 	public Content getContentType() { 
 		return Content.BINARY; 
 	}

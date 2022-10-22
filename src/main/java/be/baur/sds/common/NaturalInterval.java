@@ -10,6 +10,8 @@ package be.baur.sds.common;
  * a..b	Closed
  * a..*	Right unbounded, but a..Integer.MAX_VALUE in practice
  *   a	Degenerate, equivalent to a..a
+ *   
+ * where a >= 0 and b >= a
  * </code>
  * </pre>
  * 

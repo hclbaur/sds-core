@@ -1,8 +1,5 @@
 package be.baur.sds;
 
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
 import be.baur.sds.content.AbstractStringType;
@@ -10,23 +7,17 @@ import be.baur.sds.content.AnyType;
 import be.baur.sds.content.RangedType;
 import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.Components;
-import be.baur.sds.serialization.Content;
 
 
 /**
- * A {@code NodeType} represents an SDA node definition, with simple and/or
- * complex content. It is one of the building blocks of a {@code Schema}.
+ * A {@code NodeType} represents an SDA node type definition. It is one of the
+ * building blocks of a {@code Schema}.
  * 
- * Note that an instance of this class is a <i>complex type</i>; it cannot have
- * simple content. For a <i>simple type</i>, instantiate one of its subclasses,
- * like {@code StringType}, {@code IntegerType}, {@code BooleanType}, etc.
- * Subsequently, you can create a <i>mixed type</i> by adding child components.
+ * Note that an instance of this class is a <i>complex type</i>. For a <i>simple
+ * type</i>, instantiate a {@code MixedType} subclass, like {@code StringType},
+ * {@code IntegerType}, {@code BooleanType}, etc.
  */
 public class NodeType extends Component {
-
-	private String pattexp = null; 		// the regular expression defining the pattern.
-	private Pattern pattern = null;		// the pre-compiled (from pattexp) pattern.
-	private boolean nullable = false; 	// default null-ability (if that is a word).	
 
 	//private String globalTypeName = null; 	// the name of the type this component refers to.
 	private NodeType globalTypeNode = null; // the global node type this component refers to.
@@ -38,77 +29,7 @@ public class NodeType extends Component {
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	public NodeType(String name) {
-		super(name); // the value field is currently not used in a type definition
-	}
-	
-	
-	/**
-	 * Returns the (simple) content type. This method will return a null reference
-	 * if this type does not allow simple content.
-	 * 
-	 * @return a content type, may be null
-	 */
-	public Content getContentType() {
-		return null; // by default no simple content, subclasses override this method
-	}
-	
-	
-	/**
-	 * Returns the pattern that valid simple content must match. This method will
-	 * return a null reference if no pattern expression has been set.
-	 * 
-	 * @return the (pre-compiled) pattern, may be null
-	 */
-	public Pattern getPattern() {
-		return pattern;
-	}
-
-	
-	/**
-	 * Returns the regular expression that valid simple content must match. This
-	 * method will return a null reference if no pattern expression has been set.
-	 * 
-	 * @return a regular expression, may be null
-	 */
-	public String getPatternExpr() {
-		return pattexp;
-	}
-
-
-	/**
-	 * Sets the simple content pattern for this type from a regular expression.
-	 * 
-	 * @param regexp a regular expression
-	 * @throws PatternSyntaxException if the regular expression is invalid.
-	 */
-	public void setPatternExpr(String regexp) {
-		if (regexp == null || regexp.isEmpty()) {
-			pattexp = null; pattern = null;
-		}
-		else {
-			pattern = Pattern.compile(regexp);
-			pattexp = regexp; // set after successful compile!
-		}
-	}
-
-	
-	/**
-	 * Returns whether this type is null-able.
-	 * 
-	 * @return true or false
-	 */
-	public boolean isNullable() {
-		return nullable;
-	}
-
-
-	/**
-	 * Returns whether this type is null-able.
-	 * 
-	 * @param nullable true or false
-	 */
-	public void setNullable(boolean nullable) {
-		this.nullable = nullable;
+		super(name);
 	}
 
 	
@@ -185,11 +106,11 @@ public class NodeType extends Component {
 		}
 	
 		// Render the type attribute for a global type reference,
-		// or for the simple content type, if we have that.
+		// or for a simple (mixed) content type.
 		if (getGlobalType() != null)
 			node.add(new Node(Attribute.TYPE.tag, getGlobalType()));
-		else if (getContentType() != null)
-			node.add(new Node(Attribute.TYPE.tag, getContentType().type));
+		else if (this instanceof MixedType)
+			node.add(new Node(Attribute.TYPE.tag, ((MixedType) this).getContentType().type));
 		
 		// Render the multiplicity if not default.
 		if (getMultiplicity() != null && (getMultiplicity().min != 1 || getMultiplicity().max != 1)) 
@@ -211,11 +132,15 @@ public class NodeType extends Component {
 					node.add(new Node(Attribute.VALUE.tag, t.getRange().toString()));
 			}
 			
-			if (pattern != null)
-				node.add(new Node(Attribute.PATTERN.tag, pattexp));
-			
-			if (stringType == !nullable)
-				node.add(new Node(Attribute.NULLABLE.tag, String.valueOf(nullable)));
+			if (this instanceof MixedType) {
+				MixedType m = (MixedType) this;
+				
+				if (m.getPattern() != null)
+					node.add(new Node(Attribute.PATTERN.tag, m.getPatternExpr()));
+				
+				if (stringType == !m.isNullable())
+					node.add(new Node(Attribute.NULLABLE.tag, String.valueOf(m.isNullable())));
+			}
 		}
 		
 		// Finally, render any children, unless we are a type reference

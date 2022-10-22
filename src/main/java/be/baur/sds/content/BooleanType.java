@@ -1,13 +1,12 @@
 package be.baur.sds.content;
 
-import be.baur.sds.NodeType;
-import be.baur.sds.serialization.Content;
+import be.baur.sds.MixedType;
 
 /**
  * A <code>BooleanType</code> is a simple type representing an SDA node with
  * boolean content,that is "true" or "false". No other values are allowed.
  */
-public final class BooleanType extends NodeType {
+public final class BooleanType extends MixedType {
 
 	public static final String TRUE = "true";
 	public static final String FALSE = "false";
@@ -23,8 +22,7 @@ public final class BooleanType extends NodeType {
 		super(name);
 	}
 
-	
-	@Override
+
 	public Content getContentType() {
 		return Content.BOOLEAN;
 	}

@@ -1,6 +1,6 @@
 package be.baur.sds.content;
 
-import be.baur.sds.NodeType;
+import be.baur.sds.MixedType;
 import be.baur.sds.common.NaturalInterval;
 
 /**
@@ -9,7 +9,7 @@ import be.baur.sds.common.NaturalInterval;
  * <br>
  * See also {@link StringType} and {@link BinaryType}.
  */
-public abstract class AbstractStringType extends NodeType {
+public abstract class AbstractStringType extends MixedType {
 
 	private NaturalInterval length = null; // null means any length is allowed.
 

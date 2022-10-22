@@ -1,6 +1,6 @@
 package be.baur.sds.content;
 
-import be.baur.sds.NodeType;
+import be.baur.sds.MixedType;
 import be.baur.sds.common.Interval;
 
 /**
@@ -8,7 +8,7 @@ import be.baur.sds.common.Interval;
  * within an interval, like an integer, a decimal or a date(time).<br>
  * See also {@link Interval}.
  */
-public abstract class RangedType <T extends Comparable<?>> extends NodeType {
+public abstract class RangedType <T extends Comparable<?>> extends MixedType {
 
 	private Interval<?> range = null; // Range null means: any value is allowed.
 	
