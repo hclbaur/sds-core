@@ -19,6 +19,9 @@ package be.baur.sds.common;
  */
 public final class NaturalInterval {
 
+	/** Infinite set of non-negative integers */
+	public static final NaturalInterval INFINITE = new NaturalInterval(0, Integer.MAX_VALUE);
+	
 	/** Lower interval limit */
 	public final int min;
 	/** Upper interval limit */

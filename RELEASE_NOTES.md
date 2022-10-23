@@ -5,6 +5,7 @@ This release introducdes a few refactoring changes with limited impact.
 ## [2.1.0] - 2022-??-??
 - `Added` abstract superclass MixedType for types with simple content.
 - `Changed` Content Enum moved to package be.baur.sds.content.
+- `Removed` AbstractStringType.minLength() and maxLength().
 
 ## Compatibility
 - Requires at least Java 8 and SDA 2.0.0.

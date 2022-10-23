@@ -122,7 +122,7 @@ public class NodeType extends Component {
 			boolean stringType = (this instanceof AbstractStringType);
 			if (stringType) {
 				AbstractStringType t = (AbstractStringType) this;
-				if (t.minLength() != 0 || t.maxLength() != Integer.MAX_VALUE)
+				if (t.getLength().min != 0 || t.getLength().max != Integer.MAX_VALUE)
 					node.add(new Node(Attribute.LENGTH.tag, t.getLength().toString()));
 			}
 	

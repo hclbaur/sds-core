@@ -212,9 +212,9 @@ public final class SDAValidator implements Validator {
 		NaturalInterval range = type.getLength();
 		if (range != null) {
 			String val = node.getValue().length() > 32 ? node.getValue().substring(0,32) + "..." : node.getValue();
-			if (length < type.minLength()) 
+			if (length < type.getLength().min) 
 				return new Error(node, LENGTH_SUBCEEDS_MIN, val, length, range.min);
-			if (length > type.maxLength()) 
+			if (length > type.getLength().max) 
 				return new Error(node, LENGTH_EXCEEDS_MAX, val, length, range.max);
 		}
 		return null;
