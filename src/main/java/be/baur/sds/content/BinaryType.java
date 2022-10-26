@@ -1,5 +1,7 @@
 package be.baur.sds.content;
 
+import be.baur.sds.common.Content;
+
 /**
  * A <code>BinaryType</code> is a string type representing an SDA node with
  * binary content (in MIME base64 encoding). When setting an allowed length

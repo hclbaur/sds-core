@@ -1,5 +1,6 @@
 package be.baur.sds.content;
 
+import be.baur.sds.common.Content;
 import be.baur.sds.common.Date;
 
 /**

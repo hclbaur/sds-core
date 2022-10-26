@@ -1,5 +1,7 @@
 package be.baur.sds.content;
 
+import be.baur.sds.common.Content;
+
 /**
  * A <code>DecimalType</code> represents an SDA node with decimal content.<br>
  * See also {@link IntegerType}.

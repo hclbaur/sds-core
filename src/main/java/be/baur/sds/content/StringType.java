@@ -1,5 +1,7 @@
 package be.baur.sds.content;
 
+import be.baur.sds.common.Content;
+
 /**
  * A <code>StringType</code> represents an SDA node with string content. When
  * setting an allowed length interval, note that length is counted in number of

@@ -1,6 +1,7 @@
 package be.baur.sds.content;
 
 import be.baur.sds.MixedType;
+import be.baur.sds.common.Content;
 
 /**
  * An {@code AnyType} represents any SDA node, with any simple or complex

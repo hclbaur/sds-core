@@ -1,6 +1,7 @@
 package be.baur.sds.content;
 
 import be.baur.sds.MixedType;
+import be.baur.sds.common.Content;
 
 /**
  * A <code>BooleanType</code> is a simple type representing an SDA node with

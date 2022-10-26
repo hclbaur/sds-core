@@ -210,15 +210,19 @@ public final class SDAValidator implements Validator {
 		
 		// Check if the length is within the acceptable range.
 		NaturalInterval range = type.getLength();
-		if (range != null) {
-			String val = node.getValue().length() > 32 ? node.getValue().substring(0,32) + "..." : node.getValue();
-			if (length < type.getLength().min) 
-				return new Error(node, LENGTH_SUBCEEDS_MIN, val, length, range.min);
-			if (length > type.getLength().max) 
-				return new Error(node, LENGTH_EXCEEDS_MAX, val, length, range.max);
-		}
-		return null;
+		int contains = range.contains(length);
+		
+		if (contains == 0) return null; // length is OK, so leave
+		
+		String val = node.getValue().length() > 32 ? // trunc'ed value for error message
+			node.getValue().substring(0,32) + "..." : node.getValue();
+
+		if (contains > 0)
+			return new Error(node, LENGTH_EXCEEDS_MAX, val, length, range.min);
+		else
+			return new Error(node, LENGTH_SUBCEEDS_MIN, val, length, range.max);
 	}
+
 	
 	/**
 	 * We assert that the node value is a valid string representation of this

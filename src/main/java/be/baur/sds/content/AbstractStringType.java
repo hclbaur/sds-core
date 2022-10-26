@@ -12,7 +12,7 @@ import be.baur.sds.common.NaturalInterval;
  */
 public abstract class AbstractStringType extends MixedType {
 
-	private NaturalInterval length = NaturalInterval.INFINITE; // default is to allow any length
+	private NaturalInterval length = NaturalInterval.ZERO_TO_MAX; // default allows any length
 
 
 	/**
@@ -27,7 +27,8 @@ public abstract class AbstractStringType extends MixedType {
 
 
 	/**
-	 * Returns the allowed length interval. This method never returns null.
+	 * Returns the allowed length interval. This method never returns null; the
+	 * default value is {@code 0..*}, which means any length is allowed.
 	 * 
 	 * @return a natural interval, not null
 	 */
@@ -40,7 +41,7 @@ public abstract class AbstractStringType extends MixedType {
 	 * Sets the allowed length interval. This method does not accept null.
 	 * 
 	 * @param length a natural interval, not null
-	 * @throws IllegalArgumentException is length is null
+	 * @throws IllegalArgumentException if length is null
 	 */
 	public void setLength(NaturalInterval length) {
 		this.length = SDS.requireNonNull(length, "length must not be null");

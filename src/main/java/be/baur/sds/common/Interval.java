@@ -37,7 +37,7 @@ public final class Interval <T extends Comparable> {
 	/** The type of interval */
 	public final int type;
 
-	/** Interval types */  // must change this to an enum!
+	/** Interval types */  // change this to an enum?
 	public final static int CLOSED 		= 	0b00;
 	public final static int LEFT_OPEN 	= 	0b10;
 	public final static int RIGHT_OPEN 	= 	0b01;

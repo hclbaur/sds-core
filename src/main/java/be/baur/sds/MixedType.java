@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import be.baur.sda.Node;
-import be.baur.sds.content.Content;
+import be.baur.sds.common.Content;
 
 
 /**
