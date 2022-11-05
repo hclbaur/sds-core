@@ -221,10 +221,8 @@ public final class SDSParser implements Parser {
 		// Set the (optional) multiplicity of this component
 		Node occurs = getAttribute(sds, Attribute.OCCURS, false);
 		try {
-			if (occurs != null) {
-				NaturalInterval interval = NaturalInterval.from(occurs.getValue());
-				component.setMultiplicity(interval);
-			}
+			if (occurs != null)
+				component.setMultiplicity(NaturalInterval.from(occurs.getValue()));
 		} catch (IllegalArgumentException e) {
 			throw new SchemaException(occurs, 
 				String.format(ATTRIBUTE_INVALID, Attribute.OCCURS.tag, occurs.getValue(), e.getMessage()));

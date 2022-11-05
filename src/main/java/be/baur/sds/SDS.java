@@ -33,15 +33,15 @@ public final class SDS {
 	}
 	
 	
-	/** Convenience method that throws an exception if the argument is null.
-	 * 
-	 * @param obj the argument to check
-	 * @param msg the exception message
-	 * @return the original argument
-	 */
-	public static <T> T requireNonNull(T obj, String msg) {
-	    if (obj == null)
-	    	throw new IllegalArgumentException(msg);
-	    return obj;
-	}
+//	/** Convenience method that throws an exception if the argument is null.
+//	 * 
+//	 * @param obj the argument to check
+//	 * @param msg the exception message
+//	 * @return the original argument
+//	 */
+//	public static <T> T requireNonNull(T obj, String msg) {
+//	    if (obj == null)
+//	    	throw new IllegalArgumentException(msg);
+//	    return obj;
+//	}
 }

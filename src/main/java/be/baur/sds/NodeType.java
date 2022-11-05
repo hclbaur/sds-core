@@ -113,7 +113,7 @@ public class NodeType extends Component {
 			node.add(new Node(Attribute.TYPE.tag, ((MixedType) this).getContentType().type));
 		
 		// Render the multiplicity if not default.
-		if (getMultiplicity() != null && (getMultiplicity().min != 1 || getMultiplicity().max != 1)) 
+		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
 			node.add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		// facets are rendered ONLY if we are not a type reference!

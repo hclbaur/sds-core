@@ -25,10 +25,10 @@ public abstract class ModelGroup extends Component {
 
 	
 	/**
-	 * This method overrides the super method, to return the effective minimum
-	 * number of times that a group must occur within its context. Even when the
-	 * formal multiplicity states that it is mandatory, empty content is valid if
-	 * all of the alternatives are optional. For example, given a schema like
+	 * Returns the effective minimum number of times that a group must occur within
+	 * its context. Even when the formal multiplicity states that it is mandatory,
+	 * empty content is valid if all of the alternatives are optional. For example,
+	 * given a schema like
 	 * 
 	 * <pre>
 	 * <code>
@@ -72,7 +72,7 @@ public abstract class ModelGroup extends Component {
 //			node.add(new Node(Attribute.TYPE.tag, getGlobalType()));
 	
 		// Render the multiplicity if not default.
-		if (getMultiplicity() != null && (getMultiplicity().min != 1 || getMultiplicity().max != 1)) 
+		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
 			node.add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		//if (getGlobalType() == null) // Render children, unless we are a type reference.

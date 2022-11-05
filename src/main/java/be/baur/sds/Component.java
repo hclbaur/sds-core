@@ -1,5 +1,7 @@
 package be.baur.sds;
 
+import java.util.Objects;
+
 import be.baur.sda.Node;
 import be.baur.sda.serialization.SDAFormatter;
 import be.baur.sds.common.NaturalInterval;
@@ -11,8 +13,8 @@ import be.baur.sds.model.ModelGroup;
  */
 public abstract class Component extends Node {
 
-	private String globalTypeName = null; 			// name of the global type this component refers to.
-	private NaturalInterval multiplicity = null; 	// default multiplicity (mandatory and singular).
+	private String globalTypeName = null; 	// name of the global type that this component refers to.
+	private NaturalInterval multiplicity = NaturalInterval.ONE_TO_ONE; 	// default is mandatory and singular.
 
 	/**
 	 * Creates a component with the specified name.
@@ -50,9 +52,9 @@ public abstract class Component extends Node {
 
 	
 	/**
-	 * Returns the multiplicity of this component. The default value is null, which
-	 * means the component must occur exactly once (and which is equivalent to
-	 * {@code [1,1]}).
+	 * Returns the multiplicity interval of this component. The default value is
+	 * {@code [1,1]}, which means the component must occur exactly once. This method
+	 * never returns null.
 	 * 
 	 * @return a natural interval, may be null
 	 */
@@ -62,14 +64,12 @@ public abstract class Component extends Node {
 
 	
 	/**
-	 * Sets the multiplicity of this component. This method accepts a null
-	 * reference, which means the component must occur exactly once (and which is
-	 * equivalent to {@code [1,1]}).
+	 * Sets the multiplicity of this component. This method does not accept null.
 	 * 
-	 * @param multiplicity a natural interval, may be null
+	 * @param length a natural interval, not null
 	 */
 	public void setMultiplicity(NaturalInterval multiplicity) {
-		this.multiplicity = multiplicity;
+		this.multiplicity = Objects.requireNonNull(multiplicity, "multiplicity must not be null");
 	}
 
 	
@@ -80,7 +80,7 @@ public abstract class Component extends Node {
 	 * @return a non-negative integer
 	 */
 	public int minOccurs() {
-		return multiplicity != null ? multiplicity.min : 1;
+		return multiplicity.min;
 	}
 
 	
@@ -91,7 +91,7 @@ public abstract class Component extends Node {
 	 * @return a non-negative integer
 	 */
 	public int maxOccurs() {
-		return multiplicity != null ? multiplicity.max : 1;
+		return multiplicity.max;
 	}
 
 
