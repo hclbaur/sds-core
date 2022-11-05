@@ -128,7 +128,7 @@ public class NodeType extends Component {
 	
 			if (this instanceof RangedType) {
 				RangedType<?> t = (RangedType<?>) this;
-				if (t.getRange() != null)
+				if (t.getRange().min != null || t.getRange().max != null)
 					node.add(new Node(Attribute.VALUE.tag, t.getRange().toString()));
 			}
 			

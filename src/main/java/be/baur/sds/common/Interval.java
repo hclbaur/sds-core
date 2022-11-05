@@ -96,7 +96,7 @@ public final class Interval <T extends Comparable> {
 		
 		Matcher matcher = PATTERN.matcher(interval);
 
-		if (! matcher.matches()) { // no match; could be a fixed value
+		if (! matcher.matches()) { // no match; could be a degenerate interval
 			
 			if (interval.contains(".."))
 				throw new IllegalArgumentException("invalid interval notation");

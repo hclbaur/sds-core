@@ -245,18 +245,16 @@ public final class SDAValidator implements Validator {
 		}
 		
 		Interval<?> range = type.getRange(); 
-		if (range != null) {
-			int contains = range.contains(value);
-			if (contains < 0) {
-				if (value.equals(range.min)) 
-					return new Error(node, VALUE_NOT_INCLUSIVE, value);
-				return new Error(node, VALUE_SUBCEEDS_MIN, value, range.min);
-			}
-			if (contains > 0) {
-				if (value.equals(range.max)) 
-					return new Error(node, VALUE_NOT_INCLUSIVE, value);
-				return new Error(node, VALUE_EXCEEDS_MAX, value, range.max);
-			}
+		int contains = range.contains(value);
+		if (contains < 0) {
+			if (value.equals(range.min)) 
+				return new Error(node, VALUE_NOT_INCLUSIVE, value);
+			return new Error(node, VALUE_SUBCEEDS_MIN, value, range.min);
+		}
+		if (contains > 0) {
+			if (value.equals(range.max)) 
+				return new Error(node, VALUE_NOT_INCLUSIVE, value);
+			return new Error(node, VALUE_EXCEEDS_MAX, value, range.max);
 		}
 		return null;
 	}
