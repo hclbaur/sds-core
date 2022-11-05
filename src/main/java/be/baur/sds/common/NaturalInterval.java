@@ -19,13 +19,13 @@ package be.baur.sds.common;
  */
 public final class NaturalInterval {
 
-	/** All non-negative integers, from 0 to "infinity", e.g. {@code 0..Integer.MAX_VALUE}. */
+	/** All non-negative integers from 0 to "infinity", e.g. {@code 0..Integer.MAX_VALUE}. */
 	public static final NaturalInterval ZERO_TO_MAX = new NaturalInterval(0, Integer.MAX_VALUE);
 	
-	/** All positive integers, from 1 to "infinity", e.g. {@code 1..Integer.MAX_VALUE}. */
+	/** All positive integers from 1 to "infinity", e.g. {@code 1..Integer.MAX_VALUE}. */
 	public static final NaturalInterval ONE_TO_MAX = new NaturalInterval(1, Integer.MAX_VALUE);
 	
-	/** The unit interval, from 0 to 1 (e.g. {@code 0..1}. */
+	/** The unit interval from 0 to 1, e.g. {@code 0..1}. */
 	public static final NaturalInterval ZERO_TO_ONE = new NaturalInterval(0, 1);
 	
 	/** The degenerate interval {@code 1..1}, so just 1. */

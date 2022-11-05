@@ -12,7 +12,7 @@ import be.baur.sds.common.Interval;
  */
 public abstract class RangedType <T extends Comparable<?>> extends MixedType {
 
-	private Interval<?> range = new Interval<T>(null, null, Interval.OPEN); // default any value is allowed.
+	private Interval<?> range = Interval.MIN_TO_MAX; // default any value is allowed.
 	
 	
 	/**
