@@ -67,12 +67,14 @@ public final class Interval <T extends Comparable> {
 	@SuppressWarnings("unchecked")
 	private Interval(T min, T max, int type) {
 
-		this.min = min; this.max = max;
+		if (type < CLOSED || type > OPEN)
+			throw new IllegalArgumentException("invalid interval type " + type);
 
 		if (min == null) type |= LEFT_OPEN;
 		if (max == null) type |= RIGHT_OPEN;
 		this.type = type;
 
+		this.min = min; this.max = max;
 		if (min == null || max == null) return;
 
 		if (min.compareTo(max) > 0)
