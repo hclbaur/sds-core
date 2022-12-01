@@ -1,6 +1,6 @@
 # Release Notes
 
-This release introducdes a few refactoring changes with limited impact.
+This release introduces a few refactoring changes with limited impact.
 
 ## [2.1.0] - 2022-12-01
 - `Added` abstract superclass MixedType for types with simple content.
