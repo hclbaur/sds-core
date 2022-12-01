@@ -85,9 +85,11 @@ public final class Interval <T extends Comparable> {
 	/**
 	 * Creates an interval from two limit points and a type.
 	 * 
+	 * @param <T>  interval class
 	 * @param min  the lower limit, null means unbounded
 	 * @param max  the upper limit, null means unbounded
 	 * @param type one of OPEN, LEFT_OPEN, RIGHT_OPEN or CLOSED
+	 * @return an interval
 	 * @throws IllegalArgumentException for an invalid interval
 	 */
 	@SuppressWarnings("unchecked")

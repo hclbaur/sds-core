@@ -66,7 +66,7 @@ public abstract class Component extends Node {
 	/**
 	 * Sets the multiplicity of this component. This method does not accept null.
 	 * 
-	 * @param length a natural interval, not null
+	 * @param multiplicity a natural interval, not null
 	 */
 	public void setMultiplicity(NaturalInterval multiplicity) {
 		this.multiplicity = Objects.requireNonNull(multiplicity, "multiplicity must not be null");

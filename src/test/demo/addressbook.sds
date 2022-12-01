@@ -1,7 +1,7 @@
 schema {
 	node "addressbook" {
 		node "contact" {
-			occurs "0..*"
+			type "integer" occurs "0..*"
 			node "firstname" { type "string" }
 			node "phonenumber" { type "string" occurs "1..*" }
 		}
