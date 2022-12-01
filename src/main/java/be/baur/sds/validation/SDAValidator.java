@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
 import be.baur.sds.Component;
+import be.baur.sds.MixedType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
 import be.baur.sds.common.Date;
@@ -125,7 +126,7 @@ public final class SDAValidator implements Validator {
 		
 		// we have a match, now proceed to check the content
 		
-		if (type.getContentType() == null) { // we are expecting complex content ONLY
+		if (! (type instanceof MixedType)) { // we are expecting complex content ONLY
 			
 			if (! node.isComplex() || ! node.getValue().isEmpty())  // but we got simple or mixed content
 				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
@@ -136,7 +137,7 @@ public final class SDAValidator implements Validator {
 			return true;
 		}
 		
-		// we are expecting simple content or mixed content
+		// we are expecting simple content or mixed content, type must be instance of MixedType
 		if (node.isComplex()) {
 			if (! type.isComplex()) // no complex content is expected
 				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
@@ -147,7 +148,7 @@ public final class SDAValidator implements Validator {
 			errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
 	
 		// validate the simple content we were expecting
-		errors.add(validateSimpleContent(node, type));
+		errors.add(validateSimpleContent(node, (MixedType) type));
 		return true;
 	}
 
@@ -157,7 +158,7 @@ public final class SDAValidator implements Validator {
 	 * appropriate with respect to this components content type, and any facets that
 	 * may apply. This method returns a validation error, or null otherwise.
 	 */
-	private static Error validateSimpleContent(Node node, NodeType type) {
+	private static Error validateSimpleContent(Node node, MixedType type) {
 		
 		String value = node.getValue(); // need this a few times times
 		
@@ -209,15 +210,19 @@ public final class SDAValidator implements Validator {
 		
 		// Check if the length is within the acceptable range.
 		NaturalInterval range = type.getLength();
-		if (range != null) {
-			String val = node.getValue().length() > 32 ? node.getValue().substring(0,32) + "..." : node.getValue();
-			if (length < type.minLength()) 
-				return new Error(node, LENGTH_SUBCEEDS_MIN, val, length, range.min);
-			if (length > type.maxLength()) 
-				return new Error(node, LENGTH_EXCEEDS_MAX, val, length, range.max);
-		}
-		return null;
+		int contains = range.contains(length);
+		
+		if (contains == 0) return null; // length is OK, so leave
+		
+		String val = node.getValue().length() > 32 ? // trunc'ed value for error message
+			node.getValue().substring(0,32) + "..." : node.getValue();
+
+		if (contains > 0)
+			return new Error(node, LENGTH_EXCEEDS_MAX, val, length, range.min);
+		else
+			return new Error(node, LENGTH_SUBCEEDS_MIN, val, length, range.max);
 	}
+
 	
 	/**
 	 * We assert that the node value is a valid string representation of this
@@ -240,18 +245,16 @@ public final class SDAValidator implements Validator {
 		}
 		
 		Interval<?> range = type.getRange(); 
-		if (range != null) {
-			int contains = range.contains(value);
-			if (contains < 0) {
-				if (value.equals(range.min)) 
-					return new Error(node, VALUE_NOT_INCLUSIVE, value);
-				return new Error(node, VALUE_SUBCEEDS_MIN, value, range.min);
-			}
-			if (contains > 0) {
-				if (value.equals(range.max)) 
-					return new Error(node, VALUE_NOT_INCLUSIVE, value);
-				return new Error(node, VALUE_EXCEEDS_MAX, value, range.max);
-			}
+		int contains = range.contains(value);
+		if (contains < 0) {
+			if (value.equals(range.min)) 
+				return new Error(node, VALUE_NOT_INCLUSIVE, value);
+			return new Error(node, VALUE_SUBCEEDS_MIN, value, range.min);
+		}
+		if (contains > 0) {
+			if (value.equals(range.max)) 
+				return new Error(node, VALUE_NOT_INCLUSIVE, value);
+			return new Error(node, VALUE_EXCEEDS_MAX, value, range.max);
 		}
 		return null;
 	}

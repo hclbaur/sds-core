@@ -30,6 +30,22 @@ import java.util.regex.Pattern;
 @SuppressWarnings("rawtypes")
 public final class Interval <T extends Comparable> {
 
+	/** Interval types */
+	public final static int CLOSED 		= 	0b00;
+	public final static int LEFT_OPEN 	= 	0b10;
+	public final static int RIGHT_OPEN 	= 	0b01;
+	public final static int OPEN 		= 	0b11;
+	
+	/** All values in the range minus infinity to infinity, e.g. {@code (*..*)}. */
+	public static final Interval<Comparable> MIN_TO_MAX = new Interval<>(null, null, OPEN);
+	
+	// Private pre-compiled pattern to match an interval notation
+	private static final String LB="\\[\\(";
+	private static final String RB="\\)\\]";
+	private static final Pattern PATTERN = 
+		Pattern.compile("["+LB+"]([^"+LB+"]+)\\.\\.([^"+RB+"]+)["+RB+"]");
+
+	
 	/** Lower interval limit */
 	public final T min;
 	/** Upper interval limit */
@@ -37,20 +53,8 @@ public final class Interval <T extends Comparable> {
 	/** The type of interval */
 	public final int type;
 
-	/** Interval types */  // must change this to an enum!
-	public final static int CLOSED 		= 	0b00;
-	public final static int LEFT_OPEN 	= 	0b10;
-	public final static int RIGHT_OPEN 	= 	0b01;
-	public final static int OPEN 		= 	0b11;
-	
-	// Pre-compiled pattern that matches an interval notation
-	private static final String LB="\\[\\(";
-	private static final String RB="\\)\\]";
-	private static final Pattern PATTERN = 
-			Pattern.compile("["+LB+"]([^"+LB+"]+)\\.\\.([^"+RB+"]+)["+RB+"]");
 
-	
-	/**
+	/*
 	 * Creates an interval from two limit points and a type. The minimum should
 	 * never exceed the maximum value. A null value for a limit means that the
 	 * interval is unbounded (and open) on that side.
@@ -61,21 +65,41 @@ public final class Interval <T extends Comparable> {
 	 * @throws IllegalArgumentException if the lower exceeds the upper limit
 	 */
 	@SuppressWarnings("unchecked")
-	public Interval(T min, T max, int type) {
+	private Interval(T min, T max, int type) {
 
-		this.min = min; this.max = max;
+		if (type < CLOSED || type > OPEN)
+			throw new IllegalArgumentException("invalid interval type " + type);
 
 		if (min == null) type |= LEFT_OPEN;
 		if (max == null) type |= RIGHT_OPEN;
 		this.type = type;
 
+		this.min = min; this.max = max;
 		if (min == null || max == null) return;
 
 		if (min.compareTo(max) > 0)
 			throw new IllegalArgumentException("lower limit exceeds upper limit");
 	}
 
-	
+
+	/**
+	 * Creates an interval from two limit points and a type.
+	 * 
+	 * @param <T>  interval class
+	 * @param min  the lower limit, null means unbounded
+	 * @param max  the upper limit, null means unbounded
+	 * @param type one of OPEN, LEFT_OPEN, RIGHT_OPEN or CLOSED
+	 * @return an interval
+	 * @throws IllegalArgumentException for an invalid interval
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends Comparable> Interval<T> from(T min, T max, int type) {
+		
+		if (min == null && max == null) return (Interval<T>) MIN_TO_MAX;
+		return new Interval<T>(min, max, type);
+	}
+
+
 	/**
 	 * Creates an interval from a string in interval notation, for a specific type
 	 * of value.
@@ -84,7 +108,7 @@ public final class Interval <T extends Comparable> {
 	 * @param interval a valid interval notation, not null or empty
 	 * @param cls      the value class, not null
 	 * @return an interval
-	 * @throws IllegalArgumentException in case of an invalid interval
+	 * @throws IllegalArgumentException for an invalid interval
 	 */
 	public static <T extends Comparable> Interval<T> from(String interval, Class<T> cls) {
 		
@@ -96,7 +120,7 @@ public final class Interval <T extends Comparable> {
 		
 		Matcher matcher = PATTERN.matcher(interval);
 
-		if (! matcher.matches()) { // no match; could be a fixed value
+		if (! matcher.matches()) { // no match; could be a degenerate interval
 			
 			if (interval.contains(".."))
 				throw new IllegalArgumentException("invalid interval notation");
@@ -105,7 +129,7 @@ public final class Interval <T extends Comparable> {
 			} catch (Exception e) {
 				throw new IllegalArgumentException("invalid limiting value", e);
 			}
-			return new Interval<T>(min, min, CLOSED);
+			return from(min, min, CLOSED);
 		}
 
 		int type = CLOSED;
@@ -128,7 +152,7 @@ public final class Interval <T extends Comparable> {
 			throw new IllegalArgumentException("invalid upper limit", e);
 		}
 			
-		return new Interval<T>(min, max, type);
+		return from(min, max, type);
 	}
 
 	

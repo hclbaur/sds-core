@@ -1,17 +1,19 @@
 package be.baur.sds.content;
 
-import be.baur.sds.NodeType;
+import java.util.Objects;
+
+import be.baur.sds.MixedType;
 import be.baur.sds.common.NaturalInterval;
 
 /**
  * An {@code AbstractStringType} represents an SDA node with string content and
- * a minimum/maximum length. Unlike other types, it is null-able by default.
+ * a minimum and maximum length. Unlike other types, it is null-able by default.
  * <br>
  * See also {@link StringType} and {@link BinaryType}.
  */
-public abstract class AbstractStringType extends NodeType {
+public abstract class AbstractStringType extends MixedType {
 
-	private NaturalInterval length = null; // null means any length is allowed.
+	private NaturalInterval length = NaturalInterval.ZERO_TO_MAX; // default allows any length
 
 
 	/**
@@ -26,10 +28,10 @@ public abstract class AbstractStringType extends NodeType {
 
 
 	/**
-	 * Returns the allowed length interval. This method returns null if any length
-	 * is allowed.
+	 * Returns the allowed length interval. The default value is {@code 0..*}, which
+	 * means any length is allowed. This method never returns null.
 	 * 
-	 * @return a natural interval, may be null
+	 * @return a natural interval, not null
 	 */
 	public NaturalInterval getLength() {
 		return length;
@@ -37,32 +39,11 @@ public abstract class AbstractStringType extends NodeType {
 
 
 	/**
-	 * Sets the allowed length interval. A length of null means any length is
-	 * allowed.
+	 * Sets the allowed length interval. This method does not accept null.
 	 * 
-	 * @param length a natural interval, may be null
+	 * @param length a natural interval, not null
 	 */
 	public void setLength(NaturalInterval length) {
-		this.length = length;
-	}
-
-
-	/**
-	 * Returns the minimum content length.
-	 * 
-	 * @return a minimum length
-	 */
-	public int minLength() { // do we really need this method?
-		return length != null ? length.min : 0;
-	}
-
-
-	/**
-	 * Returns the maximum content length.
-	 * 
-	 * @return a maximum length
-	 */
-	public int maxLength() { // do we really need this method?
-		return length != null ? length.max : Integer.MAX_VALUE;
+		this.length = Objects.requireNonNull(length, "length must not be null");
 	}
 }

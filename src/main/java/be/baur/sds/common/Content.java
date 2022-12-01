@@ -1,8 +1,8 @@
-package be.baur.sds.serialization;
+package be.baur.sds.common;
 
 /**
- * Content types allowed by the SDS syntax. The lower-case name of a content
- * type ("binary", "integer", etc) can be accessed using the {@code toString()}
+ * Content types allowed in SDS. The lower-case name of the content type
+ * ("binary", "integer", etc) can be accessed using the {@code toString()}
  * method or the {@code type} field.
  */
 public enum Content {

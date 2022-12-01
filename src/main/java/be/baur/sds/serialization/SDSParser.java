@@ -10,8 +10,10 @@ import be.baur.sda.Node;
 import be.baur.sda.NodeSet;
 import be.baur.sda.SDA;
 import be.baur.sds.Component;
+import be.baur.sds.MixedType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
+import be.baur.sds.common.Content;
 import be.baur.sds.common.Date;
 import be.baur.sds.common.DateTime;
 import be.baur.sds.common.Interval;
@@ -219,10 +221,8 @@ public final class SDSParser implements Parser {
 		// Set the (optional) multiplicity of this component
 		Node occurs = getAttribute(sds, Attribute.OCCURS, false);
 		try {
-			if (occurs != null) {
-				NaturalInterval interval = NaturalInterval.from(occurs.getValue());
-				component.setMultiplicity(interval);
-			}
+			if (occurs != null)
+				component.setMultiplicity(NaturalInterval.from(occurs.getValue()));
 		} catch (IllegalArgumentException e) {
 			throw new SchemaException(occurs, 
 				String.format(ATTRIBUTE_INVALID, Attribute.OCCURS.tag, occurs.getValue(), e.getMessage()));
@@ -389,7 +389,7 @@ public final class SDSParser implements Parser {
 		}
 		
 		/*
-		 * If content type is null, it is a complex type definition and the rest of the
+		 * If content type is null, it is a complex type definition and content type
 		 * validations do not apply. The only attribute allowed in a complex type is
 		 * OCCURS, so we do check that before we return a node type.
 		 */
@@ -404,17 +404,17 @@ public final class SDSParser implements Parser {
 			return new NodeType(name); // remaining code does not apply
 		}
 		
-		NodeType nodeType;	// the (simple or mixed) type returned at the end of this method
+		MixedType mixedType;	// the type returned at the end of this method
 		
 		switch (content) {
-			case STRING   : nodeType = new StringType(name); break;
-			case BINARY   : nodeType = new BinaryType(name); break;
-			case BOOLEAN  : nodeType = new BooleanType(name); break;
-			case INTEGER  : nodeType = new IntegerType(name); break;
-			case DECIMAL  : nodeType = new DecimalType(name); break;
-			case DATETIME : nodeType = new DateTimeType(name); break;
-			case DATE     : nodeType = new DateType(name); break;
-			case ANY      : nodeType = new AnyType(name); break;
+			case STRING   : mixedType = new StringType(name); break;
+			case BINARY   : mixedType = new BinaryType(name); break;
+			case BOOLEAN  : mixedType = new BooleanType(name); break;
+			case INTEGER  : mixedType = new IntegerType(name); break;
+			case DECIMAL  : mixedType = new DecimalType(name); break;
+			case DATETIME : mixedType = new DateTimeType(name); break;
+			case DATE     : mixedType = new DateType(name); break;
+			case ANY      : mixedType = new AnyType(name); break;
 			default: // will never get here, unless we forgot to implement something...
 				throw new RuntimeException("SDS type '" + content + "' not implemented!");
 		}	
@@ -424,8 +424,8 @@ public final class SDSParser implements Parser {
 		// Set the null-ability (not allowed on the any type).
 		Node nullable = getAttribute(sds, Attribute.NULLABLE, isAnyType? null : false);
 		if (nullable != null) switch(nullable.getValue()) {
-			case BooleanType.TRUE : nodeType.setNullable(true); break;
-			case BooleanType.FALSE : nodeType.setNullable(false); break;
+			case BooleanType.TRUE : mixedType.setNullable(true); break;
+			case BooleanType.FALSE : mixedType.setNullable(false); break;
 			default : 
 				throw new SchemaException(nullable, String.format(ATTRIBUTE_INVALID, 
 					Attribute.NULLABLE.tag, nullable.getValue(), "must be 'true' or 'false'"));
@@ -434,18 +434,18 @@ public final class SDSParser implements Parser {
 		// Set the pattern (not allowed on the any type).
 		Node pattern = getAttribute(sds, Attribute.PATTERN, isAnyType? null : false);
 		try { 
-			if (pattern != null) nodeType.setPatternExpr(pattern.getValue()); 
+			if (pattern != null) mixedType.setPatternExpr(pattern.getValue()); 
 		} catch (PatternSyntaxException e) {
 			throw new SchemaException(pattern, 
 				String.format(ATTRIBUTE_INVALID, Attribute.PATTERN.tag, pattern.getValue(), e.getMessage()));
 		}
 		
 		// Set the length (only allowed on string and binary types).
-		Node length = getAttribute(sds, Attribute.LENGTH, nodeType instanceof AbstractStringType ? false : null);
+		Node length = getAttribute(sds, Attribute.LENGTH, mixedType instanceof AbstractStringType ? false : null);
 		if (length != null) {
 			try {
 				NaturalInterval interval = NaturalInterval.from(length.getValue());
-				((AbstractStringType) nodeType).setLength(interval);
+				((AbstractStringType) mixedType).setLength(interval);
 			} catch (IllegalArgumentException e) {
 				throw new SchemaException(length, String.format(ATTRIBUTE_INVALID, 
 					Attribute.LENGTH.tag, length.getValue(), e.getMessage()));
@@ -453,7 +453,7 @@ public final class SDSParser implements Parser {
 		}
 		
 		// Set the value range (only allowed on ranged types).
-		Node range = getAttribute(sds, Attribute.VALUE, nodeType instanceof RangedType ? false : null);
+		Node range = getAttribute(sds, Attribute.VALUE, mixedType instanceof RangedType ? false : null);
 		if (range != null) {
 			try {	
 				Interval<T> interval;
@@ -465,14 +465,14 @@ public final class SDSParser implements Parser {
 					default: // we will never get here, unless we forgot to implement something
 						throw new RuntimeException("SDS type '" + content + "' not implemented!");
 				}
-				((RangedType<Comparable<?>>) nodeType).setRange((Interval<T>) interval);
+				((RangedType<Comparable<?>>) mixedType).setRange((Interval<T>) interval);
 			} catch (IllegalArgumentException e) {
 				throw new SchemaException(range, 
 					String.format(ATTRIBUTE_INVALID, Attribute.VALUE.tag, range.getValue(), e.getMessage()));
 			}
 		}
 		
-		return nodeType;
+		return mixedType;
 	}
 
 	

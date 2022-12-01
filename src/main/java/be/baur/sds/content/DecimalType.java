@@ -1,6 +1,6 @@
 package be.baur.sds.content;
 
-import be.baur.sds.serialization.Content;
+import be.baur.sds.common.Content;
 
 /**
  * A <code>DecimalType</code> represents an SDA node with decimal content.<br>
@@ -19,8 +19,7 @@ public final class DecimalType extends RangedType<Double> {
 		super(name);
 	}
 	
-	
-	@Override
+
 	public Content getContentType() { 
 		return Content.DECIMAL; 
 	}

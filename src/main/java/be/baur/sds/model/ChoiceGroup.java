@@ -34,11 +34,10 @@ public final class ChoiceGroup extends ModelGroup {
 	
 	
 	/**
-	 * Returns the effective minimum
-	 * number of times that a choice group must occur within its context. Even when
-	 * the formal multiplicity states that it is mandatory, empty content is valid
-	 * if at least one of the alternatives is optional. For example, given a schema
-	 * like
+	 * Returns the effective minimum number of times that a choice group must occur
+	 * within its context. Even when the formal multiplicity states that it is
+	 * mandatory, empty content is valid if at least one of the alternatives is
+	 * optional. For example, given a schema like
 	 * 
 	 * <pre>
 	 * node {

@@ -1,6 +1,6 @@
 package be.baur.sds.content;
 
-import be.baur.sds.serialization.Content;
+import be.baur.sds.common.Content;
 
 /**
  * A <code>StringType</code> represents an SDA node with string content. When
@@ -21,8 +21,7 @@ public final class StringType extends AbstractStringType {
 		super(name);
 	}
 	
-	
-	@Override
+
 	public Content getContentType() { 
 		return Content.STRING; 
 	}

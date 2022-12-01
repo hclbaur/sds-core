@@ -1,6 +1,6 @@
 package be.baur.sds.content;
 
-import be.baur.sds.serialization.Content;
+import be.baur.sds.common.Content;
 
 /**
  * A <code>IntegerType</code> represents an SDA node with integer content.<br>
@@ -19,8 +19,7 @@ public final class IntegerType extends RangedType<Integer> {
 		super(name);
 	}
 	
-	
-	@Override
+
 	public Content getContentType() { 
 		return Content.INTEGER; 
 	}

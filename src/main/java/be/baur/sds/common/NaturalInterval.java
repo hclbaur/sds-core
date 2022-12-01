@@ -10,6 +10,8 @@ package be.baur.sds.common;
  * a..b	Closed
  * a..*	Right unbounded, but a..Integer.MAX_VALUE in practice
  *   a	Degenerate, equivalent to a..a
+ *   
+ * where a &gt;= 0 and b &gt;= a
  * </code>
  * </pre>
  * 
@@ -17,22 +19,35 @@ package be.baur.sds.common;
  */
 public final class NaturalInterval {
 
-	/** Lower interval limit */
+	/** All non-negative integers from 0 to "infinity", e.g. {@code 0..Integer.MAX_VALUE}. */
+	public static final NaturalInterval ZERO_TO_MAX = new NaturalInterval(0, Integer.MAX_VALUE);
+	
+	/** All positive integers from 1 to "infinity", e.g. {@code 1..Integer.MAX_VALUE}. */
+	public static final NaturalInterval ONE_TO_MAX = new NaturalInterval(1, Integer.MAX_VALUE);
+	
+	/** The unit interval from 0 to 1, e.g. {@code 0..1}. */
+	public static final NaturalInterval ZERO_TO_ONE = new NaturalInterval(0, 1);
+	
+	/** The degenerate interval {@code 1..1}, so just 1. */
+	public static final NaturalInterval ONE_TO_ONE = new NaturalInterval(1, 1);
+	
+	
+	/** The lower interval limit */
 	public final int min;
-	/** Upper interval limit */
+	/** The upper interval limit */
 	public final int max;
 
 
-	/**
-	 * Creates an interval from two integer limit points. The minimum should never
-	 * exceed the maximum value, and neither can be negative.
+	/*
+	 * Creates an interval from two integer limits. The minimum limit should never
+	 * exceed the maximum limit, and neither can be negative.
 	 * 
 	 * @param min the lower limit
 	 * @param max the upper limit
 	 * @throws IllegalArgumentException if the lower exceeds the upper limit or
 	 *                                  either limit is invalid
 	 */
-	public NaturalInterval(int min, int max) {
+	 private NaturalInterval(int min, int max) {
 
 		if (min < 0 || max < 0)
 			throw new IllegalArgumentException("negative values are not allowed");
@@ -43,13 +58,36 @@ public final class NaturalInterval {
 		this.max = max;
 	}
 
-	
+	 
+	/**
+	 * Creates an interval from two integer limits.
+	 * 
+	 * @param min the lower limit
+	 * @param max the upper limit
+	 * @return a natural interval
+	 * @throws IllegalArgumentException for an invalid interval
+	 */
+	 public static NaturalInterval from(int min, int max) {
+		 
+		 /* return static values for common intervals */
+		 if (min == 0) {
+			 if (max == 1) return ZERO_TO_ONE;
+			 if (max == Integer.MAX_VALUE) return ZERO_TO_MAX;
+		 }
+		 if (min == 1) {
+			 if (max == 1) return ONE_TO_ONE;
+			 if (max == Integer.MAX_VALUE) return ONE_TO_MAX;
+		 } 
+		 return new NaturalInterval(min, max);
+	}
+
+
 	/**
 	 * Creates an interval from a string in natural interval notation.
 	 * 
 	 * @param interval a valid interval notation, not null or empty
 	 * @return a natural interval
-	 * @throws IllegalArgumentException in case of an invalid interval
+	 * @throws IllegalArgumentException for an invalid interval
 	 */
 	public static NaturalInterval from(String interval)  {
 	
@@ -74,15 +112,15 @@ public final class NaturalInterval {
 			throw new IllegalArgumentException("missing or non-integer value(s)", e);
 		}
 
-		return new NaturalInterval(min, max);	
+		return NaturalInterval.from(min, max);	
 
 	}
 
 	
 	/**
 	 * Checks whether a value lies within this interval. This method returns 0 if
-	 * the specified value is contained within the interval limits, -1 if it
-	 * subceeds the lower limit, and 1 if it exceeds the upper limit.
+	 * the specified integer value is contained within the interval limits, -1 if 
+	 * it subceeds the lower limit, and 1 if it exceeds the upper limit.
 	 * 
 	 * @param value the value to be evaluated
 	 * @return -1, 0 or 1

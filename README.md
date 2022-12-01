@@ -18,7 +18,7 @@ For example:
 	schema {
 		node "addressbook" {
 			node "contact" {
-				occurs "0..*"
+				type "integer" occurs "0..*"
 				node "firstname" { type "string" }
 				node "phonenumber" { type "string" occurs "1..*" }
 			}
@@ -27,8 +27,8 @@ For example:
 
 As you can see the specification is rather straight-forward if you are already 
 familiar with SDA and the concept of schema. The example defines an 'addressbook'
-as a collection of zero or more 'contact' nodes, each of which should contain a 
-'firstname' followed by one or more 'phonenumber' nodes. 
+as a collection of zero or more 'contact' nodes, which have an integer "id" and 
+should contain a 'firstname' node followed by one or more 'phonenumber' nodes. 
 
 There is a lot more to be said about SDS than this, so please refer to the 
 [documentation](docs/) for a complete specification.

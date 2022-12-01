@@ -1,6 +1,8 @@
 package be.baur.sds.content;
 
-import be.baur.sds.NodeType;
+import java.util.Objects;
+
+import be.baur.sds.MixedType;
 import be.baur.sds.common.Interval;
 
 /**
@@ -8,9 +10,9 @@ import be.baur.sds.common.Interval;
  * within an interval, like an integer, a decimal or a date(time).<br>
  * See also {@link Interval}.
  */
-public abstract class RangedType <T extends Comparable<?>> extends NodeType {
+public abstract class RangedType <T extends Comparable<?>> extends MixedType {
 
-	private Interval<?> range = null; // Range null means: any value is allowed.
+	private Interval<?> range = Interval.MIN_TO_MAX; // default any value is allowed.
 	
 	
 	/**
@@ -25,10 +27,10 @@ public abstract class RangedType <T extends Comparable<?>> extends NodeType {
 	
 	
 	/**
-	 * Returns the interval of allowed values. This method returns null if any value
-	 * is allowed.
+	 * Returns the interval of allowed values. The default value is {@code (*..*)},
+	 * which means any value is allowed. This method never returns null.
 	 * 
-	 * @return an interval, may be null
+	 * @return an interval, never null
 	 */
 	public Interval<?> getRange() {
 		return range;
@@ -36,12 +38,11 @@ public abstract class RangedType <T extends Comparable<?>> extends NodeType {
 
 
 	/**
-	 * Sets the the interval of allowed values. An interval of null means any length
-	 * is allowed.
+	 * Sets the the interval of allowed values. This method does not accept null.
 	 * 
-	 * @param range an interval, may be null
+	 * @param range an interval, not null
 	 */
 	public void setRange(Interval<?> range) {
-		this.range = range;
+		this.range = Objects.requireNonNull(range, "range must not be null");
 	}
 }

@@ -1,7 +1,7 @@
 package be.baur.sds.content;
 
-import be.baur.sds.NodeType;
-import be.baur.sds.serialization.Content;
+import be.baur.sds.MixedType;
+import be.baur.sds.common.Content;
 
 /**
  * An {@code AnyType} represents any SDA node, with any simple or complex
@@ -13,7 +13,7 @@ import be.baur.sds.serialization.Content;
  * <code>node { type "any" }</code> (not explicitly named, any valid name is
  * allowed).
  */
-public final class AnyType extends NodeType {
+public final class AnyType extends MixedType {
 
 	private final boolean named;	// true if the any type is explicitly named
 	
@@ -40,8 +40,7 @@ public final class AnyType extends NodeType {
 		return named;
 	}
 	
-	
-	@Override
+
 	public Content getContentType() {
 		return Content.ANY;
 	}

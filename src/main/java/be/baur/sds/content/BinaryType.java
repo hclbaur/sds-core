@@ -1,6 +1,6 @@
 package be.baur.sds.content;
 
-import be.baur.sds.serialization.Content;
+import be.baur.sds.common.Content;
 
 /**
  * A <code>BinaryType</code> is a string type representing an SDA node with
@@ -22,8 +22,7 @@ public final class BinaryType extends AbstractStringType {
 		super(name);
 	}
 	
-	
-	@Override
+
 	public Content getContentType() { 
 		return Content.BINARY; 
 	}
