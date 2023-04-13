@@ -22,7 +22,7 @@
 
 ## Introduction
 
-This is the specification of the SDA syntax, version 2. Compared to version 1, I 
+This is the specification of the SDS syntax, version 2. Compared to version 1, I 
 dropped the `name` attribute, as I was able to use the SDA 2 syntax to name types 
 in a more intuitive and appealing way. Other than that, there are no suprprises. 
 You can find the original [here](/docs/SPECIFICATIONV1.md).
