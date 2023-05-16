@@ -150,9 +150,4 @@ public class NodeType extends Component {
 		return node;
 	}
 
-
-	@Override
-	public String toString() {
-		return toNode().toString();
-	}
 }

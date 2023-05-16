@@ -81,9 +81,4 @@ public abstract class ModelGroup extends Component {
 		return node;
 	}
 
-
-	@Override
-	public final String toString() {
-		return toNode().toString();
-	}
 }
