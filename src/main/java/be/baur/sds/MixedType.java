@@ -55,6 +55,7 @@ public abstract class MixedType extends NodeType {
 	 * 
 	 * @return a regular expression, may be null
 	 */
+	@Deprecated  // can be obtained from the toString method of the pattern
 	public String getPatternExpr() {
 		return pattexp;
 	}
