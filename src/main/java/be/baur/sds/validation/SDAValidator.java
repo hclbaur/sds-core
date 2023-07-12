@@ -83,7 +83,7 @@ public final class SDAValidator implements Validator {
 			
 			// otherwise if there is only one (node type), that must be the one
 			else if (schema.getNodes().size() == 1)
-				type = (NodeType) schema.getNodes().get(1);
+				type = (NodeType) schema.getNodes().get(0);
 			
 			else // otherwise we do not know nor guess
 				throw new IllegalArgumentException(String.format(NO_DEFAULT_TYPE_FOUND));

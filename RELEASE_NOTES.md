@@ -1,17 +1,23 @@
 # Release Notes
 
+## [2.1.1] - 2023-??-??
+
+This release is in development.
+
+## Compatibility
+
+- Requires at least Java 8 and sda-core 2.1.0.
+
+## Previous releases
+
+### [2.1.0] - 2022-12-01
+
 This release introduces a few refactoring changes with limited impact.
 
-## [2.1.0] - 2022-12-01
 - `Added` abstract superclass MixedType for types with simple content.
 - `Changed` Content Enum moved to package be.baur.sds.common.
 - `Removed` (Natural)Interval constructors, added factory methods.
 - `Removed` AbstractStringType.minLength() and maxLength().
-
-## Compatibility
-- Requires at least Java 8 and SDA 2.0.0.
-
-## Previous releases
 
 ### [2.0.0] - 2022-10-09 (requires at least SDA v2.0.0)
 

@@ -501,7 +501,7 @@ public final class SDSParser implements Parser {
 		if (req == null)
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, att.tag));
 		
-		Node node = attributes.get(1);
+		Node node = attributes.get(0);
 		if (node.getValue().isEmpty())
 			throw new SchemaException(node, String.format(ATTRIBUTE_EMPTY, att.tag));
 		if (size > 1)
