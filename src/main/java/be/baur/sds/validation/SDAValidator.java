@@ -128,23 +128,23 @@ public final class SDAValidator implements Validator {
 		
 		if (! (type instanceof MixedType)) { // we are expecting complex content ONLY
 			
-			if (! node.isComplex() || ! node.getValue().isEmpty())  // but we got simple or mixed content
+			if (node.isLeaf() || ! node.getValue().isEmpty())  // but we got simple or mixed content
 				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
 
-			if (node.isComplex()) // validate complex content if we have it
+			if (! node.isLeaf()) // validate complex content if we have it
 				errors.add(validateComplexContent(node, type, errors));
 
 			return true;
 		}
 		
 		// we are expecting simple content or mixed content, type must be instance of MixedType
-		if (node.isComplex()) {
-			if (! type.isComplex()) // no complex content is expected
+		if (! node.isLeaf()) {
+			if (type.isLeaf()) // no complex content is expected
 				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
 			else // validate complex content if we have it
 				errors.add(validateComplexContent(node, type, errors));
 		} 
-		else if (type.isComplex()) // report missing complex content
+		else if (! type.isLeaf()) // report missing complex content
 			errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
 	
 		// validate the simple content we were expecting
@@ -301,12 +301,12 @@ public final class SDAValidator implements Validator {
 				}
 
 				boolean match;
-				//System.out.println("validateComplex: matching " + (childnode.isComplex() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
+				//System.out.println("validateComplex: matching " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
 				if (childcomp instanceof ModelGroup)
 					match = matchGroup(inode, childnode, (ModelGroup) childcomp, errors);
 				else match = matchNodeType(childnode, (NodeType) childcomp, errors);
 				
-				//System.out.println("validateComplex: " + (childnode.isComplex() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
+				//System.out.println("validateComplex: " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
 				if (match) { // count match and get the next node (or none) to match against this component
 					childnode = inode.hasNext() ? inode.next() : null;
 					++curmatches; continue;

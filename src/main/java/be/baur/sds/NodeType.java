@@ -75,12 +75,12 @@ public class NodeType extends Component {
 	}
 
 	@Override /* handle type reference */
-	public final boolean isComplex() {
+	public final boolean isLeaf() {
 		
-		if (getGlobalType() == null) return super.isComplex();
+		if (getGlobalType() == null) return super.isLeaf();
 		if (globalTypeNode == null) // not bound yet, so get it from the schema root
 			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType());
-		return globalTypeNode.isComplex(); // should not cause NPE
+		return globalTypeNode.isLeaf(); // should not cause NPE
 	}
 
 	@Override /* handle type reference */
