@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.ParseException;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import be.baur.sda.Node;
@@ -432,12 +433,13 @@ public final class SDSParser implements Parser {
 		}
 		
 		// Set the pattern (not allowed on the any type).
-		Node pattern = getAttribute(sds, Attribute.PATTERN, isAnyType? null : false);
+		Node regexp = getAttribute(sds, Attribute.PATTERN, isAnyType ? null : false);
+		if ( regexp != null) 
 		try { 
-			if (pattern != null) mixedType.setPatternExpr(pattern.getValue()); 
+			mixedType.setPattern( Pattern.compile(regexp.getValue()) ); 
 		} catch (PatternSyntaxException e) {
-			throw new SchemaException(pattern, 
-				String.format(ATTRIBUTE_INVALID, Attribute.PATTERN.tag, pattern.getValue(), e.getMessage()));
+			throw new SchemaException(regexp, 
+				String.format(ATTRIBUTE_INVALID, Attribute.PATTERN.tag, regexp.getValue(), e.getMessage()));
 		}
 		
 		// Set the length (only allowed on string and binary types).

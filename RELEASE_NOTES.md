@@ -1,8 +1,11 @@
 # Release Notes
 
-## [2.1.1] - 2023-??-??
+## [2.2.0] - 2023-??-??
 
 This release is in development.
+
+- `Removed` MixedType.setPatternExpr() and getPatternExpr().
+- `Added` MixedType.setPattern().
 
 ## Compatibility
 

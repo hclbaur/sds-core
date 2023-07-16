@@ -183,7 +183,7 @@ public final class SDAValidator implements Validator {
 			
 		Pattern pattern = type.getPattern();
 		if (pattern != null && ! pattern.matcher(value).matches())
-			return new Error(node, VALUE_DOES_NOT_MATCH, value, type.getPatternExpr());
+			return new Error(node, VALUE_DOES_NOT_MATCH, value, type.getPattern().toString());
 		
 		return null;
 	}

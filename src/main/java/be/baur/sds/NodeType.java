@@ -136,7 +136,7 @@ public class NodeType extends Component {
 				MixedType m = (MixedType) this;
 				
 				if (m.getPattern() != null)
-					node.add(new Node(Attribute.PATTERN.tag, m.getPatternExpr()));
+					node.add(new Node(Attribute.PATTERN.tag, m.getPattern().toString()));
 				
 				if (stringType == !m.isNullable())
 					node.add(new Node(Attribute.NULLABLE.tag, String.valueOf(m.isNullable())));

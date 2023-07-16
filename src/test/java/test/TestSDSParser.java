@@ -83,6 +83,7 @@ public final class TestSDSParser
 		t.ts1("S27", "schema { node \"anything\" { node { type \"any\" } } }", null);
 		t.ts1("S28", "schema { node \"x\" { type \"string\" node \"y\" { type \"string\" } } }", null);
 		
+		/* test invalid SDS */
 		System.out.print("\n              ");
 		String s = "SDS syntax violation at ";
 		t.ts1("F01", "node { }", s + "/node: a 'schema' node is expected");
@@ -131,6 +132,18 @@ public final class TestSDSParser
 		t.ts1("F43", "schema{ node \"123\" { type \"string\" } }", s + "/schema/node: '123' is not a valid node name");
 		t.ts1("F44", "schema{ node \"phone\" { type \"string\" } node \"123\" { type \"phone\" } }", s + "/schema/node[2]: '123' is not a valid node name");
 		t.ts1("F45", "schema { node \"x\" { type \"any\" node \"y\" { type \"string\" } } }", s + "/schema/node: type 'any' is invalid; node defines content");
+	
+		// test performance
+//		PerfTest p = new PerfTest(sdsnode -> {
+//			try {
+//				SDSParser.parse(sdsnode);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		});
+//	
+//		p.test("\nPerformance : P01", sds, 2000, 40);
+	
 	}
 
 }
