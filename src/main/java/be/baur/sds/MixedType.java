@@ -13,7 +13,7 @@ import be.baur.sds.common.Content;
  */
 public abstract class MixedType extends NodeType {
 
-	private Pattern pattern = null;		// the pre-compiled (from pattexp) pattern.
+	private Pattern pattern = null;		// the pre-compiled pattern.
 	private boolean nullable = false; 	// default null-ability (if that is a word).	
 
 	

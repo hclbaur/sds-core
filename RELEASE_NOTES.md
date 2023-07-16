@@ -4,8 +4,8 @@
 
 This release is in development.
 
-- `Removed` MixedType.setPatternExpr() and getPatternExpr().
-- `Added` MixedType.setPattern().
+- `Removed` MixedType.getPatternExpr().
+- `Changed` MixedType.setPatternExpr() to setPattern().
 
 ## Compatibility
 
