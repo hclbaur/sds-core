@@ -1,7 +1,8 @@
 package be.baur.sds;
 
+import java.util.List;
+
 import be.baur.sda.Node;
-import be.baur.sda.NodeSet;
 import be.baur.sds.content.AbstractStringType;
 import be.baur.sds.content.AnyType;
 import be.baur.sds.content.RangedType;
@@ -19,7 +20,6 @@ import be.baur.sds.serialization.Components;
  */
 public class NodeType extends Component {
 
-	//private String globalTypeName = null; 	// the name of the type this component refers to.
 	private NodeType globalTypeNode = null; // the global node type this component refers to.
 	
 	/**
@@ -32,30 +32,6 @@ public class NodeType extends Component {
 		super(name);
 	}
 
-	
-//	/**
-//	 * Returns the name of the referenced global type. A component may re-use a type
-//	 * defined in the root section of the schema. This method returns null if this
-//	 * component is not referencing a type.
-//	 * 
-//	 * @return the name of the referenced type, may be null
-//	 */
-//	public String getGlobalType() {
-//		return globalTypeName;
-//	}
-//
-//	
-//	/**
-//	 * Sets the name of the referenced global type. A component may re-use a type
-//	 * defined in the root section of the schema. This method cannot be used to
-//	 * re(set) an existing reference as this is likely to cause a problem.
-//	 * 
-//	 * @param type the name of the referenced type
-//	 */
-//	public void setGlobalType(String type) {
-//		if (type != null) this.globalTypeName = type;
-//	}
-	
 	/*
 	 * The following three methods overrides the super type method to handle type
 	 * references. For a regular node type, we just access the super type. But a
@@ -65,13 +41,14 @@ public class NodeType extends Component {
 	 * and may cause unexpected behavior at some point in the future, but we shall
 	 * cross that bridge when we get there.
 	 */
+	
 	@Override
-	public final NodeSet getNodes() {
+	public final List<Node> nodes() {
 		
-		if (getGlobalType() == null) return super.getNodes();
+		if (getGlobalType() == null) return super.nodes();
 		if (globalTypeNode == null) // not bound yet, so get it from the schema root
-			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType());
-		return globalTypeNode.getNodes(); // should not cause NPE
+			globalTypeNode = (NodeType) this.root().get(getGlobalType());
+		return globalTypeNode.nodes(); // should not cause NPE
 	}
 
 	@Override /* handle type reference */
@@ -79,7 +56,7 @@ public class NodeType extends Component {
 		
 		if (getGlobalType() == null) return super.isLeaf();
 		if (globalTypeNode == null) // not bound yet, so get it from the schema root
-			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType());
+			globalTypeNode = (NodeType) this.root().get(getGlobalType());
 		return globalTypeNode.isLeaf(); // should not cause NPE
 	}
 
@@ -88,7 +65,7 @@ public class NodeType extends Component {
 		
 		if (getGlobalType() == null) return super.isParent();
 		if (globalTypeNode == null) // not bound yet, so get it from the schema root
-			globalTypeNode = (NodeType) this.root().getNodes().get(getGlobalType());
+			globalTypeNode = (NodeType) this.root().get(getGlobalType());
 		return globalTypeNode.isParent(); // should not cause NPE
 	}
 	
@@ -145,7 +122,7 @@ public class NodeType extends Component {
 		
 		// Finally, render any children, unless we are a type reference
 		if (isParent() && getGlobalType() == null)
-			for (Node child : getNodes()) node.add(((Component) child).toNode());
+			for (Node child : nodes()) node.add(((Component) child).toNode());
 		
 		return node;
 	}

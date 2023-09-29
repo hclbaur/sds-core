@@ -59,7 +59,7 @@ public final class ChoiceGroup extends ModelGroup {
 	@Override
 	public int minOccurs() {
 		
-		Optional<Node> opt = this.getNodes().stream()
+		Optional<Node> opt = this.nodes().stream()
 			.filter(n -> (n instanceof Component) && ((Component) n).minOccurs() == 0)
 			.findFirst(); // if a choice contains at least one optional component, it is optional.
 		if (opt.isPresent()) return 0;

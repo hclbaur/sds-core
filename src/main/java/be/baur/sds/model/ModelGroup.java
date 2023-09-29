@@ -50,7 +50,7 @@ public abstract class ModelGroup extends Component {
 	@Override
 	public int minOccurs() {
 		
-		Optional<Node> man = this.getNodes().stream()
+		Optional<Node> man = this.nodes().stream()
 			.filter(n -> (n instanceof Component) && ((Component) n).minOccurs() > 0)
 			.findFirst(); // if a group contains no mandatory components, it is optional.
 		if (man.isPresent()) return super.minOccurs();
@@ -76,7 +76,7 @@ public abstract class ModelGroup extends Component {
 			node.add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		//if (getGlobalType() == null) // Render children, unless we are a type reference.
-		for (Node child : getNodes()) node.add(((Component) child).toNode());
+		for (Node child : nodes()) node.add(((Component) child).toNode());
 
 		return node;
 	}

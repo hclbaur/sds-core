@@ -1,9 +1,9 @@
 package be.baur.sds.validation;
 
 import java.util.Iterator;
+import java.util.List;
 
 import be.baur.sda.Node;
-import be.baur.sda.NodeSet;
 
 /**
  * This non-public class provides a Node iterator with a revert() method to deal
@@ -15,12 +15,10 @@ class NodeIterator implements Iterator<Node>{
     private boolean reverted = false; // whether we are in reverted state
 	private Iterator<Node> internal; // the internal backing iterator
 
-
-	/** Creates an iterator over the elements contained in <code>set</code> */
-	public NodeIterator(NodeSet set) {
-		this.internal = set.iterator();
+	/** Creates an iterator over the elements contained in a node <code>list</code>. */
+	public NodeIterator(List<Node> list) {
+		this.internal = list.iterator();
 	}
-
     
     @Override
     public boolean hasNext() {
@@ -51,10 +49,10 @@ class NodeIterator implements Iterator<Node>{
     }
 
 //    public static void main(String[] args) {
-//    	NodeSet set = new NodeSet();
-//    	set.add(new SimpleNode("node","1")); 
-//    	set.add(new SimpleNode("node","2"));
-//    	set.add(new SimpleNode("node","3"));
+//    	List<Node> set = new ArrayList<Node> ();
+//    	set.add(new Node("node","1")); 
+//    	set.add(new Node("node","2"));
+//    	set.add(new Node("node","3"));
 //    	NodeIterator it = new NodeIterator(set);
 //    	it.revert(); it.revert();
 //    	System.out.println("next: " + it.next());
