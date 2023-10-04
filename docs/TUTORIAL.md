@@ -1,31 +1,31 @@
-# SDS Specification, version 2
+# SDS Tutorial
 
-- [Introduction](/docs/SPECIFICATION.md#introduction)
-- [Why we need it](/docs/SPECIFICATION.md#why-we-need-it)
-- [It is all about looks](/docs/SPECIFICATION.md#it-is-all-about-looks)
-	- [First contact](/docs/SPECIFICATION.md#first-contact)
-	- [Re:mix](/docs/SPECIFICATION.md#re:mix)
-	- [Dolls, salami and blinds](/docs/SPECIFICATION.md#dolls-salami-and-blinds)
-	- [Finding the root](/docs/SPECIFICATION.md#finding-the-root)
-	- [More on multiplicity](/docs/SPECIFICATION.md#more-on-multiplicity)
-- [Typicalities](/docs/SPECIFICATION.md#typicalities)
-	- [Matters of space](/docs/SPECIFICATION.md#matters-of-space)
-	- [Facets of restriction](/docs/SPECIFICATION.md#facets-of-restriction)
-	- [The nothing that is](/docs/SPECIFICATION.md#the-nothing-that-is)
-	- [Anything goes](/docs/SPECIFICATION.md#anything-goes)
-- [Model citizens](/docs/SPECIFICATION.md#model-citizens)
-	- [Group mentality](/docs/SPECIFICATION.md#group-mentality)
-	- [The choice is yours](/docs/SPECIFICATION.md#the-choice-is-yours)
-	- [Order! Order!](/docs/SPECIFICATION.md#order-order)
-- [Conclusion](/docs/SPECIFICATION.md#conclusion)
+- [Introduction](/docs/TUTORIAL.md#introduction)
+- [Why we need it](/docs/TUTORIAL.md#why-we-need-it)
+- [It is all about looks](/docs/TUTORIAL.md#it-is-all-about-looks)
+	- [First contact](/docs/TUTORIAL.md#first-contact)
+	- [Re:mix](/docs/TUTORIAL.md#re:mix)
+	- [Dolls, salami and blinds](/docs/TUTORIAL.md#dolls-salami-and-blinds)
+	- [Finding the root](/docs/TUTORIAL.md#finding-the-root)
+	- [More on multiplicity](/docs/TUTORIAL.md#more-on-multiplicity)
+- [Typicalities](/docs/TUTORIAL.md#typicalities)
+	- [Matters of space](/docs/TUTORIAL.md#matters-of-space)
+	- [Facets of restriction](/docs/TUTORIAL.md#facets-of-restriction)
+	- [The nothing that is](/docs/TUTORIAL.md#the-nothing-that-is)
+	- [Anything goes](/docs/TUTORIAL.md#anything-goes)
+- [Model citizens](/docs/TUTORIAL.md#model-citizens)
+	- [Group mentality](/docs/TUTORIAL.md#group-mentality)
+	- [The choice is yours](/docs/TUTORIAL.md#the-choice-is-yours)
+	- [Order! Order!](/docs/TUTORIAL.md#order-order)
+- [Conclusion](/docs/TUTORIAL.md#conclusion)
 
 
 ## Introduction
 
-This is the specification of the SDS syntax, version 2. Compared to version 1, I 
-dropped the `name` attribute, as I was able to use the SDA 2 syntax to name types 
-in a more intuitive and appealing way. Other than that, there are no suprprises. 
-You can find the original [here](/docs/SPECIFICATIONV1.md).
+This tutorial will teach you the SDS syntax, version 2. Compared to version 1, I 
+dropped the `name` attribute, and used the SDA 2 syntax to name types in a more 
+intuitive and appealing way. Other than that, there are no suprises. You can find 
+the original [here](/docs/SDS1.md).
 
 
 ## Why we need it

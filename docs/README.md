@@ -9,11 +9,11 @@ I kept, started toying around with the sources, created a git project and polish
 everything up a little.
 
 [^1]: this was around the time the COVID-19 pandemic hit. Thanks to the lockdowns I 
-got to spent quite some free evenings on SDS. 
+got to spent quite some free evenings on SDS.
 
-Not long after I was close to something that could be used to parse, render and 
+Not long after, I was close to something that could be used to parse, render and 
 manipulate data, so I tagged it SDA 1.3.0 - which is rather silly because no one 
-was using it - and started thinking about the future.
+was using earlier versions - and started thinking about the future.
 
 Which, naturally, would have to include Structured (Simple) Data Schema.
 

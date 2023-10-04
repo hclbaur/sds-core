@@ -1,8 +1,8 @@
 # Release Notes
 
-## [2.2.0] - 2023-??-??
+## [2.2.0] - 2023-10-04
 
-This release is in development.
+This is a compatability release for sda-core 2.1.x with minor changes.
 
 - `Removed` MixedType.getPatternExpr().
 - `Changed` MixedType.setPatternExpr() to setPattern().
@@ -17,7 +17,7 @@ This release is in development.
 
 This release introduces a few refactoring changes with limited impact.
 
-- `Added` abstract superclass MixedType for types with simple content.
+- Added abstract superclass MixedType for types with simple content.
 - `Changed` Content Enum moved to package be.baur.sds.common.
 - `Removed` (Natural)Interval constructors, added factory methods.
 - `Removed` AbstractStringType.minLength() and maxLength().
@@ -30,7 +30,7 @@ existing schema files, as SDS 2 is not backwards compatible with SDS 1.
 Also, the library itself has changed quite a bit, but unless you have
 been writing an SDS parser, there will be little impact when upgrading.
 
-- `Added` NodeType to replace SimpleType and ComplexType.
+- Added NodeType to replace SimpleType and ComplexType.
 - `Changed` ComponentType (interface) to Component (abstract class).
 - `Changed` AbstractGroup to extend ComponentType (was ComplexType).
 - `Changed` Parser.parse() to throw ParseException (was SyntaxException).
@@ -48,12 +48,12 @@ been writing an SDS parser, there will be little impact when upgrading.
 SchemaException (was Exception).
 
 ### [1.2.3] - 2022-06-28
-- `Fixed` bug in validation of unordered groups.
-- `Added` support for repeating components in unordered groups.
+- Fixed bug in validation of unordered groups.
+- Added support for repeating components in unordered groups.
 
 ### [1.2.2] - 2022-06-17
-- `Fixed` some issues with type casting.
-- `Added` demo and documentation in markdown.
+- Fixed some issues with type casting.
+- Added demo and documentation in markdown.
 - `Removed` documentation in ODT format.
 
 ### [1.2.1] - 2021-08-01 (requires at least SDA v1.6.0)

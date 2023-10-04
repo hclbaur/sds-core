@@ -1,9 +1,0 @@
-schema {
-	node "addressbook" {
-		node "contact" {
-			type "integer" occurs "0..*"
-			node "firstname" { type "string" }
-			node "phonenumber" { type "string" occurs "1..*" }
-		}
-	}
-}
