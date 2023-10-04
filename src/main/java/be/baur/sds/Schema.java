@@ -47,7 +47,7 @@ public final class Schema extends Node {
 	 */
 	public void setDefaultType(String type) {
  
-		if (type != null && this.getNodes().get(type) == null)
+		if (type != null && this.get(type) == null)
 			throw new IllegalArgumentException("no such global type (" + type + ")");
 		this.defaultType = type; 
 	}
@@ -67,7 +67,7 @@ public final class Schema extends Node {
 		if (defaultType != null) // Render the type attribute if we have one.
 			node.add(new Node(Attribute.TYPE.tag, defaultType));
 
-		for (Node component : this.getNodes()) // Render all components.
+		for (Node component : this.nodes()) // Render all components.
 			node.add(((Component) component).toNode());
 
 		return node;

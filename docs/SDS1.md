@@ -1,21 +1,25 @@
-# SDS Specification
+# SDS V1
 
-- [Why we need it](/docs/SPECIFICATIONV1.md#why-we-need-it)
-- [It is all about looks](/docs/SPECIFICATIONV1.md#it-is-all-about-looks)
-	- [First contact](/docs/SPECIFICATIONV1.md#first-contact)
-	- [Dolls, salami and blinds](/docs/SPECIFICATIONV1.md#dolls-salami-and-blinds)
-	- [Finding the root](/docs/SPECIFICATIONV1.md#finding-the-root)
-	- [More on multiplicity](/docs/SPECIFICATIONV1.md#more-on-multiplicity)
-- [Typicalities](/docs/SPECIFICATIONV1.md#typicalities)
-	- [Matters of space](/docs/SPECIFICATIONV1.md#matters-of-space)
-	- [Facets of restriction](/docs/SPECIFICATIONV1.md#facets-of-restriction)
-	- [The nothing that is](/docs/SPECIFICATIONV1.md#the-nothing-that-is)
-	- [Anything goes](/docs/SPECIFICATIONV1.md#anything-goes)
-- [Model citizens](/docs/SPECIFICATIONV1.md#model-citizens)
-	- [Group mentality](/docs/SPECIFICATIONV1.md#group-mentality)
-	- [The choice is yours](/docs/SPECIFICATIONV1.md#the-choice-is-yours)
-	- [Order! Order!](/docs/SPECIFICATIONV1.md#order-order)
-- [Conclusion](/docs/SPECIFICATIONV1.md#conclusion)
+<pre>
+    <b>This is the documentation for SDS version 1, now obsolete.</b>
+</pre>
+
+- [Why we need it](/docs/SDS1.md#why-we-need-it)
+- [It is all about looks](/docs/SDS1.md#it-is-all-about-looks)
+	- [First contact](/docs/SDS1.md#first-contact)
+	- [Dolls, salami and blinds](/docs/SDS1.md#dolls-salami-and-blinds)
+	- [Finding the root](/docs/SDS1.md#finding-the-root)
+	- [More on multiplicity](/docs/SDS1.md#more-on-multiplicity)
+- [Typicalities](/docs/SDS1.md#typicalities)
+	- [Matters of space](/docs/SDS1.md#matters-of-space)
+	- [Facets of restriction](/docs/SDS1.md#facets-of-restriction)
+	- [The nothing that is](/docs/SDS1.md#the-nothing-that-is)
+	- [Anything goes](/docs/SDS1.md#anything-goes)
+- [Model citizens](/docs/SDS1.md#model-citizens)
+	- [Group mentality](/docs/SDS1.md#group-mentality)
+	- [The choice is yours](/docs/SDS1.md#the-choice-is-yours)
+	- [Order! Order!](/docs/SDS1.md#order-order)
+- [Conclusion](/docs/SDS1.md#conclusion)
 
 ## Why we need it
 

@@ -1,7 +1,6 @@
 package be.baur.sds;
 
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import be.baur.sda.Node;
 import be.baur.sds.common.Content;
@@ -14,8 +13,7 @@ import be.baur.sds.common.Content;
  */
 public abstract class MixedType extends NodeType {
 
-	private String pattexp = null; 		// the regular expression defining the pattern.
-	private Pattern pattern = null;		// the pre-compiled (from pattexp) pattern.
+	private Pattern pattern = null;		// the pre-compiled pattern.
 	private boolean nullable = false; 	// default null-ability (if that is a word).	
 
 	
@@ -39,10 +37,10 @@ public abstract class MixedType extends NodeType {
 	
 	
 	/**
-	 * Returns the pattern that valid simple content must match. This method will
-	 * return a null reference if no pattern expression has been set.
+	 * Returns the pattern that simple content must match. This method will
+	 * return a null reference if no pattern has been set.
 	 * 
-	 * @return the (pre-compiled) pattern, may be null
+	 * @return a (pre-compiled) pattern, may be null
 	 */
 	public Pattern getPattern() {
 		return pattern;
@@ -50,30 +48,12 @@ public abstract class MixedType extends NodeType {
 
 	
 	/**
-	 * Returns the regular expression that valid simple content must match. This
-	 * method will return a null reference if no pattern expression has been set.
+	 * Sets the simple content pattern for this type.
 	 * 
-	 * @return a regular expression, may be null
+	 * @param pattern a (pre-compiled) pattern, may be null
 	 */
-	public String getPatternExpr() {
-		return pattexp;
-	}
-
-
-	/**
-	 * Sets the simple content pattern for this type from a regular expression.
-	 * 
-	 * @param regexp a regular expression
-	 * @throws PatternSyntaxException if the regular expression is invalid.
-	 */
-	public void setPatternExpr(String regexp) {
-		if (regexp == null || regexp.isEmpty()) {
-			pattexp = null; pattern = null;
-		}
-		else {
-			pattern = Pattern.compile(regexp);
-			pattexp = regexp; // set after successful compile!
-		}
+	public void setPattern(Pattern pattern) {
+		this.pattern = pattern;
 	}
 
 	

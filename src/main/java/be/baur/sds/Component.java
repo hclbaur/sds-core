@@ -119,6 +119,9 @@ public abstract class Component extends Node {
 	 * 
 	 * @return an SDS representation of this component
 	 */
-	@Override 
-	public abstract String toString();
+	@Override
+	public final String toString() {
+		return toNode().toString();
+	}
+
 }

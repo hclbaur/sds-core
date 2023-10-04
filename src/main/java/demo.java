@@ -1,9 +1,9 @@
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 
 import be.baur.sda.Node;
-import be.baur.sda.NodeSet;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
@@ -26,10 +26,10 @@ public class demo {
 			for (Error error : errors) System.out.println(error.toString()); return;
 		}
 		
-		for (Node contact : root.getNodes().find("contact")) {
+		for (Node contact : root.find("contact")) {
 			
-			Node name = contact.getNodes().get("firstname");
-			NodeSet numbers = contact.getNodes().find("phonenumber");
+			Node name = contact.get("firstname");
+			List<Node> numbers = contact.find("phonenumber");
 			
 			System.out.println(name.getValue() + " has " + numbers.size() + " phone number(s).");
 			

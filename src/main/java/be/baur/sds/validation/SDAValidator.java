@@ -1,12 +1,15 @@
 package be.baur.sds.validation;
 
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import be.baur.sda.Node;
-import be.baur.sda.NodeSet;
 import be.baur.sds.Component;
 import be.baur.sds.MixedType;
 import be.baur.sds.NodeType;
@@ -79,17 +82,17 @@ public final class SDAValidator implements Validator {
 		if (globaltype == null || globaltype.isEmpty()) {
 			
 			if (schema.getDefaultType() != null) // if we have a default type, we take that
-				type = (NodeType) schema.getNodes().get(schema.getDefaultType());
+				type = (NodeType) schema.get(schema.getDefaultType());
 			
 			// otherwise if there is only one (node type), that must be the one
-			else if (schema.getNodes().size() == 1)
-				type = (NodeType) schema.getNodes().get(1);
+			else if (schema.nodes().size() == 1)
+				type = (NodeType) schema.nodes().get(0);
 			
 			else // otherwise we do not know nor guess
 				throw new IllegalArgumentException(String.format(NO_DEFAULT_TYPE_FOUND));
 		}	
 		else // get the specified type (or null if not found)
-			type = (NodeType) schema.getNodes().get(globaltype);
+			type = (NodeType) schema.get(globaltype);
 			
 		if (type == null)
 			throw new IllegalArgumentException(String.format(GLOBAL_TYPE_NOT_FOUND, globaltype));
@@ -128,23 +131,23 @@ public final class SDAValidator implements Validator {
 		
 		if (! (type instanceof MixedType)) { // we are expecting complex content ONLY
 			
-			if (! node.isComplex() || ! node.getValue().isEmpty())  // but we got simple or mixed content
+			if (node.isLeaf() || ! node.getValue().isEmpty())  // but we got simple or mixed content
 				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
 
-			if (node.isComplex()) // validate complex content if we have it
+			if (! node.isLeaf()) // validate complex content if we have it
 				errors.add(validateComplexContent(node, type, errors));
 
 			return true;
 		}
 		
 		// we are expecting simple content or mixed content, type must be instance of MixedType
-		if (node.isComplex()) {
-			if (! type.isComplex()) // no complex content is expected
+		if (! node.isLeaf()) {
+			if (type.isLeaf()) // no complex content is expected
 				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
 			else // validate complex content if we have it
 				errors.add(validateComplexContent(node, type, errors));
 		} 
-		else if (type.isComplex()) // report missing complex content
+		else if (! type.isLeaf()) // report missing complex content
 			errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
 	
 		// validate the simple content we were expecting
@@ -183,7 +186,7 @@ public final class SDAValidator implements Validator {
 			
 		Pattern pattern = type.getPattern();
 		if (pattern != null && ! pattern.matcher(value).matches())
-			return new Error(node, VALUE_DOES_NOT_MATCH, value, type.getPatternExpr());
+			return new Error(node, VALUE_DOES_NOT_MATCH, value, type.getPattern().toString());
 		
 		return null;
 	}
@@ -278,11 +281,11 @@ public final class SDAValidator implements Validator {
 	 */
 	private static Error validateComplexContent(Node node, NodeType type, ErrorList errors) {
 		
-		NodeIterator inode = new NodeIterator(node.getNodes()); // iterator for child nodes
+		NodeIterator inode = new NodeIterator(node.nodes()); // iterator for child nodes
 		Node childnode = inode.hasNext() ? inode.next() : null; // first child node (or none)
 		
 		//System.out.println("validateComplex: matching children of " + node.getName()+"{}");
-		Iterator<Node> icomp = type.getNodes().iterator();
+		Iterator<Node> icomp = type.nodes().iterator();
 		while (icomp.hasNext()) {
 			
 			Component childcomp = (Component) icomp.next(); 
@@ -301,12 +304,12 @@ public final class SDAValidator implements Validator {
 				}
 
 				boolean match;
-				//System.out.println("validateComplex: matching " + (childnode.isComplex() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
+				//System.out.println("validateComplex: matching " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
 				if (childcomp instanceof ModelGroup)
 					match = matchGroup(inode, childnode, (ModelGroup) childcomp, errors);
 				else match = matchNodeType(childnode, (NodeType) childcomp, errors);
 				
-				//System.out.println("validateComplex: " + (childnode.isComplex() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
+				//System.out.println("validateComplex: " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
 				if (match) { // count match and get the next node (or none) to match against this component
 					childnode = inode.hasNext() ? inode.next() : null;
 					++curmatches; continue;
@@ -363,7 +366,7 @@ public final class SDAValidator implements Validator {
 	private static boolean matchChoice(NodeIterator inode, Node node, ChoiceGroup choice, ErrorList errors) {
 
 		//System.out.println("matchChoice: matching children of " + choice.getName()+"{}");
-		for (Node child : choice.getNodes()) {
+		for (Node child : choice.nodes()) {
 			
 			Component component = (Component) child; 
 			boolean match;
@@ -397,7 +400,7 @@ public final class SDAValidator implements Validator {
 		
 		//System.out.println("matchSequence: matching children of " + group.getName()+"{}");
 		boolean match = false;
-		Iterator<Node> icomp = group.getNodes().iterator();
+		Iterator<Node> icomp = group.nodes().iterator();
 		
 		while (icomp.hasNext()) { // main / outer component loop
 			
@@ -491,7 +494,8 @@ public final class SDAValidator implements Validator {
 		Node parent = node.getParent(); // save the parent of the node(s)
 		
 		// make a list (set) of components to be matched (by definition at least two)
-		NodeSet components =  new NodeSet(); components.addAll(group.getNodes());
+		// we remove components during iteration, so we use a concurrent write list. 
+		List<Node> components =  new CopyOnWriteArrayList<Node>(group.nodes());
 
 		node_loop:
 		while (node != null) { // while there are still nodes
@@ -578,7 +582,9 @@ public final class SDAValidator implements Validator {
 			 * anymore (and an error was already reported).
 			 */
 			if (invoked) {
-				NodeSet required = components.find(n -> ((Component) n).minOccurs() > 0);
+				List<Node> required = components.stream().
+						filter(n -> ((Component) n).minOccurs() > 0).
+						collect(Collectors.toCollection(ArrayList<Node>::new));
 				if (! required.isEmpty()) {
 					Error error = new Error(node, GOT_NODE_BUT_EXPECTED, 
 						node.getName(), quoteNames(expectedTypes(required)) );
@@ -609,7 +615,9 @@ public final class SDAValidator implements Validator {
 		 * that there are no more required components and add an error otherwise.
 		 */
 		if (invoked) {
-			NodeSet required = components.find(n -> ((Component) n).minOccurs() > 0);
+			List<Node> required = components.stream().
+					filter(n -> ((Component) n).minOccurs() > 0).
+					collect(Collectors.toCollection(ArrayList<Node>::new));
 			if (! required.isEmpty()) {
 				Error error = new Error(parent, CONTENT_MISSING_AT_END, 
 					parent.getName(), quoteNames(expectedTypes(required)) );
@@ -634,10 +642,10 @@ public final class SDAValidator implements Validator {
 	}
 
 
-	/** Returns list of quoted node names in the format: 'a', .. 'b' or 'c'. */
-	private static String quoteNames(NodeSet set) {
+	/** Returns list of quoted node names in the format: 'a'[, 'b' ...] or 'z'. */
+	private static String quoteNames(List<Node> list) {
 		
-		String result = set.stream()
+		String result = list.stream()
 			.map(n -> quoteName(n)).collect(Collectors.joining(","));
 		int i = result.lastIndexOf(','); 
 		return (i == -1) ? result : result.substring(0, i) + " or " + result.substring(i+1);	
@@ -651,10 +659,10 @@ public final class SDAValidator implements Validator {
 	 * nesting (model groups within model groups). This recursive method returns a
 	 * set of candidate component types.
 	 */
-	private static NodeSet expectedTypes(Component comp) {
+	private static List<Node> expectedTypes(Component comp) {
 		
-		// If not a group, just return the component itself, ending the recursion.
-		if (! (comp instanceof ModelGroup)) return NodeSet.of((Node)comp);
+		// If not a group, just return the component itself as a list, ending the recursion.
+		if (! (comp instanceof ModelGroup)) return Collections.singletonList(comp);
 
 		ModelGroup group = (ModelGroup) comp;
 		
@@ -665,9 +673,9 @@ public final class SDAValidator implements Validator {
 		 * follow, in any order.
 		 */
 		if (group instanceof ChoiceGroup || group instanceof UnorderedGroup) {
-			NodeSet result = group.getNodes().stream()
+			List<Node> result = group.nodes().stream()
 				.flatMap(n -> expectedTypes((Component)n).stream())
-				.collect(Collectors.toCollection(NodeSet::new));
+				.collect(Collectors.toCollection(ArrayList<Node>::new));
 			return result;
 		}
 		
@@ -678,9 +686,9 @@ public final class SDAValidator implements Validator {
 		 * mandatory component.
 		 */
 		if (group instanceof SequenceGroup) {
-			NodeSet result = new NodeSet();
-			for (Node n : group.getNodes()) {
-				for (Node e : expectedTypes((Component)n)) result.add(e); // is this is correct?
+			List<Node> result = new ArrayList<Node>();
+			for (Node n : group.nodes()) {
+				for (Node e : expectedTypes((Component) n)) result.add(e); // is this is correct?
 				if (((Component) n).minOccurs() > 0) break;
 			}
 			return result;
@@ -693,13 +701,13 @@ public final class SDAValidator implements Validator {
 
 	/**
 	 * Like expectedTypes(ComponentType), this method returns a set of candidate
-	 * component types based on a collection of (equally applicable) types.
+	 * component types based on a list of (equally applicable) types.
 	 */
-	private static NodeSet expectedTypes(NodeSet collection) {
+	private static List<Node> expectedTypes(List<Node> list) {
 		
-		NodeSet result = collection.stream()
-			.flatMap(n -> expectedTypes((Component)n).stream())
-			.collect(Collectors.toCollection(NodeSet::new));
+		List<Node> result = list.stream()
+			.flatMap(n -> expectedTypes((Component) n).stream())
+			.collect(Collectors.toCollection(ArrayList<Node>::new));
 		return result;
 	}
 
