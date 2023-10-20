@@ -9,6 +9,7 @@ import java.util.regex.PatternSyntaxException;
 
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
+import be.baur.sda.DataNode;
 import be.baur.sds.Component;
 import be.baur.sds.MixedType;
 import be.baur.sds.NodeType;
@@ -96,7 +97,7 @@ public final class SDSParser implements Parser {
 	
 	public Schema parse(Reader input) throws IOException, ParseException, SchemaException  {
 
-		Node sds = SDA.parser().parse(input);
+		DataNode sds = SDA.parser().parse(input);
 		
 //		if (sds.isLeaf())  // A schema node must have node content.
 //			throw new SchemaException(sds, String.format(SCHEMA_NODE_EXPECTED, Schema.TAG));
@@ -113,7 +114,7 @@ public final class SDSParser implements Parser {
 	 * @return a schema
 	 * @throws SchemaException if a schema exception occurs
 	 */
-	public static Schema parse(Node sds) throws SchemaException {
+	public static Schema parse(DataNode sds) throws SchemaException {
 		
 		if (! sds.getName().equals(Schema.TAG))
 			throw new SchemaException(sds, String.format(A_NODE_IS_EXPECTED, Schema.TAG));
@@ -144,19 +145,19 @@ public final class SDSParser implements Parser {
 				throw new SchemaException(node, String.format(COMPONENT_NOT_ALLOWED, node.getName()));
 			
 			// global types must not have a multiplicity attribute
-			getAttribute(node, Attribute.OCCURS, null);
+			getAttribute((DataNode) node, Attribute.OCCURS, null);
 			
-			schema.add((Node) parseComponent(node, false));
+			schema.add(parseComponent((DataNode) node, false));
 		}
 
 		// set the designated root type reference (if specified and valid)
-		Node type = getAttribute(sds, Attribute.TYPE, false);
+		DataNode type = getAttribute(sds, Attribute.TYPE, false);
 		
 		if (type != null) try {
 			schema.setDefaultType(type.getValue());
 		}
 		catch (IllegalArgumentException e) {
-			throw new SchemaException(schema, String.format(ATTRIBUTE_INVALID, 
+			throw new SchemaException(sds, String.format(ATTRIBUTE_INVALID, 
 				Attribute.TYPE.tag, type.getValue(), e.getMessage()));
 		}
 
@@ -171,7 +172,7 @@ public final class SDSParser implements Parser {
 	 * itself. A shallow parse means that no child nodes are parsed, which is used
 	 * in the parsing of type references.
 	 */
-	private static Component parseComponent(Node sds, boolean shallow) throws SchemaException {
+	private static Component parseComponent(DataNode sds, boolean shallow) throws SchemaException {
 		/*
 		 * Whatever we get must be a valid component, and contain attributes, types
 		 * and/or model groups. This method is called recursively and must deal with
@@ -199,7 +200,7 @@ public final class SDSParser implements Parser {
 		List<Node> complexChildren = sds.find(n -> ! n.isLeaf()); // empty if simple type or reference
 		
 		// simple types and references MUSt have a content type, complex/mixed types MAY have one
-		Node type = getAttribute(sds, Attribute.TYPE, isNodeType && complexChildren.isEmpty());
+		DataNode type = getAttribute(sds, Attribute.TYPE, isNodeType && complexChildren.isEmpty());
 		Content content = (type == null) ? null : Content.get(type.getValue());
 		
 		if (isNodeType && complexChildren.isEmpty()) {
@@ -219,7 +220,7 @@ public final class SDSParser implements Parser {
 			component = parseModelGroup(sds);
 		
 		// Set the (optional) multiplicity of this component
-		Node occurs = getAttribute(sds, Attribute.OCCURS, false);
+		DataNode occurs = getAttribute(sds, Attribute.OCCURS, false);
 		try {
 			if (occurs != null)
 				component.setMultiplicity(NaturalInterval.from(occurs.getValue()));
@@ -231,7 +232,7 @@ public final class SDSParser implements Parser {
 		// And finally, recursively parse and add any child components
 		if (! shallow) // unless this is a shallow parse
 			for (Node node : complexChildren)
-				component.add((Node) parseComponent(node, false));
+				component.add(parseComponent((DataNode) node, false));
 
 		return component;
 	}
@@ -252,7 +253,7 @@ public final class SDSParser implements Parser {
 	 * @returns a {@link SequenceGroup}, {@link ChoiceGroup} or
 	 *          {@link UnorderedGroup},
 	 */
-	private static Component parseModelGroup(Node sds) throws SchemaException {
+	private static Component parseModelGroup(DataNode sds) throws SchemaException {
 		/*
 		 * Preconditions: the caller (parseComponent) has already verified that this
 		 * component has a valid tag, attributes with valid tags only, and one or more
@@ -287,7 +288,7 @@ public final class SDSParser implements Parser {
 			case CHOICE		: mgroup = new ChoiceGroup(); break;
 			case UNORDERED	: mgroup = new UnorderedGroup(); break;
 			default: // we should never get here, unless we screwed up pretty bad
-				throw new RuntimeException("SDS component '" + sds.getName() + "' is not a model group!");
+				throw new RuntimeException("Model group '" + sds.getName() + "' not implemented!");
 		}
 		
 		return mgroup;
@@ -305,7 +306,7 @@ public final class SDSParser implements Parser {
 	 * <br>
 	 * assuming that <code>phone</code> was defined as a global type.
 	 */
-	private static Component parseTypeReference(Node sds, Node type) throws SchemaException {
+	private static Component parseTypeReference(DataNode sds, DataNode type) throws SchemaException {
 		/*
 		 * A reference is not a real component, but just a convenient shorthand way to
 		 * refer to a global type in SDS notation. When we encounter one, we create a
@@ -331,7 +332,7 @@ public final class SDSParser implements Parser {
 		// search all node declarations in the schema root for the referenced type
 		Node refNode = null;
 		for (Node cnode : root.find(n -> ! n.isLeaf() && n.getName().equals(Components.NODE.tag))) {
-			if ( cnode.getValue().equals(type.getValue()) ) refNode = cnode;
+			if ( ((DataNode) cnode).getValue().equals(type.getValue()) ) refNode = cnode;
 		}
 		if (refNode == null || refNode.equals(sds)) // if we found nothing or ourself, we raise an error.
 			throw new SchemaException(type, String.format(CONTENT_TYPE_UNKNOWN, type.getValue()));
@@ -342,9 +343,9 @@ public final class SDSParser implements Parser {
 		 * adding types that reference themselves or each other, we will ultimately run
 		 * into a stack overflow. In order to support recursive references, we do not
 		 * parse any child nodes in the global type, but use a late binding technique to
-		 * return them when they are referenced. For details see ComplexType.getNodes().
+		 * return them when they are referenced. For details see NodeType.nodes().
 		 */
-		Component refComp = parseComponent(refNode, true);
+		Component refComp = parseComponent((DataNode) refNode, true);
 		refComp.setGlobalType(type.getValue());  // set the type we were created from
 		
 		// if a valid name is specified (different or equal to the type name) we set it
@@ -352,7 +353,7 @@ public final class SDSParser implements Parser {
 		if (! name.isEmpty()) {
 			if (! SDA.isName(name))
 				throw new SchemaException(sds, String.format(NODE_NAME_INVALID, name));
-			refComp.setName(name);
+			((NodeType) refComp).setTypeName(name);  // references to model groups not yet supported
 		}
 		
 		return refComp;
@@ -367,7 +368,7 @@ public final class SDSParser implements Parser {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static <T extends Comparable> 
-		NodeType parseNodeType(Node sds, Content content) throws SchemaException {
+		NodeType parseNodeType(DataNode sds, Content content) throws SchemaException {
 		/*
 		 * Preconditions: the caller has already verified this node has a valid tag, 
 		 * and that all attributes have valid tags as well. 
@@ -420,7 +421,7 @@ public final class SDSParser implements Parser {
 		// Handle remaining attributes, some of which are forbidden on the "any" type !
 		
 		// Set the null-ability (not allowed on the any type).
-		Node nullable = getAttribute(sds, Attribute.NULLABLE, isAnyType? null : false);
+		DataNode nullable = getAttribute(sds, Attribute.NULLABLE, isAnyType? null : false);
 		if (nullable != null) switch(nullable.getValue()) {
 			case BooleanType.TRUE : mixedType.setNullable(true); break;
 			case BooleanType.FALSE : mixedType.setNullable(false); break;
@@ -430,7 +431,7 @@ public final class SDSParser implements Parser {
 		}
 		
 		// Set the pattern (not allowed on the any type).
-		Node regexp = getAttribute(sds, Attribute.PATTERN, isAnyType ? null : false);
+		DataNode regexp = getAttribute(sds, Attribute.PATTERN, isAnyType ? null : false);
 		if ( regexp != null) 
 		try { 
 			mixedType.setPattern( Pattern.compile(regexp.getValue()) ); 
@@ -440,7 +441,7 @@ public final class SDSParser implements Parser {
 		}
 		
 		// Set the length (only allowed on string and binary types).
-		Node length = getAttribute(sds, Attribute.LENGTH, mixedType instanceof AbstractStringType ? false : null);
+		DataNode length = getAttribute(sds, Attribute.LENGTH, mixedType instanceof AbstractStringType ? false : null);
 		if (length != null) {
 			try {
 				NaturalInterval interval = NaturalInterval.from(length.getValue());
@@ -452,7 +453,7 @@ public final class SDSParser implements Parser {
 		}
 		
 		// Set the value range (only allowed on ranged types).
-		Node range = getAttribute(sds, Attribute.VALUE, mixedType instanceof RangedType ? false : null);
+		DataNode range = getAttribute(sds, Attribute.VALUE, mixedType instanceof RangedType ? false : null);
 		if (range != null) {
 			try {	
 				Interval<T> interval;
@@ -489,9 +490,9 @@ public final class SDSParser implements Parser {
 	 * @return {@link Node} or <code>null</code>, or
 	 * @throws SchemaException
 	 */
-	private static Node getAttribute(Node sds, Attribute att, Boolean req) throws SchemaException {
+	private static DataNode getAttribute(DataNode sds, Attribute att, Boolean req) throws SchemaException {
 
-		List<Node> alist = sds.find(n -> n.isLeaf() && n.getName().equals(att.tag) );
+		List<DataNode> alist = sds.find(n -> n.isLeaf() && n.getName().equals(att.tag) );
 		
 		int size = alist.size();
 		if (size == 0) {
@@ -501,7 +502,7 @@ public final class SDSParser implements Parser {
 		if (req == null)
 			throw new SchemaException(sds, String.format(ATTRIBUTE_NOT_ALLOWED, att.tag));
 		
-		Node node = alist.get(0);
+		DataNode node = alist.get(0);
 		if (node.getValue().isEmpty())
 			throw new SchemaException(node, String.format(ATTRIBUTE_EMPTY, att.tag));
 		if (size > 1)

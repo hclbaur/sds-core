@@ -23,8 +23,9 @@ import be.baur.sds.serialization.Components;
  */
 public final class SequenceGroup extends ModelGroup {
 
-	/** Creates a sequence group. */
-	public SequenceGroup() {
-		super(Components.GROUP.tag); // extends Node so must have a tag, even if not really used
+	@Override
+	public final String getName() {
+		return Components.GROUP.tag;
 	}
+
 }

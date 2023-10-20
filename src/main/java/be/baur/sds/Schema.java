@@ -1,36 +1,39 @@
 package be.baur.sds;
 
 import be.baur.sda.Node;
+import be.baur.sda.AbstractNode;
+import be.baur.sda.DataNode;
 import be.baur.sda.serialization.SDAFormatter;
 import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.SDSParser;
 
 /**
- * A <code>Schema</code> node represents an SDA document definition, that is, a
- * structure that defines SDA content. It is a container for "components" like
- * node types and model groups. Schema is usually not created "by hand" but read
- * and parsed from input in SDS notation.<br>
- * See also {@link Component}, {@link SDSParser}.
+ * A {@code Schema} node represents an SDA document definition that can be used
+ * to validate SDA content (amongst others). It is a container for components
+ * that define the content model, like node types and model groups. Schema is
+ * usually not created "manually" but read and parsed from a definition in SDS
+ * notation.
+ * 
+ * @see Component
+ * @see SDSParser
  */
-public final class Schema extends Node {
+public final class Schema extends AbstractNode {
 
 	public static final String TAG = "schema";	
 	
 	private String defaultType = null; // the designated root node
 	
 
-	/** Creates a schema node. */
-	public Schema() {
-		super(TAG); // extends Node so it must have a tag, even if we do not really use it
-		add(null);  // all schema have child nodes so initialize it with an empty node set
-	}
+//	/** Creates a schema node. */
+//	public Schema() {
+//	}
 
 
 	/**
 	 * Returns the default type for this schema. This method returns null if no
 	 * default type has been set.
 	 * 
-	 * @return the name of the default type, may be null
+	 * @return the default type name, may be null
 	 */
 	public String getDefaultType() {
 		return defaultType;
@@ -42,12 +45,12 @@ public final class Schema extends Node {
 	 * global type, or an exception will be thrown. A null value is allowed, and
 	 * will effectively clear the default type.
 	 * 
-	 * @param type the name of the default type, may be null
+	 * @param type the default type name, may be null
 	 * @throws IllegalArgumentException if the referenced type is unknown
 	 */
 	public void setDefaultType(String type) {
  
-		if (type != null && this.get(type) == null)
+		if (type != null && get(t -> ((NodeType) t).getTypeName().equals(type)) == null)
 			throw new IllegalArgumentException("no such global type (" + type + ")");
 		this.defaultType = type; 
 	}
@@ -60,15 +63,16 @@ public final class Schema extends Node {
 	 * 
 	 * @return an SDA node
 	 */
-	public Node toNode() {
+	public DataNode toSDA() {
 		
-		Node node = new Node(TAG);
+		final DataNode node = new DataNode(TAG); 
+		node.add(null); // just in case we have no child nodes
 		
-		if (defaultType != null) // Render the type attribute if we have one.
-			node.add(new Node(Attribute.TYPE.tag, defaultType));
+		if (defaultType != null) // render type attribute if we have one
+			node.add(new DataNode(Attribute.TYPE.tag, defaultType));
 
-		for (Node component : this.nodes()) // Render all components.
-			node.add(((Component) component).toNode());
+		for (Node component : nodes()) // render all components
+			node.add(((Component) component).toSDA());
 
 		return node;
 	}
@@ -82,13 +86,13 @@ public final class Schema extends Node {
 	 * </pre>
 	 * 
 	 * Note that the returned string is formatted as a single line of text. For a
-	 * more readable output, use the {@link #toNode} method and render the output
+	 * more readable output, use the {@link #toSDA} method and render the output
 	 * node using an {@link SDAFormatter}.
 	 * 
 	 * @return an SDS representation of this node
 	 */
 	@Override
 	public String toString() {
-		return toNode().toString();
+		return toSDA().toString();
 	}
 }

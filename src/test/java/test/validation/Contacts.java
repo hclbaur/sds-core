@@ -4,8 +4,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
-import be.baur.sda.Node;
 import be.baur.sda.SDA;
+import be.baur.sda.DataNode;
+import be.baur.sda.serialization.Parser;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
 import be.baur.sds.validation.Error;
@@ -14,7 +15,7 @@ import test.Test;
 
 public final class Contacts {
 	
-	private static be.baur.sda.serialization.Parser parser = SDA.parser();
+	private static Parser<DataNode> parser = SDA.parser();
 
 	/* 
 	 * Parsing and validation of simple types with facets.
@@ -26,7 +27,7 @@ public final class Contacts {
 		});
 		
 		InputStream sda = Contacts.class.getResourceAsStream("/contacts.sda");
-		Node document = parser.parse(new InputStreamReader(sda, "UTF-8"));
+		DataNode document = parser.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Contacts.class.getResourceAsStream("/contacts.sds");
 		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));

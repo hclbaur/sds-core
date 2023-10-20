@@ -3,8 +3,9 @@ package test.validation;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import be.baur.sda.Node;
 import be.baur.sda.SDA;
+import be.baur.sda.DataNode;
+import be.baur.sda.serialization.Parser;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
 import be.baur.sds.validation.ErrorList;
@@ -12,7 +13,7 @@ import test.Test;
 
 public final class RussianDolls {
 	
-	private static be.baur.sda.serialization.Parser parser = SDA.parser();
+	private static Parser<DataNode> parser = SDA.parser();
 
 	/* 
 	 * Parsing and validation of self- and cross- referencing types.
@@ -24,7 +25,7 @@ public final class RussianDolls {
 		});
 		
 		InputStream sda = RussianDolls.class.getResourceAsStream("/russiandolls.sda");
-		Node document = parser.parse(new InputStreamReader(sda, "UTF-8"));
+		DataNode document = parser.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = RussianDolls.class.getResourceAsStream("/russiandolls.sds");
 		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));

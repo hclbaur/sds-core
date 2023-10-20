@@ -5,6 +5,7 @@ import java.util.List;
 
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
+import be.baur.sda.DataNode;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
 import be.baur.sds.serialization.SchemaException;
@@ -19,7 +20,7 @@ public class demo {
 		Schema schema = SDS.parser().parse(sds);
 		
 		FileReader sda = new FileReader(args[1]);
-		Node root = SDA.parser().parse(sda);
+		DataNode root = SDA.parser().parse(sda);
 		
 		ErrorList errors = SDS.validator().validate(root, schema, null);
 		if (! errors.isEmpty()) {
@@ -28,12 +29,12 @@ public class demo {
 		
 		for (Node contact : root.find("contact")) {
 			
-			Node name = contact.get("firstname");
-			List<Node> numbers = contact.find("phonenumber");
+			DataNode name = contact.get("firstname");
+			List<DataNode> numbers = contact.find("phonenumber");
 			
 			System.out.println(name.getValue() + " has " + numbers.size() + " phone number(s).");
 			
-			int i = 0; 	for (Node number : numbers) {
+			int i = 0; 	for (DataNode number : numbers) {
 				System.out.println("  Number " + ++i + ": " + number.getValue());
 			}
 		}

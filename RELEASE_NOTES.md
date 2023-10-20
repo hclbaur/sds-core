@@ -1,17 +1,23 @@
 # Release Notes
 
-## [2.2.0] - 2023-10-04
+## [2.3.0] - in development
 
-This is a compatability release for sda-core 2.1.x with minor changes.
+This is a compatibility release for sda-core 2.2.x.
 
-- `Removed` MixedType.getPatternExpr().
-- `Changed` MixedType.setPatternExpr() to setPattern().
+- `Changed` NodeType.getName to NodeType.getTypeName.
 
 ## Compatibility
 
 - Requires at least Java 8 and sda-core 2.1.0.
 
 ## Previous releases
+
+### [2.2.0] - 2023-10-04
+
+This is a compatibility release for sda-core 2.1.x with minor changes.
+
+- `Removed` MixedType.getPatternExpr().
+- `Changed` MixedType.setPatternExpr() to setPattern().
 
 ### [2.1.0] - 2022-12-01
 

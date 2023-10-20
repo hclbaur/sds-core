@@ -1,6 +1,6 @@
 package be.baur.sds.validation;
 
-import be.baur.sda.Node;
+import be.baur.sda.DataNode;
 import be.baur.sds.Schema;
 
 /**
@@ -22,6 +22,6 @@ public interface Validator {
 	 * @return an error list, empty if no validation errors were found
 	 * @throws IllegalArgumentException - if the type is not found
 	 */
-	public ErrorList validate(Node node, Schema schema, String globaltype);
+	public ErrorList validate(DataNode node, Schema schema, String globaltype);
 	
 }

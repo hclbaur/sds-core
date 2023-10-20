@@ -9,14 +9,14 @@ import be.baur.sda.Node;
  * This non-public class provides a Node iterator with a revert() method to deal
  * with a specific validation issue.
  */
-class NodeIterator implements Iterator<Node>{
+class NodeIterator<T extends Node> implements Iterator<T> {
 
-    private Node saved = null;  // reference to the most recently returned element
+    private T saved = null;  // reference to the most recently returned element
     private boolean reverted = false; // whether we are in reverted state
-	private Iterator<Node> internal; // the internal backing iterator
+	private Iterator<T> internal; // the internal backing iterator
 
 	/** Creates an iterator over the elements contained in a node <code>list</code>. */
-	public NodeIterator(List<Node> list) {
+	public NodeIterator(List<T> list) {
 		this.internal = list.iterator();
 	}
     
@@ -28,7 +28,7 @@ class NodeIterator implements Iterator<Node>{
 
     
     @Override
-    public Node next() {
+    public T next() {
     	// return a reverted element if we have one, otherwise rely on the backing method
     	if (! reverted || saved == null)
             saved = internal.next(); 
