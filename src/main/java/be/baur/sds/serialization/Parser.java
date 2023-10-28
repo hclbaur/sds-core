@@ -3,8 +3,8 @@ package be.baur.sds.serialization;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.text.ParseException;
 
+import be.baur.sda.serialization.ParseException;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
 

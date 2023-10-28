@@ -2,13 +2,13 @@ package be.baur.sds.serialization;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.text.ParseException;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
+import be.baur.sda.serialization.ParseException;
 import be.baur.sda.DataNode;
 import be.baur.sds.Component;
 import be.baur.sds.MixedType;
