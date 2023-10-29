@@ -2,19 +2,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
-import be.baur.sda.serialization.ParseException;
-import be.baur.sda.DataNode;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
-import be.baur.sds.serialization.SchemaException;
 import be.baur.sds.validation.Error;
 import be.baur.sds.validation.ErrorList;
 
 public class demo {
 
-	public static void main(String[] args) throws IOException, ParseException, SchemaException {
+	public static void main(String[] args) throws IOException {
 		
 		FileReader sds = new FileReader(args[0]);
 		Schema schema = SDS.parser().parse(sds);

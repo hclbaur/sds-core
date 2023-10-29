@@ -1,35 +1,24 @@
 package be.baur.sds.serialization;
 
 import be.baur.sda.Node;
+import be.baur.sda.serialization.NodeProcessingException;
 
 /**
- * A {@code SchemaException} is thrown by the <code>SDSParser</code> if the SDS
- * syntax is violated. The node where the error occurred during parsing is
- * available from {@link #getErrorNode()}.
+ * A {@code SchemaException} may be thrown by a {@code SchemaParser} if a
+ * {@code Schema} cannot be created, mostly due - but not limited to - some
+ * syntactical or semantical violation.
  */
 @SuppressWarnings("serial")
-public final class SchemaException extends Exception {
-
-	private Node errorNode; // node that caused the exception to be thrown
+public abstract class SchemaException extends NodeProcessingException {
 	
 	/**
-	 * Creates an SDS schema exception.
+	 * Creates a schema exception with an error message and node.
 	 * 
 	 * @param node    the node where the error was found
 	 * @param message an error message
 	 */
 	public SchemaException(Node node, String message) {
-		super("SDS syntax violation at " + node.path() + ": " + message);
-		this.errorNode = node;
+		super(node, message);
 	}
 
-	
-	/**
-	 * Returns the node that caused the exception to be thrown.
-	 * 
-	 * @return the error node
-	 */
-	public Node getErrorNode() {
-		return errorNode;
-	}
 }

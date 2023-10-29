@@ -5,15 +5,18 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import be.baur.sda.serialization.ParseException;
+import be.baur.sda.serialization.Parser;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
 
 /**
- * A <code>Parser</code> (in SDS context) is a <i>deserializer</i> that reads an
- * input stream (in a format specific to the type of parser) and creates a
- * {@code Schema}. A sample implementation is the default {@link SDSParser}.
+ * A {@code SchemaParser} is a <i>deserializer</i> that reads an input stream in
+ * a format specific to the type of parser, to create a {@code Schema}. A sample
+ * implementation is the default SDS parser.
+ * 
+ * @see SDSParser
  */
-public interface Parser {
+public interface SchemaParser extends Parser<Schema> {
 
 
 	/**
@@ -21,8 +24,8 @@ public interface Parser {
 	 * 
 	 * @param input an input stream
 	 * @return a schema
-	 * @throws IOException if an input exception occurs
-	 * @throws ParseException if a parse exception occurs
+	 * @throws IOException     if an input exception occurs
+	 * @throws ParseException  if a parse exception occurs
 	 * @throws SchemaException if a schema exception occurs
 	 */
 	Schema parse(Reader input) throws IOException, ParseException, SchemaException;
@@ -30,9 +33,9 @@ public interface Parser {
 
 	/**
 	 * Verifies a schema. This method can be used used to to validate schema which
-	 * was not created by the default {@code SDSParser}, but assembled "manually" or
-	 * created by some other parser. The default implementation serializes the
-	 * schema to SDS format, which is then parsed back to reveal any issues.
+	 * was not created by the default {@code SDSParser}. The default implementation
+	 * just serializes the schema to SDS format, which is then parsed back to reveal
+	 * any issues.
 	 * 
 	 * @param schema the schema to be verified
 	 * @throws IOException     if an input exception occurs
