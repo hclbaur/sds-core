@@ -2,11 +2,12 @@
 
 ## [2.3.0] - in development
 
-This is a compatibility release for sda-core 2.2.x.
+This is a compatibility release for sda-core 2.2.x, with name changes.
 
 - `Changed` NodeType.getName to NodeType.getTypeName.
 - `Renamed` be.baur.sds.serialization.Parser to SchemaParser.
 - `Renamed` SchemaException to SDSParseException.
+- `Renamed` MixedType to DataType.
 
 ## Compatibility
 

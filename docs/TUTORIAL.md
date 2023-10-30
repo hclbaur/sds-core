@@ -166,7 +166,6 @@ has an `integer` value:
 		}
 	…
 
-I suppose we could call this a *mixed* type.
 
 ### Dolls, salami and blinds
 
@@ -619,7 +618,7 @@ different from:
 		…
 
 because when it is specified like that, the 'about' node is not necessarily a 
-complex type, but it can be a simple (or mixed) type too, for example:
+complex type, for example:
 
 	contact {
 		firstname "Bob" phonenumber "06-90784523"

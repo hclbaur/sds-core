@@ -1,6 +1,7 @@
 package be.baur.sds.serialization;
 
 import be.baur.sda.Node;
+import be.baur.sda.NodeProcessingException;
 
 /**
  * An {@code SDSParseException} is thrown by an {@code SDSParser} if the SDS
@@ -9,7 +10,7 @@ import be.baur.sda.Node;
  * @see SDSParser
  */
 @SuppressWarnings("serial")
-public final class SDSParseException extends SchemaException {
+public final class SDSParseException extends NodeProcessingException {
 	
 	/**
 	 * Creates an SDS parse exception with an error message and node.

@@ -1,6 +1,6 @@
 package be.baur.sds.content;
 
-import be.baur.sds.MixedType;
+import be.baur.sds.DataType;
 import be.baur.sds.common.Content;
 
 /**
@@ -12,7 +12,7 @@ import be.baur.sds.common.Content;
  * <br>
  * <code>node { type "any" }</code> (unnamed; any valid node name is allowed).
  */
-public final class AnyType extends MixedType {
+public final class AnyType extends DataType {
 
 	private final boolean named; // true if the any type is explicitly named
 	

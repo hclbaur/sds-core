@@ -114,12 +114,11 @@ public class NodeType extends Component {
 			node.setValue(typeName);
 		}
 	
-		// Render the type attribute for a global type reference,
-		// or for a simple (mixed) content type.
+		// Render the type attribute for a global type reference, or a data type
 		if (getGlobalType() != null)
 			node.add(new DataNode(Attribute.TYPE.tag, getGlobalType()));
-		else if (this instanceof MixedType)
-			node.add(new DataNode(Attribute.TYPE.tag, ((MixedType) this).getContentType().type));
+		else if (this instanceof DataType)
+			node.add(new DataNode(Attribute.TYPE.tag, ((DataType) this).getContentType().type));
 		
 		// Render the multiplicity if not default.
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
@@ -142,14 +141,14 @@ public class NodeType extends Component {
 					node.add(new DataNode(Attribute.VALUE.tag, t.getRange().toString()));
 			}
 			
-			if (this instanceof MixedType) {
-				MixedType m = (MixedType) this;
+			if (this instanceof DataType) {
+				DataType t = (DataType) this;
 				
-				if (m.getPattern() != null)
-					node.add(new DataNode(Attribute.PATTERN.tag, m.getPattern().toString()));
+				if (t.getPattern() != null)
+					node.add(new DataNode(Attribute.PATTERN.tag, t.getPattern().toString()));
 				
-				if (stringType == !m.isNullable())
-					node.add(new DataNode(Attribute.NULLABLE.tag, String.valueOf(m.isNullable())));
+				if (stringType == !t.isNullable())
+					node.add(new DataNode(Attribute.NULLABLE.tag, String.valueOf(t.isNullable())));
 			}
 		}
 		

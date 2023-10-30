@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import be.baur.sda.Node;
 import be.baur.sda.DataNode;
 import be.baur.sds.Component;
-import be.baur.sds.MixedType;
+import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
 import be.baur.sds.common.Date;
@@ -131,9 +131,9 @@ public final class SDAValidator implements Validator {
 		
 		// we have a match, now proceed to check the content
 		
-		if (! (type instanceof MixedType)) { // we are expecting complex content ONLY
+		if (! (type instanceof DataType)) { // we are expecting complex content ONLY
 			
-			if (node.isLeaf() || ! node.getValue().isEmpty())  // but we got simple or mixed content
+			if (node.isLeaf() || ! node.getValue().isEmpty())  // but we got something with a value
 				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
 
 			if (! node.isLeaf()) // validate complex content if we have it
@@ -142,7 +142,7 @@ public final class SDAValidator implements Validator {
 			return true;
 		}
 		
-		// we are expecting simple content or mixed content, type must be instance of MixedType
+		// we are expecting simple content
 		if (! node.isLeaf()) {
 			if (type.isLeaf()) // no complex content is expected
 				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
@@ -153,7 +153,7 @@ public final class SDAValidator implements Validator {
 			errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
 	
 		// validate the simple content we were expecting
-		errors.add(validateSimpleContent(node, (MixedType) type));
+		errors.add(validateSimpleContent(node, (DataType) type));
 		return true;
 	}
 
@@ -163,7 +163,7 @@ public final class SDAValidator implements Validator {
 	 * appropriate with respect to this components content type, and any facets that
 	 * may apply. This method returns a validation error, or null otherwise.
 	 */
-	private static Error validateSimpleContent(DataNode node, MixedType type) {
+	private static Error validateSimpleContent(DataNode node, DataType type) {
 		
 		String value = node.getValue(); // need this a few times times
 		

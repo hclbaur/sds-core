@@ -24,11 +24,10 @@ public interface SchemaParser extends Parser<Schema> {
 	 * 
 	 * @param input an input stream
 	 * @return a schema
-	 * @throws IOException     if an input exception occurs
-	 * @throws ParseException  if a parse exception occurs
-	 * @throws SchemaException if a schema exception occurs
+	 * @throws IOException    if an input exception occurs
+	 * @throws ParseException if a parse exception occurs
 	 */
-	Schema parse(Reader input) throws IOException, ParseException, SchemaException;
+	Schema parse(Reader input) throws IOException, ParseException;
 
 
 	/**
@@ -38,12 +37,11 @@ public interface SchemaParser extends Parser<Schema> {
 	 * any issues.
 	 * 
 	 * @param schema the schema to be verified
-	 * @throws IOException     if an input exception occurs
-	 * @throws ParseException  if a parse exception occurs
-	 * @throws SchemaException if a schema exception occurs
+	 * @throws IOException    if an input exception occurs
+	 * @throws ParseException if a parse exception occurs
 	 * 
 	 */
-	default void verify(Schema schema) throws IOException, ParseException, SchemaException {
+	default void verify(Schema schema) throws IOException, ParseException {
 		SDS.parser().parse(new StringReader(schema.toString()));
 	}
 }

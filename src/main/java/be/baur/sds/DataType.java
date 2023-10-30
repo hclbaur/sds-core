@@ -11,7 +11,7 @@ import be.baur.sds.common.Content;
  * simple content. This abstract type is sub-classed for appropriate content
  * types: {@code StringType}, {@code IntegerType}, {@code BooleanType}, etc.
  */
-public abstract class MixedType extends NodeType {
+public abstract class DataType extends NodeType {
 
 	private Pattern pattern = null;		// the pre-compiled pattern.
 	private boolean nullable = false; 	// default null-ability (if that is a word).	
@@ -23,7 +23,7 @@ public abstract class MixedType extends NodeType {
 	 * @param name a valid node name, see also {@link Node}
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public MixedType(String name) {
+	public DataType(String name) {
 		super(name);
 	}
 	

@@ -12,7 +12,7 @@ import be.baur.sda.SDA;
 import be.baur.sda.serialization.SDAParseException;
 import be.baur.sda.serialization.SDAParser;
 import be.baur.sds.Component;
-import be.baur.sds.MixedType;
+import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
 import be.baur.sds.common.Content;
@@ -201,7 +201,7 @@ public final class SDSParser implements SchemaParser {
 		boolean isNodeType = sds.getName().equals(Components.NODE.tag); // will be false for a model group
 		List<Node> complexChildren = sds.find(n -> ! n.isLeaf()); // empty if simple type or reference
 		
-		// simple types and references MUSt have a content type, complex/mixed types MAY have one
+		// simple types and references MUSt have a content type, complex types MAY have one
 		DataNode type = getAttribute(sds, Attribute.TYPE, isNodeType && complexChildren.isEmpty());
 		Content content = (type == null) ? null : Content.get(type.getValue());
 		
@@ -212,7 +212,7 @@ public final class SDSParser implements SchemaParser {
 			else // otherwise it must be a reference
 				component = parseTypeReference(sds, type);
 		}
-		else if (isNodeType) { // a complex or mixed type
+		else if (isNodeType) { // a complex type
 			if (content == Content.ANY) // any type cannot contain type definitions
 				throw new SDSParseException(sds, String.format(ATTRIBUTE_INVALID, 
 					Attribute.TYPE.tag, Content.ANY.type, "node defines content"));
@@ -365,8 +365,8 @@ public final class SDSParser implements SchemaParser {
 	/**
 	 * This method is called from parseComponent() to create a NodeType from an SDS
 	 * type definition. Note that this method is called for both simple and complex
-	 * (or mixed) types. For complex types, the content (type) will be null, whereas
-	 * for simple and mixed types, it will be a known simple content type.
+	 * types. For complex types without simple content, the content (type) will be
+	 * null, whereas for data types, it will be a known simple content type.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static <T extends Comparable> 
@@ -405,17 +405,17 @@ public final class SDSParser implements SchemaParser {
 			return new NodeType(name); // remaining code does not apply in this case
 		}
 		
-		MixedType mixedType;	// the type returned at the end of this method
+		DataType dataType;	// the type returned at the end of this method
 		
 		switch (content) {
-			case STRING   : mixedType = new StringType(name); break;
-			case BINARY   : mixedType = new BinaryType(name); break;
-			case BOOLEAN  : mixedType = new BooleanType(name); break;
-			case INTEGER  : mixedType = new IntegerType(name); break;
-			case DECIMAL  : mixedType = new DecimalType(name); break;
-			case DATETIME : mixedType = new DateTimeType(name); break;
-			case DATE     : mixedType = new DateType(name); break;
-			case ANY      : mixedType = new AnyType(name); break;
+			case STRING   : dataType = new StringType(name); break;
+			case BINARY   : dataType = new BinaryType(name); break;
+			case BOOLEAN  : dataType = new BooleanType(name); break;
+			case INTEGER  : dataType = new IntegerType(name); break;
+			case DECIMAL  : dataType = new DecimalType(name); break;
+			case DATETIME : dataType = new DateTimeType(name); break;
+			case DATE     : dataType = new DateType(name); break;
+			case ANY      : dataType = new AnyType(name); break;
 			default: // will never get here, unless we forgot to implement something...
 				throw new RuntimeException("SDS type '" + content + "' not implemented!");
 		}	
@@ -425,8 +425,8 @@ public final class SDSParser implements SchemaParser {
 		// Set the null-ability (not allowed on the any type).
 		DataNode nullable = getAttribute(sds, Attribute.NULLABLE, isAnyType? null : false);
 		if (nullable != null) switch(nullable.getValue()) {
-			case BooleanType.TRUE : mixedType.setNullable(true); break;
-			case BooleanType.FALSE : mixedType.setNullable(false); break;
+			case BooleanType.TRUE : dataType.setNullable(true); break;
+			case BooleanType.FALSE : dataType.setNullable(false); break;
 			default : 
 				throw new SDSParseException(nullable, String.format(ATTRIBUTE_INVALID, 
 					Attribute.NULLABLE.tag, nullable.getValue(), "must be 'true' or 'false'"));
@@ -436,18 +436,18 @@ public final class SDSParser implements SchemaParser {
 		DataNode regexp = getAttribute(sds, Attribute.PATTERN, isAnyType ? null : false);
 		if ( regexp != null) 
 		try { 
-			mixedType.setPattern( Pattern.compile(regexp.getValue()) ); 
+			dataType.setPattern( Pattern.compile(regexp.getValue()) ); 
 		} catch (PatternSyntaxException e) {
 			throw new SDSParseException(regexp, 
 				String.format(ATTRIBUTE_INVALID, Attribute.PATTERN.tag, regexp.getValue(), e.getMessage()));
 		}
 		
 		// Set the length (only allowed on string and binary types).
-		DataNode length = getAttribute(sds, Attribute.LENGTH, mixedType instanceof AbstractStringType ? false : null);
+		DataNode length = getAttribute(sds, Attribute.LENGTH, dataType instanceof AbstractStringType ? false : null);
 		if (length != null) {
 			try {
 				NaturalInterval interval = NaturalInterval.from(length.getValue());
-				((AbstractStringType) mixedType).setLength(interval);
+				((AbstractStringType) dataType).setLength(interval);
 			} catch (IllegalArgumentException e) {
 				throw new SDSParseException(length, String.format(ATTRIBUTE_INVALID, 
 					Attribute.LENGTH.tag, length.getValue(), e.getMessage()));
@@ -455,7 +455,7 @@ public final class SDSParser implements SchemaParser {
 		}
 		
 		// Set the value range (only allowed on ranged types).
-		DataNode range = getAttribute(sds, Attribute.VALUE, mixedType instanceof RangedType ? false : null);
+		DataNode range = getAttribute(sds, Attribute.VALUE, dataType instanceof RangedType ? false : null);
 		if (range != null) {
 			try {	
 				Interval<T> interval;
@@ -467,14 +467,14 @@ public final class SDSParser implements SchemaParser {
 					default: // we will never get here, unless we forgot to implement something
 						throw new RuntimeException("SDS type '" + content + "' not implemented!");
 				}
-				((RangedType<Comparable<?>>) mixedType).setRange((Interval<T>) interval);
+				((RangedType<Comparable<?>>) dataType).setRange((Interval<T>) interval);
 			} catch (IllegalArgumentException e) {
 				throw new SDSParseException(range, 
 					String.format(ATTRIBUTE_INVALID, Attribute.VALUE.tag, range.getValue(), e.getMessage()));
 			}
 		}
 		
-		return mixedType;
+		return dataType;
 	}
 
 	
