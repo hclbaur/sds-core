@@ -9,6 +9,7 @@ import java.util.regex.PatternSyntaxException;
 import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
+import be.baur.sda.serialization.Parser;
 import be.baur.sda.serialization.SDAParseException;
 import be.baur.sda.serialization.SDAParser;
 import be.baur.sds.Component;
@@ -68,11 +69,11 @@ import be.baur.sds.model.UnorderedGroup;
  * </pre>
  * 
  * This parser relies on the default SDA parser.
- * 
+ * <p>
  * @see Schema
  * @see SDAParser
  */
-public final class SDSParser implements SchemaParser {
+public final class SDSParser implements Parser<Schema> {
 
 	private static final String A_NODE_IS_EXPECTED = "a '%s' node is expected";
 	private static final String A_NODE_MUST_HAVE = "a '%s' node must have %s";
@@ -94,6 +95,9 @@ public final class SDSParser implements SchemaParser {
 	private static final String NAME_IS_EXPECTED = "a name is expected";
 	
 	/**
+	 * Creates a schema from a character input stream.
+	 * 
+	 * @return a schema
 	 * @throws SDAParseException if an SDA parse exception occurs
 	 * @throws SDSParseException if an SDS parse exception occurs
 	 */

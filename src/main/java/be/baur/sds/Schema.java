@@ -1,8 +1,12 @@
 package be.baur.sds;
 
-import be.baur.sda.Node;
+import java.io.IOException;
+import java.io.StringReader;
+
 import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
+import be.baur.sda.Node;
+import be.baur.sda.serialization.ParseException;
 import be.baur.sda.serialization.SDAFormatter;
 import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.SDSParser;
@@ -22,11 +26,6 @@ public final class Schema extends AbstractNode {
 	public static final String TAG = "schema";	
 	
 	private String defaultType = null; // the designated root node
-	
-
-//	/** Creates a schema node. */
-//	public Schema() {
-//	}
 
 
 	/**
@@ -94,5 +93,18 @@ public final class Schema extends AbstractNode {
 	@Override
 	public String toString() {
 		return toSDA().toString();
+	}
+
+
+	/**
+	 * Verifies this schema. This method can be used to to validate a schema that
+	 * was not created by the {@code SDTParser}.
+	 * 
+	 * @throws IOException    if an input exception occurs
+	 * @throws ParseException if a parse exception occurs
+	 */
+	public void verify() throws IOException, ParseException {
+		// Serialize the schema and parse it using the SDSParser to reveal issues
+		SDS.parser().parse(new StringReader(this.toString()));
 	}
 }

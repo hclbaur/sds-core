@@ -1,6 +1,5 @@
 package be.baur.sds;
 
-import be.baur.sds.serialization.SchemaParser;
 import be.baur.sds.serialization.SDSParser;
 import be.baur.sds.validation.SDAValidator;
 import be.baur.sds.validation.Validator;
@@ -18,7 +17,7 @@ public final class SDS {
 	 * 
 	 * @return an {@link SDSParser}
 	 */
-	public static SchemaParser parser() {
+	public static SDSParser parser() {
 		return new SDSParser();
 	}
 	

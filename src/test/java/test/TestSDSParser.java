@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 
-import be.baur.sda.SDA;
 import be.baur.sda.DataNode;
+import be.baur.sda.SDA;
 import be.baur.sda.serialization.Parser;
 import be.baur.sds.Schema;
 import be.baur.sds.serialization.SDSParser;
@@ -51,8 +51,7 @@ public final class TestSDSParser
 		SDA.formatter().format(output, schema.toSDA()); output.close();
 		
 		/* verify a schema */
-		SDSParser sdsparser = new SDSParser(); 
-		sdsparser.verify(schema);
+		schema.verify();
 		
 		/* test valid SDS */
 		t.ts1("S01", "schema { node \"name\" { type \"string\" } }", null);
