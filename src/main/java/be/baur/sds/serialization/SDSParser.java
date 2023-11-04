@@ -103,7 +103,7 @@ public final class SDSParser implements Parser<Schema> {
 	 */
 	public Schema parse(Reader input) throws IOException, SDAParseException, SDSParseException {
 
-		DataNode sds = SDA.parser().parse(input);
+		DataNode sds = SDA.parse(input);
 		
 //		if (sds.isLeaf())  // A schema node must have node content.
 //			throw new SDSParseException(sds, String.format(SCHEMA_NODE_EXPECTED, Schema.TAG));

@@ -8,19 +8,16 @@ import java.io.StringReader;
 
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
-import be.baur.sda.serialization.Parser;
 import be.baur.sds.Schema;
 import be.baur.sds.serialization.SDSParser;
 
-public final class TestSDSParser 
-{
-	private static Parser<DataNode> sdaparser = SDA.parser();
-	
+public final class TestSDSParser {
+
 	public static void main(String[] args) throws Exception {
 		
 		Test t = new Test(s -> {
 			try {
-				return SDSParser.parse( sdaparser.parse(new StringReader(s)) ).toString();
+				return SDSParser.parse( SDA.parse(new StringReader(s)) ).toString();
 			} catch (Exception e) {
 				return e.getMessage();
 			}
@@ -29,7 +26,7 @@ public final class TestSDSParser
 		/* test parsing SDS from files and formatting back to SDS */
 		System.out.print("contacts ");
 		InputStream input = TestSDSParser.class.getResourceAsStream("/contacts.sds");
-		DataNode sds = sdaparser.parse(new InputStreamReader(input,"UTF-8"));
+		DataNode sds = SDA.parse(new InputStreamReader(input,"UTF-8"));
 		Schema schema = SDSParser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);
@@ -38,7 +35,7 @@ public final class TestSDSParser
 		
 		System.out.print("addressbook ");
 		input = TestSDSParser.class.getResourceAsStream("/addressbook.sds");
-		sds = sdaparser.parse(new InputStreamReader(input,"UTF-8"));
+		sds = SDA.parse(new InputStreamReader(input,"UTF-8"));
 		schema = SDSParser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);
@@ -48,7 +45,7 @@ public final class TestSDSParser
 		/* test writing a schema to an output file */
 		OutputStreamWriter output = 
 			new OutputStreamWriter(new FileOutputStream("c:/temp/addressbook.sds"), "UTF-8");
-		SDA.formatter().format(output, schema.toSDA()); output.close();
+		SDA.format(output, schema.toSDA()); output.close();
 		
 		/* verify a schema */
 		schema.verify();

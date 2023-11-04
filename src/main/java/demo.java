@@ -18,7 +18,7 @@ public class demo {
 		Schema schema = SDS.parser().parse(sds);
 		
 		FileReader sda = new FileReader(args[1]);
-		DataNode root = SDA.parser().parse(sda);
+		DataNode root = SDA.parse(sda);
 		
 		ErrorList errors = SDS.validator().validate(root, schema, null);
 		if (! errors.isEmpty()) {

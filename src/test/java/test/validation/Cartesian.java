@@ -4,9 +4,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
-import be.baur.sda.SDA;
 import be.baur.sda.DataNode;
-import be.baur.sda.serialization.Parser;
+import be.baur.sda.SDA;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
 import be.baur.sds.validation.Error;
@@ -14,8 +13,6 @@ import be.baur.sds.validation.ErrorList;
 import test.Test;
 
 public final class Cartesian {
-	
-	private static Parser<DataNode> parser = SDA.parser();
 
 	/* 
 	 * Parsing and validation of unordered groups of Cartesian coordinates.
@@ -27,7 +24,7 @@ public final class Cartesian {
 		});
 		
 		InputStream sda = Cartesian.class.getResourceAsStream("/cartesian.sda");
-		DataNode document = parser.parse(new InputStreamReader(sda, "UTF-8"));
+		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Cartesian.class.getResourceAsStream("/cartesian.sds");
 		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
