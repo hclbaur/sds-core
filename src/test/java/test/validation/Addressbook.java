@@ -27,7 +27,7 @@ public final class Addressbook {
 		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Addressbook.class.getResourceAsStream("/addressbook.sds");
-		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
+		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
 
 		ErrorList errors = SDS.validator().validate(document, schema, "contact");
 		t.ts1("F01", errors.get(0) + "", "/addressbook: got 'addressbook', but 'contact' was expected");

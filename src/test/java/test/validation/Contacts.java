@@ -27,7 +27,7 @@ public final class Contacts {
 		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Contacts.class.getResourceAsStream("/contacts.sds");
-		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
+		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
 
 		//SDS.validator().validate(document, schema, null);
 		ErrorList errors = SDS.validator().validate(document, schema, "contacts");

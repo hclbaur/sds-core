@@ -15,7 +15,7 @@ public class demo {
 	public static void main(String[] args) throws IOException {
 		
 		FileReader sds = new FileReader(args[0]);
-		Schema schema = SDS.parser().parse(sds);
+		Schema schema = SDS.parse(sds);
 		
 		FileReader sda = new FileReader(args[1]);
 		DataNode root = SDA.parse(sda);

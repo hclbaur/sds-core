@@ -58,18 +58,9 @@ import be.baur.sds.model.UnorderedGroup;
  * }
  * </pre>
  * 
- * The internal representation of the schema would be:
- * 
- * <pre>
- * Schema { 
- *    NodeType("greeting") { 
- *       StringType("message") 
- *   } 
- * }
- * </pre>
- * 
  * This parser relies on the default SDA parser.
  * <p>
+ * 
  * @see Schema
  * @see SDAParser
  */
@@ -95,9 +86,10 @@ public final class SDSParser implements Parser<Schema> {
 	private static final String NAME_IS_EXPECTED = "a name is expected";
 	
 	/**
-	 * Creates a schema from a character input stream.
+	 * Creates a schema from a character input stream in SDS format.
 	 * 
 	 * @return a schema
+	 * @throws IOException       if an I/O operation failed
 	 * @throws SDAParseException if an SDA parse exception occurs
 	 * @throws SDSParseException if an SDS parse exception occurs
 	 */

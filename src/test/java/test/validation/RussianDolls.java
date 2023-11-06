@@ -25,7 +25,7 @@ public final class RussianDolls {
 		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = RussianDolls.class.getResourceAsStream("/russiandolls.sds");
-		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
+		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
 
 		ErrorList errors = SDS.validator().validate(document, schema, null);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
@@ -36,7 +36,7 @@ public final class RussianDolls {
 		document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		sds = RussianDolls.class.getResourceAsStream("/russiandolls2.sds");
-		schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
+		schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
 
 		errors = SDS.validator().validate(document, schema, null);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
@@ -47,7 +47,7 @@ public final class RussianDolls {
 		document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		sds = RussianDolls.class.getResourceAsStream("/russiandolls3.sds");
-		schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
+		schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
 
 		errors = SDS.validator().validate(document, schema, null);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());

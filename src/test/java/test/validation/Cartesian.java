@@ -27,7 +27,7 @@ public final class Cartesian {
 		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Cartesian.class.getResourceAsStream("/cartesian.sds");
-		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
+		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
 
 		ErrorList errors = SDS.validator().validate(document, schema, null);
 		//for (Error error : errors) System.out.println(error.toString());

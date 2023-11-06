@@ -105,6 +105,6 @@ public final class Schema extends AbstractNode {
 	 */
 	public void verify() throws IOException, ParseException {
 		// Serialize the schema and parse it using the SDSParser to reveal issues
-		SDS.parser().parse(new StringReader(this.toString()));
+		SDS.parse(new StringReader(this.toString()));
 	}
 }
