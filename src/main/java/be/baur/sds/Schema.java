@@ -10,6 +10,7 @@ import be.baur.sda.serialization.ParseException;
 import be.baur.sda.serialization.SDAFormatter;
 import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.SDSParser;
+import be.baur.sds.validation.Validator;
 
 /**
  * A {@code Schema} node represents an SDA document definition that can be used
@@ -106,5 +107,20 @@ public final class Schema extends AbstractNode {
 	public void verify() throws IOException, ParseException {
 		// Serialize the schema and parse it using the SDSParser to reveal issues
 		SDS.parse(new StringReader(this.toString()));
+	}
+	
+	
+	/**
+	 * Returns a {@code Validator} associated with this schema.
+	 * 
+	 * @return a validator, not null
+	 * @see Validator
+	 */
+	public Validator newValidator() {
+		return new Validator() {
+			protected Schema getSchema() {
+				return Schema.this;
+			}
+		};
 	}
 }

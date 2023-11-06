@@ -5,10 +5,13 @@
 This is (mostly) a compatibility release for sda-core 2.2.x.
 
 - `Removed` Interface be.baur.sds.serialization.Parser.
+- `Removed` SDS.validator() and Validator interface.
+- `Changed` SDAValidator to abstract Validator class.
 - `Changed` NodeType.getName to NodeType.getTypeName.
 - `Changed` SDS.parser() to SDS.parse().
 - `Renamed` SchemaException to SDSParseException.
 - `Renamed` MixedType to DataType.
+- Added Schema.newValidator().
 
 ## Compatibility
 

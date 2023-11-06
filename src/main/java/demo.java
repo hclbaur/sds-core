@@ -9,6 +9,7 @@ import be.baur.sds.SDS;
 import be.baur.sds.Schema;
 import be.baur.sds.validation.Error;
 import be.baur.sds.validation.ErrorList;
+import be.baur.sds.validation.Validator;
 
 public class demo {
 
@@ -20,7 +21,8 @@ public class demo {
 		FileReader sda = new FileReader(args[1]);
 		DataNode root = SDA.parse(sda);
 		
-		ErrorList errors = SDS.validator().validate(root, schema, null);
+		Validator validator = schema.newValidator();
+		ErrorList errors = validator.validate(root, null);
 		if (! errors.isEmpty()) {
 			for (Error error : errors) System.out.println(error.toString()); return;
 		}

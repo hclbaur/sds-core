@@ -7,9 +7,9 @@ import java.util.Iterator;
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.Schema;
 import be.baur.sds.validation.Error;
 import be.baur.sds.validation.ErrorList;
+import be.baur.sds.validation.Validator;
 import test.Test;
 
 public final class Contacts {
@@ -27,10 +27,9 @@ public final class Contacts {
 		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Contacts.class.getResourceAsStream("/contacts.sds");
-		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
+		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		//SDS.validator().validate(document, schema, null);
-		ErrorList errors = SDS.validator().validate(document, schema, "contacts");
+		ErrorList errors = validator.validate(document, "contacts");
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<Error> e = errors.iterator();
 		

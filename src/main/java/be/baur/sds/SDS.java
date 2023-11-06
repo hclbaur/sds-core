@@ -6,8 +6,6 @@ import java.io.Reader;
 import be.baur.sda.serialization.SDAParseException;
 import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
-import be.baur.sds.validation.SDAValidator;
-import be.baur.sds.validation.Validator;
 
 /**
  * This class defines static constants and utility methods.
@@ -30,16 +28,6 @@ public final class SDS {
 	 */
 	public static Schema parse(Reader input) throws IOException, SDAParseException, SDSParseException {
 		return PARSER.parse(input);
-	}
-
-	
-	/**
-	 * Returns a new instance of the default SDS validator.
-	 * 
-	 * @return an {@link SDAValidator}
-	 */
-	public static Validator validator() {
-		return new SDAValidator();
 	}
 	
 	

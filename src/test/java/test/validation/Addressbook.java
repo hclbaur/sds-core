@@ -7,9 +7,9 @@ import java.util.Iterator;
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.Schema;
 import be.baur.sds.validation.Error;
 import be.baur.sds.validation.ErrorList;
+import be.baur.sds.validation.Validator;
 import test.Test;
 
 public final class Addressbook {
@@ -27,11 +27,11 @@ public final class Addressbook {
 		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Addressbook.class.getResourceAsStream("/addressbook.sds");
-		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
+		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		ErrorList errors = SDS.validator().validate(document, schema, "contact");
+		ErrorList errors = validator.validate(document, "contact");
 		t.ts1("F01", errors.get(0) + "", "/addressbook: got 'addressbook', but 'contact' was expected");
-		errors = SDS.validator().validate(document, schema, null);
+		errors = validator.validate(document, null);
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<Error> e = errors.iterator();
 		

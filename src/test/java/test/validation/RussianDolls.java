@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.Schema;
 import be.baur.sds.validation.ErrorList;
+import be.baur.sds.validation.Validator;
 import test.Test;
 
 public final class RussianDolls {
@@ -25,9 +25,9 @@ public final class RussianDolls {
 		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = RussianDolls.class.getResourceAsStream("/russiandolls.sds");
-		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
+		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		ErrorList errors = SDS.validator().validate(document, schema, null);
+		ErrorList errors = validator.validate(document, null);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
 		t.ts1("S01", errors.isEmpty() ? "" : errors.get(0).toString(), "");
@@ -36,9 +36,9 @@ public final class RussianDolls {
 		document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		sds = RussianDolls.class.getResourceAsStream("/russiandolls2.sds");
-		schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
+		validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		errors = SDS.validator().validate(document, schema, null);
+		errors = validator.validate(document, null);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
 		t.ts1("S02", errors.isEmpty() ? "" : errors.get(0).toString(), "");
@@ -47,9 +47,9 @@ public final class RussianDolls {
 		document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		sds = RussianDolls.class.getResourceAsStream("/russiandolls3.sds");
-		schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
+		validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		errors = SDS.validator().validate(document, schema, null);
+		errors = validator.validate(document, null);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
 		t.ts1("S03", errors.isEmpty() ? "" : errors.get(0).toString(), "");
