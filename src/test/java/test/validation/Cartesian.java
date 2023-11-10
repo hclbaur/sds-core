@@ -29,7 +29,7 @@ public final class Cartesian {
 		InputStream sds = Cartesian.class.getResourceAsStream("/cartesian.sds");
 		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		ErrorList errors = validator.validate(document, null);
+		ErrorList errors = validator.validate(document);
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<Error> e = errors.iterator();
 		

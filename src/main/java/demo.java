@@ -22,7 +22,7 @@ public class demo {
 		DataNode root = SDA.parse(sda);
 		
 		Validator validator = schema.newValidator();
-		ErrorList errors = validator.validate(root, null);
+		ErrorList errors = validator.validate(root);
 		if (! errors.isEmpty()) {
 			for (Error error : errors) System.out.println(error.toString()); return;
 		}

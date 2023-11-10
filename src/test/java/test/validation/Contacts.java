@@ -28,8 +28,7 @@ public final class Contacts {
 
 		InputStream sds = Contacts.class.getResourceAsStream("/contacts.sds");
 		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
-
-		ErrorList errors = validator.validate(document, "contacts");
+		ErrorList errors = validator.validate(document);
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<Error> e = errors.iterator();
 		
@@ -64,6 +63,6 @@ public final class Contacts {
 		t.ts1("F28", e.next() + "", "/contacts/contact[29]: content missing at end of 'contact'; expected 'name'");
 		t.ts1("F29", e.next() + "", "/contacts/contact[29]: empty value not allowed; 'contact' is not nullable");
 		t.ts1("F30", e.next() + "", "/contacts/compact: 'compact' was not expected in 'contacts'");
-		t.ts1("F99", e.hasNext() + "", "false");
+		t.ts1("F31", e.hasNext() + "", "false");
 	}
 }

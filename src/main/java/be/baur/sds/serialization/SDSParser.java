@@ -152,7 +152,7 @@ public final class SDSParser implements Parser<Schema> {
 		DataNode type = getAttribute(sds, Attribute.TYPE, false);
 		
 		if (type != null) try {
-			schema.setDefaultType(type.getValue());
+			schema.setDefaultTypeName(type.getValue());
 		}
 		catch (IllegalArgumentException e) {
 			throw new SDSParseException(sds, String.format(ATTRIBUTE_INVALID, 

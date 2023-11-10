@@ -2,13 +2,14 @@ package be.baur.sds;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Objects;
 
 import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
 import be.baur.sda.Node;
-import be.baur.sda.serialization.ParseException;
 import be.baur.sda.serialization.SDAFormatter;
 import be.baur.sds.serialization.Attribute;
+import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
 import be.baur.sds.validation.Validator;
 
@@ -26,36 +27,50 @@ public final class Schema extends AbstractNode {
 
 	public static final String TAG = "schema";	
 	
-	private String defaultType = null; // the designated root node
+	/** The name of the default type, may be null. */
+	private String defaultType = null;
 
 
 	/**
-	 * Returns the default type for this schema. This method returns null if no
-	 * default type has been set.
+	 * Returns the name of the default type. This method returns null if no default
+	 * type has been set for this schema.
 	 * 
 	 * @return the default type name, may be null
 	 */
-	public String getDefaultType() {
+	public String getDefaultTypeName() {
 		return defaultType;
 	}
 
 	
 	/**
-	 * Sets the default type for this schema. The argument must refer to an existing
-	 * global type, or an exception will be thrown. A null value is allowed, and
-	 * will effectively clear the default type.
+	 * Specifies the default type. The name must refer to an existing global type,
+	 * or an exception will be thrown. A null reference is allowed, and will
+	 * effectively clear the default type.
 	 * 
-	 * @param type the default type name, may be null
-	 * @throws IllegalArgumentException if the referenced type is unknown
+	 * @param name the default type name, may be null
+	 * @throws IllegalArgumentException if the type is not found in the schema
 	 */
-	public void setDefaultType(String type) {
+	public void setDefaultTypeName(String name) {
  
-		if (type != null && get(t -> ((NodeType) t).getTypeName().equals(type)) == null)
-			throw new IllegalArgumentException("no such global type (" + type + ")");
-		this.defaultType = type; 
+		if (name != null && getGlobalType(name) == null)
+			throw new IllegalArgumentException("no such global type (" + name + ")");
+		this.defaultType = name; 
 	}
 
 	
+	/**
+	 * Returns a global type specified by name, or null if no appropriate type could
+	 * be found in the schema.
+	 * 
+	 * @param name the name of the type to get, not null
+	 * @return a global type, may be null
+	 */
+	public NodeType getGlobalType(String name) {
+		Objects.requireNonNull(name, "name must not be null");
+		return get(t -> t instanceof NodeType && ((NodeType) t).getTypeName().equals(name));
+	}
+
+
 	/**
 	 * Returns an SDA node representing this schema. In other words, what an SDA
 	 * parser would return upon processing an input stream describing the schema in
@@ -99,28 +114,33 @@ public final class Schema extends AbstractNode {
 
 	/**
 	 * Verifies this schema. This method can be used to to validate a schema that
-	 * was not created by the {@code SDTParser}.
+	 * was not created by the {@code SDTParser}. This method returns nothing but
+	 * throws an {@code SDSParseException} if the schema is not valid.
 	 * 
-	 * @throws IOException    if an input exception occurs
-	 * @throws ParseException if a parse exception occurs
+	 * @throws IOException       if an input exception occurs
+	 * @throws SDSParseException if an SDS parse exception occurs
 	 */
-	public void verify() throws IOException, ParseException {
+	public void verify() throws IOException, SDSParseException {
 		// Serialize the schema and parse it using the SDSParser to reveal issues
 		SDS.parse(new StringReader(this.toString()));
 	}
 	
 	
 	/**
-	 * Returns a {@code Validator} associated with this schema.
+	 * Returns a {@code Validator} associated with this schema, prepared to validate
+	 * SDA content against the default type, or against any global type declared if
+	 * no default type has been set for this schema.
 	 * 
 	 * @return a validator, not null
 	 * @see Validator
 	 */
 	public Validator newValidator() {
-		return new Validator() {
+		Validator val = new Validator() {
 			protected Schema getSchema() {
 				return Schema.this;
 			}
 		};
+		val.setTypeName(getDefaultTypeName());
+		return val;
 	}
 }

@@ -9,8 +9,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import be.baur.sda.Node;
 import be.baur.sda.DataNode;
+import be.baur.sda.Node;
 import be.baur.sds.Component;
 import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
@@ -30,7 +30,7 @@ import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
 
 /**
- * This is the default validator; used to validate an SDA document against a
+ * This is the default validator; used to validate SDA content against a
  * {@code Schema}. For example, when a schema (in SDS notation) looks like
  * 
  * <pre>
@@ -51,13 +51,17 @@ import be.baur.sds.model.UnorderedGroup;
  * 
  * an error is returned, reporting an unexpected 'text' node in 'greeting'.
  * <p>
- * A validator is obtained from a schema, by calling {@link Schema#newValidator()}.
- * @see Schema
+ * A validator is not instantiated using {@code new}, but obtained from a schema
+ * instance. A validator instance can be re-used and is thread-safe as long as
+ * the associated schema and validated type is not changed by the application.
+ * <p>
+ * 
+ * @see Schema#newValidator
+ * @see #setTypeName
  */
 public abstract class Validator {
 
-	private static final String NO_DEFAULT_TYPE_FOUND = "no default type found";
-	private static final String GLOBAL_TYPE_NOT_FOUND = "global type '%s' not found";
+	private static final String NO_DECLARATION_FOUND = "no declaration for '%s' found";
 	private static final String CONTENT_EXPECTED_FOR_NODE = "%s is expected for node '%s'";
 	private static final String CONTENT_MISSING_AT_END = "content missing at end of '%s'; expected %s";
 	private static final String GOT_NODE_BUT_EXPECTED = "got '%s', but %s was expected";
@@ -73,6 +77,9 @@ public abstract class Validator {
 	private static final String VALUE_SUBCEEDS_MIN = "value '%s' subceeds the minimum of %s";
 	private static final String VALUE_EXCEEDS_MAX = "value '%s' exceeds the maximum of %s";
 	private static final String VALUE_NOT_INCLUSIVE = "value '%s' is not inclusive";
+	
+	/** The name of the type for validation, may be null. */
+	private String typeName;
 
 
 	/**
@@ -83,49 +90,79 @@ public abstract class Validator {
 	 */
 	protected abstract Schema getSchema();
 
+
+	/**
+	 * Sets the name of the type to validate against. The specified name must refer
+	 * to an existing global type, or an exception will be thrown. A null reference
+	 * is allowed, and will instruct the validator to look for an appropriate global
+	 * type, regardless of the default type for the schema.
+	 * <p>
+	 * Applications must not (re)set the type while validation is in progress or
+	 * when multiple threads are using the validator.
+	 * <p>
+	 * 
+	 * @param name a global type name, may be null
+	 * @throws IllegalArgumentException if the type is not found in the schema
+	 */
+	public void setTypeName(String name) {
+ 
+		if (name != null && getSchema().getGlobalType(name) == null)
+			throw new IllegalArgumentException("no such global type (" + name + ")");
+		this.typeName = name; 
+	}
+	
 	
 	/**
-	 * Validates an SDA document (node). This method validates a node (and its child
-	 * nodes) against a global type within the schema. The global type name may be
-	 * null or empty if the schema has a default type. An exception is thrown if no
-	 * appropriate type can be found.
+	 * This method validates a data node (and any child nodes) against the schema
+	 * associated with this validator.
+	 * <p>
+	 * The supplied node will be validated against the default type of the schema,
+	 * or against any appropriate global type if no default type has been set.
+	 * <p>
+	 * Alternatively, the validator may be instructed to use a specific type by
+	 * calling {@code #setTypeName} prior to validation. Note that if a null
+	 * reference is supplied, the validator will try to find an appropriate type,
+	 * regardless of the default type set for the schema.
 	 * 
-	 * @param node       the node to be validated
-	 * @param globaltype a global type name, may be null
+	 * @param node the node to be validated
 	 * @return an error list, empty if no validation errors were found
-	 * @throws IllegalArgumentException - if the type is not found
+	 * @see #setTypeName
 	 */
-	public ErrorList validate(DataNode node, String globalType) {
+	public ErrorList validate(DataNode node) {
 
 		final Schema schema = getSchema();  // the schema we are associated with
-		NodeType type = null;  // the type to validate the node against
+		ErrorList errors = new ErrorList();	// result that will be returned at the end
+		NodeType nodeType; // the type to validate against, determination logic below
 		
-		if (globalType == null || globalType.isEmpty()) {
-			
-			final String defaultType = schema.getDefaultType();
-			if (defaultType != null) // if we have a default type, we take that
-				type = schema.get(t -> ((NodeType) t).getTypeName().equals(defaultType));
-			
-			// otherwise if there is only one (node type), that must be the one
-			else if (schema.nodes().size() == 1)
-				type = (NodeType) schema.nodes().get(0);
-			
-			else // otherwise we do not know nor guess
-				throw new IllegalArgumentException(String.format(NO_DEFAULT_TYPE_FOUND));
-		}	
-		else // get the specified type (or null if not found)
-			type = schema.get(t -> ((NodeType) t).getTypeName().equals(globalType));
-			
-		if (type == null)
-			throw new IllegalArgumentException(String.format(GLOBAL_TYPE_NOT_FOUND, globalType));
+		if (typeName == null || typeName.isEmpty()) {
+			/*
+			 * no type name has been set, so try to find an appropriate type to validate
+			 * the supplied node against. If no type is found quit right away (fatal).
+			 */
+			nodeType = schema.getGlobalType(node.getName());
+
+			if (nodeType == null) {
+				errors.add(new Error(node, NO_DECLARATION_FOUND, node.getName()));
+				return errors;
+			}
+		}
+		else 
+		{
+			// a type was specified, so get it (should never return null)
+			nodeType = schema.getGlobalType(typeName);
+			if (nodeType == null) // impossible, unless associated schema was modified
+				throw new IllegalStateException(String.format(NO_DECLARATION_FOUND, typeName));
+		}
 		
-		// we have a type, now recursively validate the entire document
-		ErrorList errors = new ErrorList();	
-		if (! matchNodeType(node, type, errors))
-			errors.add(new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName(type)));
+		// recursively validate the entire document against the selected type
+		if (! matchNodeType(node, nodeType, errors))
+			errors.add(new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName(nodeType)));
 		
 		return errors;
 	}
+
+	
+	// code below this line is the actual validation logic
 
 	
 	/**

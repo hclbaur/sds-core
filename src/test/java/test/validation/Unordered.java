@@ -29,7 +29,7 @@ public final class Unordered {
 		InputStream sds = Unordered.class.getResourceAsStream("/unordered.sds");
 		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		ErrorList errors = validator.validate(document, null);
+		ErrorList errors = validator.validate(document);
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<Error> e = errors.iterator();
 		

@@ -27,7 +27,7 @@ public final class RussianDolls {
 		InputStream sds = RussianDolls.class.getResourceAsStream("/russiandolls.sds");
 		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		ErrorList errors = validator.validate(document, null);
+		ErrorList errors = validator.validate(document);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
 		t.ts1("S01", errors.isEmpty() ? "" : errors.get(0).toString(), "");
@@ -38,7 +38,7 @@ public final class RussianDolls {
 		sds = RussianDolls.class.getResourceAsStream("/russiandolls2.sds");
 		validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		errors = validator.validate(document, null);
+		errors = validator.validate(document);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
 		t.ts1("S02", errors.isEmpty() ? "" : errors.get(0).toString(), "");
@@ -49,7 +49,7 @@ public final class RussianDolls {
 		sds = RussianDolls.class.getResourceAsStream("/russiandolls3.sds");
 		validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		errors = validator.validate(document, null);
+		errors = validator.validate(document);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
 		t.ts1("S03", errors.isEmpty() ? "" : errors.get(0).toString(), "");
