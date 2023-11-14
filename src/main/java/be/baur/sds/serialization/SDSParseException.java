@@ -1,7 +1,8 @@
 package be.baur.sds.serialization;
 
+import be.baur.sda.DataNode;
 import be.baur.sda.Node;
-import be.baur.sda.NodeProcessingException;
+import be.baur.sda.ProcessingException;
 
 /**
  * An {@code SDSParseException} is thrown by an {@code SDSParser} if the SDS
@@ -10,7 +11,7 @@ import be.baur.sda.NodeProcessingException;
  * @see SDSParser
  */
 @SuppressWarnings("serial")
-public final class SDSParseException extends NodeProcessingException {
+public final class SDSParseException extends ProcessingException {
 	
 	/**
 	 * Creates an SDS parse exception with an error message and node.
@@ -22,4 +23,11 @@ public final class SDSParseException extends NodeProcessingException {
 		super(node, "SDS syntax violation at " + node.path() + ": " + message);
 	}
 
+//	public SDSParseException(Node node, String message, Throwable cause) {
+//		this(node, message); initCause(cause);
+//	} 
+//	
+//	public SDSParseException(DataNode node, Throwable cause) {
+//		super(node, cause.getMessage()); initCause(cause);
+//	} 
 }
