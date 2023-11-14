@@ -82,15 +82,15 @@ public final class TestSDSParser {
 		
 		/* test invalid SDS */
 		System.out.print("\n              ");
-		String s = "SDS syntax violation at ";
+		String s = "error at ";
 		t.ts1("F01", "node { }", s + "/node: a 'schema' node is expected");
 		t.ts1("F02", "node \"\"", s + "/node: a 'schema' node is expected");
 		t.ts1("F03", "schema { }", s + "/schema: a 'schema' node must have content");
 		t.ts1("F04", "schema \"\"", s + "/schema: a 'schema' node must have content");
 		t.ts1("F05", "schema{ test \"\" }", s + "/schema/test: attribute 'test' is unknown");
 		t.ts1("F06", "schema{ type \"\" }", s + "/schema/type: attribute 'type' is empty");
-		t.ts1("F07", "schema{ type \"frut\" }", s + "/schema: type 'frut' is invalid; no such global type (frut)");
-		t.ts1("F08", "schema{ type \"string\" }", s + "/schema: type 'string' is invalid; no such global type (string)");
+		t.ts1("F07", "schema{ type \"frut\" }", s + "/schema: type 'frut' is invalid; no such global type");
+		t.ts1("F08", "schema{ type \"string\" }", s + "/schema: type 'string' is invalid; no such global type");
 		t.ts1("F09", "schema{ occurs \"1\" }", s + "/schema/occurs: attribute 'occurs' is not allowed here");
 		t.ts1("F10", "schema{ node{ name \"x\" type \"string\" occurs \"1\" } }", s + "/schema/node: attribute 'occurs' is not allowed here");
 		t.ts1("F11", "schema{ node{ name \"x\" occurs \"1\" node{ name \"x\" type \"string\" } } }", s + "/schema/node: attribute 'occurs' is not allowed here");
