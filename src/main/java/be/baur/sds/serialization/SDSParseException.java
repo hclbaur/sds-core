@@ -23,17 +23,6 @@ public final class SDSParseException extends ProcessingException {
 	}
 
 
-	/**
-	 * Returns an SDS parse exception with an error node and formatted message.
-	 * 
-	 * @param node   the node where the error was found
-	 * @param format a format message, and
-	 * @param args arguments, as in {@link String#format}
-	 */
-	public static SDSParseException of(Node node, String format, Object... args) {
-		return new SDSParseException(node, String.format(format, args));
-	}
-
 //	public SDSParseException(Node node, String message, Throwable cause) {
 //		this(node, message); initCause(cause);
 //	} 
