@@ -19,7 +19,7 @@ public final class SDSParseException extends ProcessingException {
 	 * @param message an error message
 	 */
 	public SDSParseException(Node node, String message) {
-		super(node, (node != null ? ("error at " + node.path() + ": ") : "") + message);
+		super(node, message);
 	}
 
 
