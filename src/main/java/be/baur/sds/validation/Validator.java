@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import be.baur.sda.DataNode;
 import be.baur.sda.Node;
+import be.baur.sda.util.Result;
+import be.baur.sda.util.Results;
 import be.baur.sds.Component;
 import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
@@ -90,7 +92,37 @@ public abstract class Validator {
 	 */
 	protected abstract Schema getSchema();
 
+	
+	/**
+	 * A convenience class to hold a list of validation errors.
+	 */
+	@SuppressWarnings("serial")
+	public final class Errors extends Results<Node> {
 
+		private boolean add(Error error) {
+			return super.addError(error);
+		}
+	}
+	
+	/** A private class to hold a validation result */
+	private static final class Error extends Result<Node> {
+
+		public Error(Node node, String message) {
+			super(false, node, message);
+		}
+
+		public String toString() {
+			return this.getValue().path() + ": " + this.getMessage();
+		}
+	}
+
+	
+	/** A private method to create errors */
+	private static Error error(Node node, String format, Object... args) {
+		return new Error(node, String.format(format, args));
+	}
+
+	
 	/**
 	 * Sets the name of the type to validate against. The specified name must refer
 	 * to an existing global type, or an exception will be thrown. A null reference
@@ -128,10 +160,10 @@ public abstract class Validator {
 	 * @return an error list, empty if no validation errors were found
 	 * @see #setTypeName
 	 */
-	public ErrorList validate(DataNode node) {
+	public Errors validate(DataNode node) {
 
 		final Schema schema = getSchema();  // the schema we are associated with
-		ErrorList errors = new ErrorList();	// result that will be returned at the end
+		Errors errors = new Errors();	// result that will be returned at the end
 		NodeType nodeType; // the type to validate against, determination logic below
 		
 		if (typeName == null || typeName.isEmpty()) {
@@ -142,7 +174,7 @@ public abstract class Validator {
 			nodeType = schema.getGlobalType(node.getName());
 
 			if (nodeType == null) {
-				errors.add(new Error(node, NO_DECLARATION_FOUND, node.getName()));
+				errors.add(error(node, NO_DECLARATION_FOUND, node.getName()));
 				return errors;
 			}
 		}
@@ -156,7 +188,7 @@ public abstract class Validator {
 		
 		// recursively validate the entire document against the selected type
 		if (! matchNodeType(node, nodeType, errors))
-			errors.add(new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName(nodeType)));
+			errors.add(error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName(nodeType)));
 		
 		return errors;
 	}
@@ -174,7 +206,7 @@ public abstract class Validator {
 	 * If there is a match, we assert that the node content is valid, or add an
 	 * error to the list otherwise. This does not apply to "any" type components.
 	 */
-	private static boolean matchNodeType(DataNode node, NodeType type, ErrorList errors) {
+	private static boolean matchNodeType(DataNode node, NodeType type, Errors errors) {
 		
 		String nodename = node.getName();
 		boolean namesmatch = nodename.equals(type.getTypeName());
@@ -191,7 +223,7 @@ public abstract class Validator {
 		if (! (type instanceof DataType)) { // we are expecting complex content ONLY
 			
 			if (node.isLeaf() || ! node.getValue().isEmpty())  // but we got something with a value
-				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
+				errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
 
 			if (! node.isLeaf()) // validate complex content if we have it
 				errors.add(validateComplexContent(node, type, errors));
@@ -202,12 +234,12 @@ public abstract class Validator {
 		// we are expecting simple content
 		if (! node.isLeaf()) {
 			if (type.isLeaf()) // no complex content is expected
-				errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
+				errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
 			else // validate complex content if we have it
 				errors.add(validateComplexContent(node, type, errors));
 		} 
 		else if (! type.isLeaf()) // report missing complex content
-			errors.add(new Error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
+			errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
 	
 		// validate the simple content we were expecting
 		errors.add(validateSimpleContent(node, (DataType) type));
@@ -226,7 +258,7 @@ public abstract class Validator {
 		
 		// empty values are allowed only for null-able types.
 		if (value.isEmpty() && ! type.isNullable())
-			return new Error(node, EMPTY_VALUE_NOT_ALLOWED, node.getName());
+			return error(node, EMPTY_VALUE_NOT_ALLOWED, node.getName());
 		
 		if (type instanceof AbstractStringType) {
 			Error error = validateStringValue(node, (AbstractStringType) type);
@@ -240,12 +272,12 @@ public abstract class Validator {
 		
 		if (type instanceof BooleanType) {
 			if (! (value.equals(BooleanType.TRUE) || value.equals(BooleanType.FALSE)) )
-				return new Error(node, INVALID_BOOLEAN_VALUE, value);
+				return error(node, INVALID_BOOLEAN_VALUE, value);
 		}
 			
 		Pattern pattern = type.getPattern();
 		if (pattern != null && ! pattern.matcher(value).matches())
-			return new Error(node, VALUE_DOES_NOT_MATCH, value, type.getPattern().toString());
+			return error(node, VALUE_DOES_NOT_MATCH, value, type.getPattern().toString());
 		
 		return null;
 	}
@@ -265,7 +297,7 @@ public abstract class Validator {
 			try {
 				length = Base64.getDecoder().decode(node.getValue()).length;
 			} catch (IllegalArgumentException e) {
-				return new Error(node, INVALID_BINARY_VALUE, node.getName(), e.getMessage());
+				return error(node, INVALID_BINARY_VALUE, node.getName(), e.getMessage());
 			}
 		}
 		else length = node.getValue().length();   // otherwise it is a regular string
@@ -280,9 +312,9 @@ public abstract class Validator {
 			node.getValue().substring(0,32) + "..." : node.getValue();
 
 		if (contains > 0)
-			return new Error(node, LENGTH_EXCEEDS_MAX, val, length, range.min);
+			return error(node, LENGTH_EXCEEDS_MAX, val, length, range.min);
 		else
-			return new Error(node, LENGTH_SUBCEEDS_MIN, val, length, range.max);
+			return error(node, LENGTH_SUBCEEDS_MIN, val, length, range.max);
 	}
 
 	
@@ -303,20 +335,20 @@ public abstract class Validator {
 					throw new RuntimeException("validation of '" + type.getContentType() + "' not implemented!");
 			}
 		} catch (Exception e) {
-			return new Error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getContentType(), e.getMessage());
+			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getContentType(), e.getMessage());
 		}
 		
 		Interval<?> range = type.getRange(); 
 		int contains = range.contains(value);
 		if (contains < 0) {
 			if (value.equals(range.min)) 
-				return new Error(node, VALUE_NOT_INCLUSIVE, value);
-			return new Error(node, VALUE_SUBCEEDS_MIN, value, range.min);
+				return error(node, VALUE_NOT_INCLUSIVE, value);
+			return error(node, VALUE_SUBCEEDS_MIN, value, range.min);
 		}
 		if (contains > 0) {
 			if (value.equals(range.max)) 
-				return new Error(node, VALUE_NOT_INCLUSIVE, value);
-			return new Error(node, VALUE_EXCEEDS_MAX, value, range.max);
+				return error(node, VALUE_NOT_INCLUSIVE, value);
+			return error(node, VALUE_EXCEEDS_MAX, value, range.max);
 		}
 		return null;
 	}
@@ -338,7 +370,7 @@ public abstract class Validator {
 	 * a validation error. If we run out of nodes while there is still mandatory
 	 * content expected, that is also a validation error.
 	 */
-	private static Error validateComplexContent(DataNode node, NodeType type, ErrorList errors) {
+	private static Error validateComplexContent(DataNode node, NodeType type, Errors errors) {
 		
 		NodeIterator<DataNode> inode = new NodeIterator<DataNode>(node.nodes()); // iterator for child nodes
 		DataNode childnode = inode.hasNext() ? inode.next() : null; // first child node (or none)
@@ -384,12 +416,12 @@ public abstract class Validator {
 
 		//System.out.println("validateComplex: matched all child components of " + component.getName());
 		if (childnode != null) { // if we have an unmatched node, that is a validation error
-			errors.add(new Error(childnode, 
+			errors.add(error(childnode, 
 				NODE_NOT_EXPECTED_IN, childnode.getName(), childnode.getParent().getName()));
 
 			// each remaining node is also a validation error, but maybe thats for ABUNDANT mode.
 //			inode.forEachRemaining( n -> { 
-//				errors.add(new Error(n, NODE_NOT_EXPECTED_IN, n.getName(), n.getParent().getName())); 
+//				errors.add(error(n, NODE_NOT_EXPECTED_IN, n.getName(), n.getParent().getName())); 
 //			});
 		}
 		return null;
@@ -402,7 +434,7 @@ public abstract class Validator {
 	 * against nested model groups. When matching a model group we may consider more
 	 * than one node, so this method accepts an iterator to access subsequent nodes.
 	 */
-	private static boolean matchGroup(NodeIterator<DataNode> inode, DataNode node, ModelGroup group, ErrorList errors) {
+	private static boolean matchGroup(NodeIterator<DataNode> inode, DataNode node, ModelGroup group, Errors errors) {
 
 		if (group instanceof ChoiceGroup) 
 			return matchChoice(inode, node, (ChoiceGroup) group, errors);
@@ -422,7 +454,7 @@ public abstract class Validator {
 	 * of its child components is a match. Note that we may encounter other model
 	 * groups within the choice group.
 	 */
-	private static boolean matchChoice(NodeIterator<DataNode> inode, DataNode node, ChoiceGroup choice, ErrorList errors) {
+	private static boolean matchChoice(NodeIterator<DataNode> inode, DataNode node, ChoiceGroup choice, Errors errors) {
 
 		//System.out.println("matchChoice: matching children of " + choice.getName()+"{}");
 		for (Node child : choice.nodes()) {
@@ -452,7 +484,7 @@ public abstract class Validator {
 	 * that just marks the end of the group and we return, causing the remaining
 	 * nodes to be matched against the parent component context.
 	 */
-	private static boolean matchSequence(NodeIterator<DataNode> inode, DataNode node, SequenceGroup group, ErrorList errors) {
+	private static boolean matchSequence(NodeIterator<DataNode> inode, DataNode node, SequenceGroup group, Errors errors) {
 
 		boolean invoked = false; // overall match for this group, initially false
 		final DataNode parent = node.getParent(); // save the parent of the node(s) for later use
@@ -547,7 +579,7 @@ public abstract class Validator {
 	 * the parent component context. If we encounter a non-matching node, that is
 	 * usually an error.
 	 */
-	private static boolean matchUnordered(NodeIterator<DataNode> inode, DataNode node, UnorderedGroup group, ErrorList errors) {
+	private static boolean matchUnordered(NodeIterator<DataNode> inode, DataNode node, UnorderedGroup group, Errors errors) {
 		
 		boolean invoked = false; // whether this group was invoked, initially false
 		final DataNode parent = node.getParent(); // save the parent of the node(s)
@@ -645,7 +677,7 @@ public abstract class Validator {
 					components.stream().filter(n -> n.minOccurs() > 0)
 					.collect(Collectors.toCollection(ArrayList<Component>::new));
 				if (! required.isEmpty()) {
-					Error error = new Error(node, GOT_NODE_BUT_EXPECTED, 
+					Error error = error(node, GOT_NODE_BUT_EXPECTED, 
 						node.getName(), quoteNames(expectedTypes(required)) );
 					errors.add(error);
 					node = inode.hasNext() ? inode.next() : null; // get the next node
@@ -678,7 +710,7 @@ public abstract class Validator {
 				components.stream().filter(n -> n.minOccurs() > 0)
 				.collect(Collectors.toCollection(ArrayList<Component>::new));
 			if (! required.isEmpty()) {
-				Error error = new Error(parent, CONTENT_MISSING_AT_END, 
+				Error error = error(parent, CONTENT_MISSING_AT_END, 
 					parent.getName(), quoteNames(expectedTypes(required)) );
 				errors.add(error);
 			}
@@ -777,8 +809,8 @@ public abstract class Validator {
 	private static Error missingNodeError(DataNode context, Component comp) {
 		
 		if (comp instanceof ModelGroup)
-			return new Error(context, CONTENT_MISSING_AT_END, context.getName(), quoteNames(expectedTypes(comp)));
-		else return new Error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((NodeType) comp));
+			return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteNames(expectedTypes(comp)));
+		else return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((NodeType) comp));
 	}
 
 
@@ -786,8 +818,8 @@ public abstract class Validator {
 	private static Error unexpectedNodeError(DataNode node, Component comp) {
 		
 		if (comp instanceof ModelGroup)
-			return new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteNames(expectedTypes(comp)));
-		else return new Error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName((NodeType) comp));
+			return error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteNames(expectedTypes(comp)));
+		else return error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName((NodeType) comp));
 	}
 
 }

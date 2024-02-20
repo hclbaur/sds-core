@@ -8,9 +8,8 @@ import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
-import be.baur.sds.validation.Error;
-import be.baur.sds.validation.ErrorList;
 import be.baur.sds.validation.Validator;
+import be.baur.sds.validation.Validator.Errors;
 import test.Test;
 
 public final class Addressbook {
@@ -32,13 +31,13 @@ public final class Addressbook {
 		Validator validator = schema.newValidator();
 
 		validator.setTypeName("contact"); // set to existing type but not what we expect
-		ErrorList errors = validator.validate(document);
+		Errors errors = validator.validate(document);
 		t.ts1("F01", errors.get(0) + "", "/addressbook: got 'addressbook', but 'contact' was expected");
 		
 		validator.setTypeName(null); // try again with any matching type
 		errors = validator.validate(document);
 		//for (Error error : errors) System.out.println(error.toString());
-		Iterator<Error> e = errors.iterator();
+		Iterator<?> e = errors.iterator();
 		
 		t.ts1("F02", e.next() + "", "/addressbook/contact[1]/person/about: only complex content is expected for node 'about'");
 		t.ts1("F03", e.next() + "", "/addressbook/contact[1]/address/housenumber: got 'housenumber', but 'streetname' or 'postalcode' was expected");

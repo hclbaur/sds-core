@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.validation.ErrorList;
 import be.baur.sds.validation.Validator;
+import be.baur.sds.validation.Validator.Errors;
 import test.Test;
 
 public final class RussianDolls {
@@ -27,7 +27,7 @@ public final class RussianDolls {
 		InputStream sds = RussianDolls.class.getResourceAsStream("/russiandolls.sds");
 		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		ErrorList errors = validator.validate(document);
+		Errors errors = validator.validate(document);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
 		t.ts1("S01", errors.isEmpty() ? "" : errors.get(0).toString(), "");

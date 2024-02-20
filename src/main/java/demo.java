@@ -7,9 +7,8 @@ import be.baur.sda.Node;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
-import be.baur.sds.validation.Error;
-import be.baur.sds.validation.ErrorList;
 import be.baur.sds.validation.Validator;
+import be.baur.sds.validation.Validator.Errors;
 
 public class demo {
 
@@ -22,11 +21,12 @@ public class demo {
 		DataNode root = SDA.parse(sda);
 		
 		Validator validator = schema.newValidator();
-		ErrorList errors = validator.validate(root);
+		Errors errors = validator.validate(root);
 		if (! errors.isEmpty()) {
-			for (Error error : errors) System.out.println(error.toString()); return;
+			errors.forEach(error -> System.out.println(error.toString()));
+			return;
 		}
-		
+
 		for (Node contact : root.find("contact")) {
 			
 			DataNode name = contact.get("firstname");

@@ -7,9 +7,8 @@ import java.util.Iterator;
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.validation.Error;
-import be.baur.sds.validation.ErrorList;
 import be.baur.sds.validation.Validator;
+import be.baur.sds.validation.Validator.Errors;
 import test.Test;
 
 public final class Unordered {
@@ -29,9 +28,9 @@ public final class Unordered {
 		InputStream sds = Unordered.class.getResourceAsStream("/unordered.sds");
 		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		ErrorList errors = validator.validate(document);
+		Errors errors = validator.validate(document);
 		//for (Error error : errors) System.out.println(error.toString());
-		Iterator<Error> e = errors.iterator();
+		Iterator<?> e = errors.iterator();
 		
 		t.ts1("F01", e.next() + "", "/test/man_man_man[1]: content missing at end of 'man_man_man'; expected 'man2'");
 		t.ts1("F02", e.next() + "", "/test/man_man_man[2]: content missing at end of 'man_man_man'; expected 'man1'");

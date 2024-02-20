@@ -37,7 +37,7 @@ public final class TestSDSParser {
 		
 		/* test writing a schema to an output file */
 		OutputStreamWriter output = 
-			new OutputStreamWriter(new FileOutputStream("c:/temp/addressbook.sds"), "UTF-8");
+			new OutputStreamWriter(new FileOutputStream("c:/temp/test.sds"), "UTF-8");
 		SDA.format(output, schema.toSDA()); output.close();
 		
 		/* verify a schema */

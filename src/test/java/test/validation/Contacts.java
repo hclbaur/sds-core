@@ -7,9 +7,8 @@ import java.util.Iterator;
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.validation.Error;
-import be.baur.sds.validation.ErrorList;
 import be.baur.sds.validation.Validator;
+import be.baur.sds.validation.Validator.Errors;
 import test.Test;
 
 public final class Contacts {
@@ -28,9 +27,9 @@ public final class Contacts {
 
 		InputStream sds = Contacts.class.getResourceAsStream("/contacts.sds");
 		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
-		ErrorList errors = validator.validate(document);
+		Errors errors = validator.validate(document);
 		//for (Error error : errors) System.out.println(error.toString());
-		Iterator<Error> e = errors.iterator();
+		Iterator<?> e = errors.iterator();
 		
 		t.ts1("F01", e.next() + "", "/contacts/contact[6]: complex content is expected for node 'contact'");
 		t.ts1("F02", e.next() + "", "/contacts/contact[7]: content missing at end of 'contact'; expected 'name'");
