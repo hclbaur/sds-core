@@ -62,8 +62,8 @@ public final class TestSDSParser {
 		s.ts1("S04", "schema { node \"book\" { node \"contact\" { occurs \"1..*\" node \"name\" { type \"string\" } } } }", null);
 		s.ts1("S05", "schema { node \"phone\" { type \"string\" } node { type \"phone\" } }", null);
 		s.ts1("S06", "schema { node \"phone\" { type \"string\" } node \"mobile\" { type \"phone\" } }", null);
-		s.ts1("S07", "schema { type \"phone\" node \"phone\" { type \"string\" } node { type \"phone\" } }", null);
-		s.ts1("S08", "schema { type \"mobile\" node \"phone\" { type \"string\" } node \"mobile\" { type \"phone\" } }", null);
+//		s.ts1("S07", "schema { type \"phone\" node \"phone\" { type \"string\" } node { type \"phone\" } }", null);
+//		s.ts1("S08", "schema { type \"mobile\" node \"phone\" { type \"string\" } node \"mobile\" { type \"phone\" } }", null);
 		s.ts1("S09", "schema { node \"g\" { group { node \"x\" { type \"string\" } node \"y\" { type \"string\" } } } }", null);
 		s.ts1("S10", "schema { node \"c\" { choice { node \"x\" { type \"string\" } node \"y\" { type \"string\" } } } }", null);
 		s.ts1("S11", "schema { node \"u\" { unordered { node \"x\" { type \"string\" } node \"y\" { type \"string\" } } } }", null);
@@ -92,9 +92,9 @@ public final class TestSDSParser {
 		f.ts1("F03", "schema { }", "/schema: a 'schema' node must have content");
 		f.ts1("F04", "schema \"\"", "/schema: a 'schema' node must have content");
 		f.ts1("F05", "schema{ test \"\" }", "/schema/test: attribute 'test' is unknown");
-		f.ts1("F06", "schema{ type \"\" }", "/schema/type: attribute 'type' is empty");
-		f.ts1("F07", "schema{ type \"frut\" }", "/schema: type 'frut' is invalid; no such global type");
-		f.ts1("F08", "schema{ type \"string\" }", "/schema: type 'string' is invalid; no such global type");
+//		f.ts1("F06", "schema{ type \"\" }", "/schema/type: attribute 'type' is empty");
+//		f.ts1("F07", "schema{ type \"frut\" }", "/schema: type 'frut' is invalid; no such global type");
+//		f.ts1("F08", "schema{ type \"string\" }", "/schema: type 'string' is invalid; no such global type");
 		f.ts1("F09", "schema{ occurs \"1\" }", "/schema/occurs: attribute 'occurs' is not allowed here");
 		f.ts1("F10", "schema{ node{ name \"x\" type \"string\" occurs \"1\" } }", "/schema/node: attribute 'occurs' is not allowed here");
 		f.ts1("F11", "schema{ node{ name \"x\" occurs \"1\" node{ name \"x\" type \"string\" } } }", "/schema/node: attribute 'occurs' is not allowed here");

@@ -2,11 +2,15 @@
 
 ## [2.3.0] - in development
 
-This is (mostly) a compatibility release for sda-core 2.2.x.
+This started out as a compatibility release for sda-core 2.2.x, 
+until I decided to change the SDS syntax and disallow a type 
+attribute in the main schema section. So, as of this release, 
+a schema no longer has a "default type", whatever that was.
 
 - `Removed` Interface be.baur.sds.serialization.Parser.
 - `Removed` SDS.validator() and Validator interface.
 - `Removed` Error and ErrorList classes (use Errors).
+- `Removed` Schema.set - and getDefaultTypeName().
 - `Changed` SDAValidator to abstract Validator class.
 - `Changed` Validator.validate(node,type) to validate(node).
 - `Changed` NodeType.getName() to getTypeName().
@@ -19,7 +23,7 @@ This is (mostly) a compatibility release for sda-core 2.2.x.
 
 ## Compatibility
 
-- Requires at least Java 8 and sda-core 2.1.0.
+- Requires at least Java 8 and sda-core 2.2.0.
 
 ## Previous releases
 

@@ -116,8 +116,11 @@ public final class SDSParser implements Parser<Schema> {
 		if (! sds.isParent()) // a schema must have components
 			throw exception(sds, A_NODE_MUST_HAVE, sds.getName(), "content");
 		
-		// a schema must not have attributes, except for an optional type reference
-		List<Node> alist = sds.find(n -> n.isLeaf() && ! n.getName().equals(Attribute.TYPE.tag));
+//		// a schema must not have attributes, except for an optional type reference
+//		List<Node> alist = sds.find(n -> n.isLeaf() && ! n.getName().equals(Attribute.TYPE.tag));
+		
+		// a schema must not have attributes
+		List<Node> alist = sds.find(n -> n.isLeaf());
 		
 		if (! alist.isEmpty()) { // An unknown or forbidden attribute was found.
 			Node a = alist.get(0);
@@ -144,16 +147,16 @@ public final class SDSParser implements Parser<Schema> {
 			schema.add(parseComponent((DataNode) node, false));
 		}
 
-		// set the designated root type reference (if specified and valid)
-		DataNode type = getAttribute(sds, Attribute.TYPE, false);
-		
-		if (type != null) try {
-			schema.setDefaultTypeName(type.getValue());
-		}
-		catch (IllegalArgumentException e) {
-			throw exception(sds, ATTRIBUTE_INVALID, 
-				Attribute.TYPE.tag, type.getValue(), "no such global type");
-		}
+//		// set the designated root type reference (if specified and valid)
+//		DataNode type = getAttribute(sds, Attribute.TYPE, false);
+//		
+//		if (type != null) try {
+//			schema.setDefaultTypeName(type.getValue());
+//		}
+//		catch (IllegalArgumentException e) {
+//			throw exception(sds, ATTRIBUTE_INVALID, 
+//				Attribute.TYPE.tag, type.getValue(), "no such global type");
+//		}
 
 		return schema;
 	}

@@ -116,7 +116,6 @@ public abstract class Validator {
 		}
 	}
 
-	
 	/** A private method to create errors */
 	private static Error error(Node node, String format, Object... args) {
 		return new Error(node, String.format(format, args));
@@ -126,8 +125,7 @@ public abstract class Validator {
 	/**
 	 * Sets the name of the type to validate against. The specified name must refer
 	 * to an existing global type, or an exception will be thrown. A null reference
-	 * is allowed, and will instruct the validator to look for an appropriate global
-	 * type, regardless of the default type for the schema.
+	 * is allowed, and will make the validator look for any appropriate global type.
 	 * <p>
 	 * Applications must not (re)set the type while validation is in progress or
 	 * when multiple threads are using the validator.
@@ -148,13 +146,9 @@ public abstract class Validator {
 	 * This method validates a data node (and any child nodes) against the schema
 	 * associated with this validator.
 	 * <p>
-	 * The supplied node will be validated against the default type of the schema,
-	 * or against any appropriate global type if no default type has been set.
-	 * <p>
-	 * Alternatively, the validator may be instructed to use a specific type by
-	 * calling {@code #setTypeName} prior to validation. Note that if a null
-	 * reference is supplied, the validator will try to find an appropriate type,
-	 * regardless of the default type set for the schema.
+	 * The supplied node will be validated against any appropriate global type. The
+	 * validator may be instructed to validate against a specific type by calling
+	 * {@code #setTypeName} prior to validation.
 	 * 
 	 * @param node the node to be validated
 	 * @return an error list, empty if no validation errors were found

@@ -1,5 +1,4 @@
 schema {
-	type "addressbook"
 	node "person" {
 		type "string" nullable "false"
 		node "lastname" { type "string" occurs "0..1" }

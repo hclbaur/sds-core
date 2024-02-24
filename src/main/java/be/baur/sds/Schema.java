@@ -8,7 +8,6 @@ import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.serialization.SDAFormatter;
-import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
 import be.baur.sds.validation.Validator;
@@ -27,35 +26,35 @@ public final class Schema extends AbstractNode {
 
 	public static final String TAG = "schema";	
 	
-	/** The name of the default type, may be null. */
-	private String defaultType = null;
+//	/** The name of the default type, may be null. */
+//	private String defaultType = null;
 
 
-	/**
-	 * Returns the name of the default type. This method returns null if no default
-	 * type has been set for this schema.
-	 * 
-	 * @return the default type name, may be null
-	 */
-	public String getDefaultTypeName() {
-		return defaultType;
-	}
+//	/**
+//	 * Returns the name of the default type. This method returns null if no default
+//	 * type has been set for this schema.
+//	 * 
+//	 * @return the default type name, may be null
+//	 */
+//	public String getDefaultTypeName() {
+//		return defaultType;
+//	}
 
 	
-	/**
-	 * Specifies the default type. The name must refer to an existing global type,
-	 * or an exception will be thrown. A null reference is allowed, and will
-	 * effectively clear the default type.
-	 * 
-	 * @param name the default type name, may be null
-	 * @throws IllegalArgumentException if the type is not found in the schema
-	 */
-	public void setDefaultTypeName(String name) {
- 
-		if (name != null && getGlobalType(name) == null)
-			throw new IllegalArgumentException("no such global type (" + name + ")");
-		this.defaultType = name; 
-	}
+//	/**
+//	 * Specifies the default type. The name must refer to an existing global type,
+//	 * or an exception will be thrown. A null reference is allowed, and will
+//	 * effectively clear the default type.
+//	 * 
+//	 * @param name the default type name, may be null
+//	 * @throws IllegalArgumentException if the type is not found in the schema
+//	 */
+//	public void setDefaultTypeName(String name) {
+// 
+//		if (name != null && getGlobalType(name) == null)
+//			throw new IllegalArgumentException("no such global type (" + name + ")");
+//		this.defaultType = name; 
+//	}
 
 	
 	/**
@@ -83,8 +82,8 @@ public final class Schema extends AbstractNode {
 		final DataNode node = new DataNode(TAG); 
 		node.add(null); // just in case we have no child nodes
 		
-		if (defaultType != null) // render type attribute if we have one
-			node.add(new DataNode(Attribute.TYPE.tag, defaultType));
+//		if (defaultType != null) // render type attribute if we have one
+//			node.add(new DataNode(Attribute.TYPE.tag, defaultType));
 
 		for (Node component : nodes()) // render all components
 			node.add(((Component) component).toSDA());
@@ -128,8 +127,7 @@ public final class Schema extends AbstractNode {
 	
 	/**
 	 * Returns a {@code Validator} associated with this schema, prepared to validate
-	 * SDA content against the default type, or against any global type declared if
-	 * no default type has been set for this schema.
+	 * SDA content against any global type declared in this schema.
 	 * 
 	 * @return a validator, not null
 	 * @see Validator
@@ -140,7 +138,7 @@ public final class Schema extends AbstractNode {
 				return Schema.this;
 			}
 		};
-		val.setTypeName(getDefaultTypeName());
+		//val.setTypeName(getDefaultTypeName());
 		return val;
 	}
 }
