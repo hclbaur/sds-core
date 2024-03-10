@@ -254,13 +254,16 @@ So far, we primarily saw a `string` type in our schema definition. We are going 
 
 **decimal**: a general numeric type, that includes the aforementioned integer  type, and decimal as well as scientific representations.
 
-**date**: a type for a calendar date, and **datetime** for a specific point  in time.	
+**date**: a type for a calendar date, and
 
-**boolean**: the well-known truth value type (true or false).
+**datetime**: for a specific point in time.	
+
+**boolean**: the truth value type.
 
 Compared to the myriad of types and sub-types that are supported in XML schema, this may seem limited. That is true; both SDA and SDS are a trade-off between versatility and simplicity (or necessity). And that approach can be limiting in some ways. On the other hand, when was the last time you actually used a `gMonthDate` type?
 
 Having said that, you can use certain attributes called *facets* (covered later)  to restrict any of the built-in types and mimic most of the derived types that you feel are absent. But before we go there, I should explain the difference between the so-called "value space" and "lexical space".
+
 
 ### Matters of space
 
@@ -311,6 +314,7 @@ I say more-or-less, because there is a price to pay for accuracy. Unlike in the 
 
 And finally, the humble Boolean, the lexical space of which allows only “true” or “false” in lowercase only - and “0” or “1” are not accepted either!
 
+
 ### Facets of restriction
 
 Facets are attributes to restrict the built-in types and create sub-types as it were. The imperative word here is *restrict*; there is no way you can extend the value or lexical space of any type using a facet. Here are the facets at your disposal:
@@ -329,7 +333,7 @@ Omitting the length facet is equivalent to **0..\***.
 
 #### value
 
-The value facet restricts the value space of integer, decimal and date(time) types. The syntax is similar to that for length and multiplicity, except that  standard interval notation is used, unless a single value is supplied. Limits can be inclusive or exclusive depending on whether brackets (inclusive) or parentheses (exclusive) are used:
+The value facet restricts the value space of integer, decimal and date(time) types. The syntax is similar to that for length and multiplicity, except that standard interval notation is used, unless a single value is supplied. Limits can be inclusive or exclusive depending on whether brackets (inclusive) or parentheses (exclusive) are used:
 
 	node "negativeInteger" { type "integer" value "(*..0)" }
 
@@ -355,7 +359,7 @@ Omitting the value facet is equivalent to **(\*..\*)**.
 
 The final facet is different from length and value in two ways: first, it  works on all simple types, and second, it restricts the lexical space rather than the value space. A pattern lets you derive all kinds of custom types using the power of a regular expression. The possibilities are literally endless, so here are just a few to whet your appetite:
 
-	node "token" { type "string" pattern "[^\\s]" }
+	node "token" { type "string" pattern "[^\\s]+" }
 
 	node "time24" { type "string" pattern "([01][0-9]|2[0-3]):[0-5][0-9]" }
 

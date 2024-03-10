@@ -83,6 +83,23 @@ public abstract class Validator {
 	/** The name of the type for validation, may be null. */
 	private String typeName;
 
+	/** A private class to hold a validation error */
+	private static final class Error extends Result<Node> {
+
+		public Error(Node node, String message) {
+			super(false, node, message);
+		}
+
+		public String toString() {
+			return this.getValue().path() + ": " + this.getMessage();
+		}
+	}
+
+	/** A private method to create a validation error */
+	private static Error error(Node node, String format, Object... args) {
+		return new Error(node, String.format(format, args));
+	}
+
 
 	/**
 	 * Returns the {@code Schema} associated with this validator.
@@ -102,23 +119,6 @@ public abstract class Validator {
 		private boolean add(Error error) {
 			return super.addError(error);
 		}
-	}
-	
-	/** A private class to hold a validation result */
-	private static final class Error extends Result<Node> {
-
-		public Error(Node node, String message) {
-			super(false, node, message);
-		}
-
-		public String toString() {
-			return this.getValue().path() + ": " + this.getMessage();
-		}
-	}
-
-	/** A private method to create errors */
-	private static Error error(Node node, String format, Object... args) {
-		return new Error(node, String.format(format, args));
 	}
 
 	
