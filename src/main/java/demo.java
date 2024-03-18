@@ -1,5 +1,4 @@
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 
 import be.baur.sda.DataNode;
@@ -12,7 +11,7 @@ import be.baur.sds.validation.Validator.Errors;
 
 public class demo {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		
 		FileReader sds = new FileReader(args[0]);
 		Schema schema = SDS.parse(sds);

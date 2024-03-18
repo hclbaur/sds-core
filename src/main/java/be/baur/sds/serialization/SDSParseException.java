@@ -23,11 +23,13 @@ public final class SDSParseException extends ProcessingException {
 	}
 
 
-//	public SDSParseException(Node node, String message, Throwable cause) {
-//		this(node, message); initCause(cause);
-//	} 
-
-//	public SDSParseException(DataNode node, Throwable cause) {
-//		super(node, cause.getMessage()); initCause(cause);
-//	} 
+	/**
+	 * Creates an SDS parse exception with an error node and a cause.
+	 * 
+	 * @param node  the node where the exception occurred
+	 * @param cause the exception causing this exception
+	 */
+	public SDSParseException(Node node, Throwable cause) {
+		super(node, cause.getMessage()); initCause(cause);
+	} 
 }

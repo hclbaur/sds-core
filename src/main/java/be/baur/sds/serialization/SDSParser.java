@@ -11,7 +11,6 @@ import be.baur.sda.Node;
 import be.baur.sda.SDA;
 import be.baur.sda.serialization.Parser;
 import be.baur.sda.serialization.SDAParseException;
-import be.baur.sda.serialization.SDAParser;
 import be.baur.sds.Component;
 import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
@@ -58,11 +57,7 @@ import be.baur.sds.model.UnorderedGroup;
  * }
  * </pre>
  * 
- * This parser relies on the default SDA parser.
- * <p>
- * 
  * @see Schema
- * @see SDAParser
  */
 public final class SDSParser implements Parser<Schema> {
 
@@ -90,19 +85,23 @@ public final class SDSParser implements Parser<Schema> {
 	 * 
 	 * @return a schema
 	 * @throws IOException       if an I/O operation failed
-	 * @throws SDAParseException if an SDA parse exception occurs
 	 * @throws SDSParseException if an SDS parse exception occurs
 	 */
-	public Schema parse(Reader input) throws IOException, SDAParseException, SDSParseException {
+	public Schema parse(Reader input) throws IOException, SDSParseException {
 
-		DataNode sds = SDA.parse(input);
+		DataNode sds = null;
+		try {
+			sds = SDA.parse(input);
+		} catch (SDAParseException e) {
+			throw new SDSParseException(null, e);
+		}
 		return parse(sds);
 	}
 
 
 	/**
-	 * Creates a schema from an SDA node obtained by parsing a schema in SDS
-	 * notation.
+	 * Creates a schema from an SDA node representing a schema (what an SDA parser
+	 * returns upon processing an input stream in SDS format).
 	 * 
 	 * @param sds a node with a schema definition
 	 * @return a schema

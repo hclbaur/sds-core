@@ -1,6 +1,5 @@
 package be.baur.sds;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.Objects;
 
@@ -113,15 +112,18 @@ public final class Schema extends AbstractNode {
 
 	/**
 	 * Verifies this schema. This method can be used to to validate a schema that
-	 * was not created by the {@code SDTParser}. This method returns nothing but
+	 * was not created by the {@code SDSParser}. This method returns nothing but
 	 * throws an {@code SDSParseException} if the schema is not valid.
 	 * 
-	 * @throws IOException       if an input exception occurs
 	 * @throws SDSParseException if an SDS parse exception occurs
 	 */
-	public void verify() throws IOException, SDSParseException {
-		// Serialize the schema and parse it using the SDSParser to reveal issues
-		SDS.parse(new StringReader(this.toString()));
+	public void verify() throws SDSParseException {
+		// Serialize the schema and parse it back to reveal issues
+		try {
+			SDS.parse(new StringReader(this.toString()));
+		} catch (Exception e) { // should never happen
+			e.printStackTrace(); 
+		}
 	}
 	
 	

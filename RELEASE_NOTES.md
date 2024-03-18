@@ -20,6 +20,7 @@ a schema no longer has a "default type", whatever that was.
 - `Renamed` MixedType to DataType.
 - Added Schema.newValidator() and getGlobalType().
 - Added Validator.setTypeName().
+- Added docs/SPECIFICATION.
 
 ## Compatibility
 
