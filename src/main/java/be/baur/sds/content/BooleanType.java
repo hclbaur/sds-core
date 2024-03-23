@@ -5,7 +5,7 @@ import be.baur.sds.common.Content;
 
 /**
  * A <code>BooleanType</code> is a simple type representing an SDA node with
- * boolean content,that is "true" or "false". No other values are allowed.
+ * a boolean value, that is "true" or "false". No other values are allowed.
  */
 public final class BooleanType extends DataType {
 
@@ -24,6 +24,21 @@ public final class BooleanType extends DataType {
 	}
 
 
+//	/**
+//	 * Returns an OK result if the supplied value is within the lexical space of a
+//	 * boolean type.
+//	 * 
+//	 * @param value a string value
+//	 * @return a result
+//	 */
+//	public static Result<Boolean> validate(String value) {
+//		
+//		if (value.equals(TRUE) || value.equals(FALSE))
+//			return Result.OK(Boolean.valueOf(value));
+//		return Result.error("value '" + value + "' is not a valid boolean");
+//	}
+
+	
 	public Content getContentType() {
 		return Content.BOOLEAN;
 	}
