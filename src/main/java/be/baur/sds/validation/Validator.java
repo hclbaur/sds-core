@@ -56,7 +56,6 @@ import be.baur.sds.model.UnorderedGroup;
  * A validator is not instantiated using {@code new}, but obtained from a schema
  * instance. A validator instance can be re-used and is thread-safe as long as
  * the associated schema and validated type is not changed by the application.
- * <p>
  * 
  * @see Schema#newValidator
  * @see #setTypeName

@@ -107,7 +107,7 @@ public abstract class Component extends AbstractNode {
 	 * </pre>
 	 * 
 	 * Note that the returned string is formatted as a single line of text. For a
-	 * more readable output, use the {@link #toNode} method and render the output
+	 * more readable output, use the {@link #toSDA} method and render the output
 	 * node using an {@link SDAFormatter}.
 	 * 
 	 * @return an SDS representation of this component

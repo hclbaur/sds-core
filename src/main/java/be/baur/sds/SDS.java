@@ -3,7 +3,6 @@ package be.baur.sds;
 import java.io.IOException;
 import java.io.Reader;
 
-import be.baur.sda.serialization.SDAParseException;
 import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
 
@@ -20,13 +19,13 @@ public final class SDS {
 	 * Creates a schema from a character input stream in SDS format, using the
 	 * default SDS parser.
 	 * 
+	 * @param input an input stream
 	 * @return a schema
 	 * @throws IOException       if an I/O operation failed
-	 * @throws SDAParseException if an SDA parse exception occurs
 	 * @throws SDSParseException if an SDS parse exception occurs
 	 * @see SDSParser
 	 */
-	public static Schema parse(Reader input) throws IOException, SDAParseException, SDSParseException {
+	public static Schema parse(Reader input) throws IOException, SDSParseException {
 		return PARSER.parse(input);
 	}
 	

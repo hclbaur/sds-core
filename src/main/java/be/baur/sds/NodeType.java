@@ -8,6 +8,7 @@ import be.baur.sda.DataNode;
 import be.baur.sds.content.AbstractStringType;
 import be.baur.sds.content.AnyType;
 import be.baur.sds.content.RangedType;
+import be.baur.sds.model.ModelGroup;
 import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.Components;
 
@@ -32,7 +33,7 @@ public class NodeType extends Component {
 	/**
 	 * Creates a node type with the specified name.
 	 * 
-	 * @param type a valid node name, see {@link SDA#isName}
+	 * @param name a valid node name, see {@link SDA#isName}
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	public NodeType(String name) {
@@ -54,7 +55,7 @@ public class NodeType extends Component {
 	 * Sets the name of this type. Ultimately, a type represents an instance of a
 	 * data node, so the name of the type is restricted to valid node names.
 	 * 
-	 * @param type a valid node name, see {@link SDA#isName}
+	 * @param name a valid node name, see {@link SDA#isName}
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	public final void setTypeName(String name) {

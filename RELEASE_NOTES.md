@@ -1,6 +1,6 @@
 # Release Notes
 
-## [2.3.0] - in development
+## [2.3.0] - 2024-03-23
 
 This started out as a compatibility release for sda-core 2.2.x, 
 until I decided to change the SDS syntax and disallow a type 
