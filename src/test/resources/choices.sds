@@ -1,5 +1,4 @@
 schema {
-	type "test"
 	node "id" { type "integer" value "[1..*]" }
 	node "test" {
 		node "man_man_man" {

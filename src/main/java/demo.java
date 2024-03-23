@@ -1,39 +1,39 @@
 import java.io.FileReader;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
+import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
-import be.baur.sds.serialization.SchemaException;
-import be.baur.sds.validation.Error;
-import be.baur.sds.validation.ErrorList;
+import be.baur.sds.validation.Validator;
+import be.baur.sds.validation.Validator.Errors;
 
 public class demo {
 
-	public static void main(String[] args) throws IOException, ParseException, SchemaException   {
+	public static void main(String[] args) throws Exception {
 		
 		FileReader sds = new FileReader(args[0]);
-		Schema schema = SDS.parser().parse(sds);
+		Schema schema = SDS.parse(sds);
 		
 		FileReader sda = new FileReader(args[1]);
-		Node root = SDA.parser().parse(sda);
+		DataNode root = SDA.parse(sda);
 		
-		ErrorList errors = SDS.validator().validate(root, schema, null);
+		Validator validator = schema.newValidator();
+		Errors errors = validator.validate(root);
 		if (! errors.isEmpty()) {
-			for (Error error : errors) System.out.println(error.toString()); return;
+			errors.forEach(error -> System.out.println(error.toString()));
+			return;
 		}
-		
+
 		for (Node contact : root.find("contact")) {
 			
-			Node name = contact.get("firstname");
-			List<Node> numbers = contact.find("phonenumber");
+			DataNode name = contact.get("firstname");
+			List<DataNode> numbers = contact.find("phonenumber");
 			
 			System.out.println(name.getValue() + " has " + numbers.size() + " phone number(s).");
 			
-			int i = 0; 	for (Node number : numbers) {
+			int i = 0; 	for (DataNode number : numbers) {
 				System.out.println("  Number " + ++i + ": " + number.getValue());
 			}
 		}

@@ -1,5 +1,4 @@
 schema {
-	type "russian_dolls"
 	node "doll" {
 		type "string"
 		choice {

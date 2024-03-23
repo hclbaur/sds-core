@@ -2,7 +2,7 @@ package be.baur.sds.content;
 
 import java.util.Objects;
 
-import be.baur.sds.MixedType;
+import be.baur.sds.DataType;
 import be.baur.sds.common.NaturalInterval;
 
 /**
@@ -11,7 +11,7 @@ import be.baur.sds.common.NaturalInterval;
  * <br>
  * See also {@link StringType} and {@link BinaryType}.
  */
-public abstract class AbstractStringType extends MixedType {
+public abstract class AbstractStringType extends DataType {
 
 	private NaturalInterval length = NaturalInterval.ZERO_TO_MAX; // default allows any length
 

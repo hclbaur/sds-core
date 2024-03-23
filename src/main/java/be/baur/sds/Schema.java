@@ -1,58 +1,74 @@
 package be.baur.sds;
 
+import java.io.StringReader;
+import java.util.Objects;
+
+import be.baur.sda.AbstractNode;
+import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.serialization.SDAFormatter;
-import be.baur.sds.serialization.Attribute;
+import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
+import be.baur.sds.validation.Validator;
 
 /**
- * A <code>Schema</code> node represents an SDA document definition, that is, a
- * structure that defines SDA content. It is a container for "components" like
- * node types and model groups. Schema is usually not created "by hand" but read
- * and parsed from input in SDS notation.<br>
- * See also {@link Component}, {@link SDSParser}.
+ * A {@code Schema} node represents an SDA document definition that can be used
+ * to validate SDA content (amongst others). It is a container for components
+ * that define the content model, like node types and model groups. Schema is
+ * usually not created "manually" but read and parsed from a definition in SDS
+ * notation.
+ * 
+ * @see Component
+ * @see SDSParser
  */
-public final class Schema extends Node {
+public final class Schema extends AbstractNode {
 
 	public static final String TAG = "schema";	
 	
-	private String defaultType = null; // the designated root node
+//	/** The name of the default type, may be null. */
+//	private String defaultType = null;
+
+
+//	/**
+//	 * Returns the name of the default type. This method returns null if no default
+//	 * type has been set for this schema.
+//	 * 
+//	 * @return the default type name, may be null
+//	 */
+//	public String getDefaultTypeName() {
+//		return defaultType;
+//	}
+
 	
+//	/**
+//	 * Specifies the default type. The name must refer to an existing global type,
+//	 * or an exception will be thrown. A null reference is allowed, and will
+//	 * effectively clear the default type.
+//	 * 
+//	 * @param name the default type name, may be null
+//	 * @throws IllegalArgumentException if the type is not found in the schema
+//	 */
+//	public void setDefaultTypeName(String name) {
+// 
+//		if (name != null && getGlobalType(name) == null)
+//			throw new IllegalArgumentException("no such global type (" + name + ")");
+//		this.defaultType = name; 
+//	}
 
-	/** Creates a schema node. */
-	public Schema() {
-		super(TAG); // extends Node so it must have a tag, even if we do not really use it
-		add(null);  // all schema have child nodes so initialize it with an empty node set
-	}
-
-
+	
 	/**
-	 * Returns the default type for this schema. This method returns null if no
-	 * default type has been set.
+	 * Returns a global type specified by name, or null if no appropriate type could
+	 * be found in the schema.
 	 * 
-	 * @return the name of the default type, may be null
+	 * @param name the name of the type to get, not null
+	 * @return a global type, may be null
 	 */
-	public String getDefaultType() {
-		return defaultType;
+	public NodeType getGlobalType(String name) {
+		Objects.requireNonNull(name, "name must not be null");
+		return get(t -> t instanceof NodeType && ((NodeType) t).getTypeName().equals(name));
 	}
 
-	
-	/**
-	 * Sets the default type for this schema. The argument must refer to an existing
-	 * global type, or an exception will be thrown. A null value is allowed, and
-	 * will effectively clear the default type.
-	 * 
-	 * @param type the name of the default type, may be null
-	 * @throws IllegalArgumentException if the referenced type is unknown
-	 */
-	public void setDefaultType(String type) {
- 
-		if (type != null && this.get(type) == null)
-			throw new IllegalArgumentException("no such global type (" + type + ")");
-		this.defaultType = type; 
-	}
 
-	
 	/**
 	 * Returns an SDA node representing this schema. In other words, what an SDA
 	 * parser would return upon processing an input stream describing the schema in
@@ -60,15 +76,16 @@ public final class Schema extends Node {
 	 * 
 	 * @return an SDA node
 	 */
-	public Node toNode() {
+	public DataNode toSDA() {
 		
-		Node node = new Node(TAG);
+		final DataNode node = new DataNode(TAG); 
+		node.add(null); // just in case we have no child nodes
 		
-		if (defaultType != null) // Render the type attribute if we have one.
-			node.add(new Node(Attribute.TYPE.tag, defaultType));
+//		if (defaultType != null) // render type attribute if we have one
+//			node.add(new DataNode(Attribute.TYPE.tag, defaultType));
 
-		for (Node component : this.nodes()) // Render all components.
-			node.add(((Component) component).toNode());
+		for (Node component : nodes()) // render all components
+			node.add(((Component) component).toSDA());
 
 		return node;
 	}
@@ -82,13 +99,48 @@ public final class Schema extends Node {
 	 * </pre>
 	 * 
 	 * Note that the returned string is formatted as a single line of text. For a
-	 * more readable output, use the {@link #toNode} method and render the output
+	 * more readable output, use the {@link #toSDA} method and render the output
 	 * node using an {@link SDAFormatter}.
 	 * 
 	 * @return an SDS representation of this node
 	 */
 	@Override
 	public String toString() {
-		return toNode().toString();
+		return toSDA().toString();
+	}
+
+
+	/**
+	 * Verifies this schema. This method can be used to to validate a schema that
+	 * was not created by the {@code SDSParser}. This method returns nothing but
+	 * throws an {@code SDSParseException} if the schema is not valid.
+	 * 
+	 * @throws SDSParseException if an SDS parse exception occurs
+	 */
+	public void verify() throws SDSParseException {
+		// Serialize the schema and parse it back to reveal issues
+		try {
+			SDS.parse(new StringReader(this.toString()));
+		} catch (Exception e) { // should never happen
+			e.printStackTrace(); 
+		}
+	}
+	
+	
+	/**
+	 * Returns a {@code Validator} associated with this schema, prepared to validate
+	 * SDA content against any global type declared in this schema.
+	 * 
+	 * @return a validator, not null
+	 * @see Validator
+	 */
+	public Validator newValidator() {
+		Validator val = new Validator() {
+			protected Schema getSchema() {
+				return Schema.this;
+			}
+		};
+		//val.setTypeName(getDefaultTypeName());
+		return val;
 	}
 }

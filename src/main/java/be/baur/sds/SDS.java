@@ -1,9 +1,10 @@
 package be.baur.sds;
 
-import be.baur.sds.serialization.Parser;
+import java.io.IOException;
+import java.io.Reader;
+
+import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
-import be.baur.sds.validation.SDAValidator;
-import be.baur.sds.validation.Validator;
 
 /**
  * This class defines static constants and utility methods.
@@ -12,24 +13,20 @@ public final class SDS {
 	
 	private SDS() {} // cannot construct this
 
-	
+	private static SDSParser PARSER = new SDSParser(); // singleton parser
+
 	/**
-	 * Returns a new instance of the default SDS parser.
+	 * Creates a schema from a character input stream in SDS format, using the
+	 * default SDS parser.
 	 * 
-	 * @return an {@link SDSParser}
+	 * @param input an input stream
+	 * @return a schema
+	 * @throws IOException       if an I/O operation failed
+	 * @throws SDSParseException if an SDS parse exception occurs
+	 * @see SDSParser
 	 */
-	public static Parser parser() {
-		return new SDSParser();
-	}
-	
-	
-	/**
-	 * Returns a new instance of the default SDS validator.
-	 * 
-	 * @return an {@link SDAValidator}
-	 */
-	public static Validator validator() {
-		return new SDAValidator();
+	public static Schema parse(Reader input) throws IOException, SDSParseException {
+		return PARSER.parse(input);
 	}
 	
 	

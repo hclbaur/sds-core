@@ -4,17 +4,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
-import be.baur.sda.Node;
+import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.Schema;
-import be.baur.sds.validation.Error;
-import be.baur.sds.validation.ErrorList;
+import be.baur.sds.validation.Validator;
+import be.baur.sds.validation.Validator.Errors;
 import test.Test;
 
 public final class Unordered {
-	
-	private static be.baur.sda.serialization.Parser parser = SDA.parser();
 
 	/* 
 	 * Parsing and validation of all kinds of sequence groups.
@@ -26,14 +23,14 @@ public final class Unordered {
 		});
 		
 		InputStream sda = Unordered.class.getResourceAsStream("/mgtest.sda");
-		Node document = parser.parse(new InputStreamReader(sda, "UTF-8"));
+		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Unordered.class.getResourceAsStream("/unordered.sds");
-		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
+		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		ErrorList errors = SDS.validator().validate(document, schema, null);
+		Errors errors = validator.validate(document);
 		//for (Error error : errors) System.out.println(error.toString());
-		Iterator<Error> e = errors.iterator();
+		Iterator<?> e = errors.iterator();
 		
 		t.ts1("F01", e.next() + "", "/test/man_man_man[1]: content missing at end of 'man_man_man'; expected 'man2'");
 		t.ts1("F02", e.next() + "", "/test/man_man_man[2]: content missing at end of 'man_man_man'; expected 'man1'");

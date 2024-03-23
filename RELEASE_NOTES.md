@@ -1,17 +1,39 @@
 # Release Notes
 
-## [2.2.0] - 2023-10-04
+## [2.3.0] - 2024-03-23
 
-This is a compatability release for sda-core 2.1.x with minor changes.
+This started out as a compatibility release for sda-core 2.2.x, 
+until I decided to change the SDS syntax and disallow a type 
+attribute in the main schema section. So, as of this release, 
+a schema no longer has a "default type", whatever that was.
 
-- `Removed` MixedType.getPatternExpr().
-- `Changed` MixedType.setPatternExpr() to setPattern().
+- `Removed` Interface be.baur.sds.serialization.Parser.
+- `Removed` SDS.validator() and Validator interface.
+- `Removed` Error and ErrorList classes (use Errors).
+- `Removed` Schema.set - and getDefaultTypeName().
+- `Changed` SDAValidator to abstract Validator class.
+- `Changed` Validator.validate(node,type) to validate(node).
+- `Changed` NodeType.getName() to getTypeName().
+- `Changed` SDS.parser() to SDS.parse().
+- `Renamed` Schema.getDefaultType() to getDefaultTypeName().
+- `Renamed` SchemaException to SDSParseException.
+- `Renamed` MixedType to DataType.
+- Added Schema.newValidator() and getGlobalType().
+- Added Validator.setTypeName().
+- Added docs/SPECIFICATION.
 
 ## Compatibility
 
-- Requires at least Java 8 and sda-core 2.1.0.
+- Requires at least Java 8 and sda-core 2.2.0.
 
 ## Previous releases
+
+### [2.2.0] - 2023-10-04
+
+This is a compatibility release for sda-core 2.1.x with minor changes.
+
+- `Removed` MixedType.getPatternExpr().
+- `Changed` MixedType.setPatternExpr() to setPattern().
 
 ### [2.1.0] - 2022-12-01
 

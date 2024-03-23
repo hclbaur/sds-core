@@ -4,17 +4,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
-import be.baur.sda.Node;
+import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
-import be.baur.sds.validation.Error;
-import be.baur.sds.validation.ErrorList;
+import be.baur.sds.validation.Validator;
+import be.baur.sds.validation.Validator.Errors;
 import test.Test;
 
 public final class Addressbook {
-	
-	private static be.baur.sda.serialization.Parser parser = SDA.parser();
 
 	/* 
 	 * Parsing and validation of complex types and model groups.
@@ -26,16 +24,20 @@ public final class Addressbook {
 		});
 		
 		InputStream sda = Addressbook.class.getResourceAsStream("/addressbook.sda");
-		Node document = parser.parse(new InputStreamReader(sda, "UTF-8"));
+		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Addressbook.class.getResourceAsStream("/addressbook.sds");
-		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
+		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
+		Validator validator = schema.newValidator();
 
-		ErrorList errors = SDS.validator().validate(document, schema, "contact");
+		validator.setTypeName("contact"); // set to existing type but not what we expect
+		Errors errors = validator.validate(document);
 		t.ts1("F01", errors.get(0) + "", "/addressbook: got 'addressbook', but 'contact' was expected");
-		errors = SDS.validator().validate(document, schema, null);
+		
+		validator.setTypeName(null); // try again with any matching type
+		errors = validator.validate(document);
 		//for (Error error : errors) System.out.println(error.toString());
-		Iterator<Error> e = errors.iterator();
+		Iterator<?> e = errors.iterator();
 		
 		t.ts1("F02", e.next() + "", "/addressbook/contact[1]/person/about: only complex content is expected for node 'about'");
 		t.ts1("F03", e.next() + "", "/addressbook/contact[1]/address/housenumber: got 'housenumber', but 'streetname' or 'postalcode' was expected");
@@ -53,7 +55,16 @@ public final class Addressbook {
 		t.ts1("F14", e.next() + "", "/addressbook/contact[6]/address/postalcode: got 'postalcode', but 'housenumber' was expected");
 		t.ts1("F15", e.next() + "", "/addressbook/contact[6]: content missing at end of 'contact'; expected 'phone' or 'email'");
 		t.ts1("F16", e.next() + "", "/addressbook/contact[7]/person: empty value not allowed; 'person' is not nullable");
-		t.ts1("F16", e.next() + "", "/addressbook/contact[7]/address: value 'nowhere' does not match pattern 'home|work'");
-		t.ts1("F99", e.hasNext() + "", "false");
+		t.ts1("F17", e.next() + "", "/addressbook/contact[7]/address: value 'nowhere' does not match pattern 'home|work'");
+		t.ts1("F18", e.hasNext() + "", "false");
+		
+		validator.setTypeName("contact"); // now validate an actual contact (the first one)
+		errors = validator.validate(document.get("contact"));
+		e = errors.iterator();
+
+		t.ts1("F19", e.next() + "", "/addressbook/contact[1]/person/about: only complex content is expected for node 'about'");
+		t.ts1("F20", e.next() + "", "/addressbook/contact[1]/address/housenumber: got 'housenumber', but 'streetname' or 'postalcode' was expected");
+		t.ts1("F21", e.next() + "", "/addressbook/contact[1]/email[2]: 'email' was not expected in 'contact'");
+		t.ts1("F22", e.hasNext() + "", "false");
 	}
 }

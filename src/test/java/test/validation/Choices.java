@@ -4,17 +4,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
-import be.baur.sda.Node;
+import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.Schema;
-import be.baur.sds.validation.Error;
-import be.baur.sds.validation.ErrorList;
+import be.baur.sds.validation.Validator;
+import be.baur.sds.validation.Validator.Errors;
 import test.Test;
 
 public final class Choices {
-	
-	private static be.baur.sda.serialization.Parser parser = SDA.parser();
 
 	/* 
 	 * Parsing and validation of all kinds of choices.
@@ -26,14 +23,14 @@ public final class Choices {
 		});
 		
 		InputStream sda = Choices.class.getResourceAsStream("/mgtest.sda");
-		Node document = parser.parse(new InputStreamReader(sda, "UTF-8"));
+		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Choices.class.getResourceAsStream("/choices.sds");
-		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
+		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		ErrorList errors = SDS.validator().validate(document, schema, null);
+		Errors errors = validator.validate(document);
 		//for (Error error : errors) System.out.println(error.toString());
-		Iterator<Error> e = errors.iterator();
+		Iterator<?> e = errors.iterator();
 		
 		t.ts1("F01", e.next() + "", "/test/man_man_man[3]/man2: 'man2' was not expected in 'man_man_man'");
 		t.ts1("F02", e.next() + "", "/test/man_man_man[4]/man1: 'man1' was not expected in 'man_man_man'");

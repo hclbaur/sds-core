@@ -3,6 +3,7 @@ package be.baur.sds.model;
 import java.util.Optional;
 
 import be.baur.sda.Node;
+import be.baur.sda.DataNode;
 import be.baur.sds.Component;
 import be.baur.sds.serialization.Attribute;
 
@@ -19,9 +20,9 @@ public abstract class ModelGroup extends Component {
 	 * @param name a valid node name, see also {@link Node}
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public ModelGroup(String name) {
-		super(name); add(null); // all groups must have child nodes
-	}
+//	public ModelGroup(String name) {
+//		super(name); add(null); // all groups must have child nodes
+//	}
 
 	
 	/**
@@ -59,9 +60,9 @@ public abstract class ModelGroup extends Component {
 	
 
 	@Override
-	public final Node toNode() {
+	public final DataNode toSDA() {
 		
-		Node node = new Node(getName()); // group, choice or unordered
+		final DataNode node = new DataNode(getName()); // group, choice or unordered
 		
 		// maybe someday we will support named groups, but not today
 		
@@ -73,10 +74,10 @@ public abstract class ModelGroup extends Component {
 	
 		// Render the multiplicity if not default.
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
-			node.add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
+			node.add(new DataNode(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		//if (getGlobalType() == null) // Render children, unless we are a type reference.
-		for (Node child : nodes()) node.add(((Component) child).toNode());
+		for (Node child : nodes()) node.add(((Component) child).toSDA());
 
 		return node;
 	}

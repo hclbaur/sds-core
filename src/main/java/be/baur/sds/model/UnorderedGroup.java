@@ -22,8 +22,9 @@ import be.baur.sds.serialization.Components;
  */
 public final class UnorderedGroup extends ModelGroup {
 
-	/** Creates an unordered group. */
-	public UnorderedGroup() {
-		super(Components.UNORDERED.tag); // extends Node so must have a tag, even if not really used
+	@Override
+	public final String getName() {
+		return Components.UNORDERED.tag;
 	}
+	
 }

@@ -27,12 +27,12 @@ import be.baur.sds.serialization.Components;
  */
 public final class ChoiceGroup extends ModelGroup {
 
-	/** Creates a choice group. */
-	public ChoiceGroup() {
-		super(Components.CHOICE.tag); // extends Node so must have a tag, even if not really used
+	@Override
+	public final String getName() {
+		return Components.CHOICE.tag;
 	}
-	
-	
+
+
 	/**
 	 * Returns the effective minimum number of times that a choice group must occur
 	 * within its context. Even when the formal multiplicity states that it is

@@ -2,37 +2,30 @@ package be.baur.sds;
 
 import java.util.Objects;
 
-import be.baur.sda.Node;
+import be.baur.sda.AbstractNode;
+import be.baur.sda.DataNode;
 import be.baur.sda.serialization.SDAFormatter;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.model.ModelGroup;
 
 /**
- * The abstract superclass of schema components. <br>
- * See also {@link NodeType} and {@link ModelGroup}
+ * This is the abstract superclass of all schema components.
+ * 
+ * @see NodeType
+ * @see ModelGroup
  */
-public abstract class Component extends Node {
+public abstract class Component extends AbstractNode {
 
-	private String globalTypeName = null; 	// name of the global type that this component refers to.
-	private NaturalInterval multiplicity = NaturalInterval.ONE_TO_ONE; 	// default is mandatory and singular.
-
-	/**
-	 * Creates a component with the specified name.
-	 * 
-	 * @param name a valid node name, see also {@link Node}
-	 * @throws IllegalArgumentException if the name is invalid
-	 */
-	public Component(String name) {
-		super(name);
-	}
+	private String globalTypeName = null; // name of the global type that this component refers to.
+	private NaturalInterval multiplicity = NaturalInterval.ONE_TO_ONE; // default is mandatory and singular.
 
 	
 	/**
-	 * Returns the name of the referenced global type. A component may re-use a type
+	 * Returns the name of the referenced global type. Components may re-use a type
 	 * defined in the root section of the schema. This method returns null if this
-	 * component is not referencing a type.
+	 * component is not referencing a global type.
 	 * 
-	 * @return the name of the referenced type, may be null
+	 * @return the referenced type name, may be null
 	 */
 	public String getGlobalType() {
 		return globalTypeName;
@@ -40,11 +33,11 @@ public abstract class Component extends Node {
 
 	
 	/**
-	 * Sets the name of the referenced global type. A component may re-use a type
+	 * Sets the name of the referenced global type. Components may re-use a type
 	 * defined in the root section of the schema. This method cannot be used to
-	 * re(set) an existing reference as this is likely to cause a problem.
+	 * clear or reset an existing reference as this is likely to cause a problem.
 	 * 
-	 * @param type the name of the referenced type, null is ignored
+	 * @param type the referenced type name, null is ignored
 	 */
 	public void setGlobalType(String type) {
 		if (type != null) this.globalTypeName = type;
@@ -102,7 +95,7 @@ public abstract class Component extends Node {
 	 * 
 	 * @return an SDA node
 	 */
-	public abstract Node toNode();
+	public abstract DataNode toSDA();
 
 	
 	/**
@@ -114,14 +107,14 @@ public abstract class Component extends Node {
 	 * </pre>
 	 * 
 	 * Note that the returned string is formatted as a single line of text. For a
-	 * more readable output, use the {@link #toNode} method and render the output
+	 * more readable output, use the {@link #toSDA} method and render the output
 	 * node using an {@link SDAFormatter}.
 	 * 
 	 * @return an SDS representation of this component
 	 */
 	@Override
 	public final String toString() {
-		return toNode().toString();
+		return toSDA().toString();
 	}
 
 }

@@ -1,5 +1,4 @@
 schema {
-	type "russian_dolls"
 	node "doll" {
 		type "integer" value "[1..*)"
 		node { type "doll" occurs "0..1" }

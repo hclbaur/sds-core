@@ -6,22 +6,24 @@ import java.util.function.Function;
 /** A convenience class with testing methods that accept Lambda expressions */
 public class Test {
 
-	Function<String, String> function;
-	BiFunction<String, String, String> bifunction;
+	Function<String, String> strfun;
+	String prefix;
 	
-	public Test(Function<String, String> function) {
-		this.function = function;
+	public Test(Function<String, String> strfun, String prefix) {
+		this.strfun = strfun; this.prefix = prefix;
 	}
 	
-	Test(BiFunction<String, String, String> bifunction) {
-		this.bifunction = bifunction;
+	public Test(Function<String, String> strfun) {
+		this(strfun, "");
 	}
 	
-	public void ts1(String scenario, String input, String expected) {
+	public void ts1(String scenario, String str, String expected) {
 		
-		String result = function.apply(input);
+		String result = strfun.apply(str);
 
-		if (expected == null) expected = input;
+		if (expected == null) expected = str;
+		expected = prefix + expected;
+		
 		if (result.equals(expected)) 
 			System.out.print(scenario + " ");
 		else {
@@ -34,7 +36,7 @@ public class Test {
 	public void ts1Error(String scenario, String input, String expected) {
 		
 		try { 
-			function.apply(input);
+			strfun.apply(input);
 		}
 		catch (Exception e) { 
 			if (e.getMessage().equals(expected)) 
@@ -47,6 +49,13 @@ public class Test {
 			return;
 		}
 		System.out.println(scenario + " FAILED - exception expected");
+	}
+	
+	
+	BiFunction<String, String, String> bifunction;
+	
+	Test(BiFunction<String, String, String> bifunction) {
+		this.bifunction = bifunction;
 	}
 	
 	public void ts2(String scenario, String input1, String input2, String expected) {

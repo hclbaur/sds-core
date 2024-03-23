@@ -4,17 +4,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
-import be.baur.sda.Node;
+import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.Schema;
-import be.baur.sds.validation.Error;
-import be.baur.sds.validation.ErrorList;
+import be.baur.sds.validation.Validator;
+import be.baur.sds.validation.Validator.Errors;
 import test.Test;
 
 public final class Contacts {
-	
-	private static be.baur.sda.serialization.Parser parser = SDA.parser();
 
 	/* 
 	 * Parsing and validation of simple types with facets.
@@ -26,15 +23,13 @@ public final class Contacts {
 		});
 		
 		InputStream sda = Contacts.class.getResourceAsStream("/contacts.sda");
-		Node document = parser.parse(new InputStreamReader(sda, "UTF-8"));
+		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
 		InputStream sds = Contacts.class.getResourceAsStream("/contacts.sds");
-		Schema schema = SDS.parser().parse(new InputStreamReader(sds, "UTF-8"));
-
-		//SDS.validator().validate(document, schema, null);
-		ErrorList errors = SDS.validator().validate(document, schema, "contacts");
+		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
+		Errors errors = validator.validate(document);
 		//for (Error error : errors) System.out.println(error.toString());
-		Iterator<Error> e = errors.iterator();
+		Iterator<?> e = errors.iterator();
 		
 		t.ts1("F01", e.next() + "", "/contacts/contact[6]: complex content is expected for node 'contact'");
 		t.ts1("F02", e.next() + "", "/contacts/contact[7]: content missing at end of 'contact'; expected 'name'");
@@ -67,6 +62,6 @@ public final class Contacts {
 		t.ts1("F28", e.next() + "", "/contacts/contact[29]: content missing at end of 'contact'; expected 'name'");
 		t.ts1("F29", e.next() + "", "/contacts/contact[29]: empty value not allowed; 'contact' is not nullable");
 		t.ts1("F30", e.next() + "", "/contacts/compact: 'compact' was not expected in 'contacts'");
-		t.ts1("F99", e.hasNext() + "", "false");
+		t.ts1("F31", e.hasNext() + "", "false");
 	}
 }

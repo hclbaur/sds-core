@@ -1,5 +1,4 @@
 schema {
-	type "cartesian"
 	node "id" { type "integer" value "(0..*)" }
 	node "point" { 
 		node { type "id" }

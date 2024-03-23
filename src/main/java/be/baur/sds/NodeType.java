@@ -3,34 +3,67 @@ package be.baur.sds;
 import java.util.List;
 
 import be.baur.sda.Node;
+import be.baur.sda.SDA;
+import be.baur.sda.DataNode;
 import be.baur.sds.content.AbstractStringType;
 import be.baur.sds.content.AnyType;
 import be.baur.sds.content.RangedType;
+import be.baur.sds.model.ModelGroup;
 import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.Components;
 
 
 /**
- * A {@code NodeType} represents an SDA node type definition. It is one of the
- * building blocks of a {@code Schema}.
+ * A {@code NodeType} is an SDA node type definition. It is one of the building
+ * blocks of a {@code Schema} that defines content, the other being a
+ * {@code ModelGroup}.
  * 
  * Note that an instance of this class is a <i>complex type</i>. For a <i>simple
  * type</i>, instantiate a {@code MixedType} subclass, like {@code StringType},
  * {@code IntegerType}, {@code BooleanType}, etc.
- */
+ * 
+ * @see ModelGroup
+ **/
 public class NodeType extends Component {
 
-	private NodeType globalTypeNode = null; // the global node type this component refers to.
-	
+	private NodeType globalType = null; // the global type this type refers to, if any
+	private String typeName; // the name of this type
+
+
 	/**
 	 * Creates a node type with the specified name.
 	 * 
-	 * @param name a valid node name, see also {@link Node}
+	 * @param name a valid node name, see {@link SDA#isName}
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	public NodeType(String name) {
-		super(name);
+		setTypeName(name);
 	}
+	
+
+	/**
+	 * Returns the name of this type.
+	 * 
+	 * @return a valid node name, not null or empty
+	 */
+	public String getTypeName() {
+		return typeName;
+	}
+
+
+	/**
+	 * Sets the name of this type. Ultimately, a type represents an instance of a
+	 * data node, so the name of the type is restricted to valid node names.
+	 * 
+	 * @param name a valid node name, see {@link SDA#isName}
+	 * @throws IllegalArgumentException if the name is invalid
+	 */
+	public final void setTypeName(String name) {
+		if (! SDA.isName(name)) 
+			throw new IllegalArgumentException("invalid node name (" + name + ")");
+		typeName = name;
+	}
+
 
 	/*
 	 * The following three methods overrides the super type method to handle type
@@ -41,88 +74,88 @@ public class NodeType extends Component {
 	 * and may cause unexpected behavior at some point in the future, but we shall
 	 * cross that bridge when we get there.
 	 */
-	
-	@Override
+
+	@Override /* handle type reference */
 	public final List<Node> nodes() {
 		
 		if (getGlobalType() == null) return super.nodes();
-		if (globalTypeNode == null) // not bound yet, so get it from the schema root
-			globalTypeNode = (NodeType) this.root().get(getGlobalType());
-		return globalTypeNode.nodes(); // should not cause NPE
+		if (globalType == null) // not bound yet, so get it from the schema root
+			globalType = (NodeType) root().get(t -> ((NodeType) t).getTypeName().equals(getGlobalType()));
+		return globalType.nodes(); // should not cause NPE
 	}
 
 	@Override /* handle type reference */
 	public final boolean isLeaf() {
 		
 		if (getGlobalType() == null) return super.isLeaf();
-		if (globalTypeNode == null) // not bound yet, so get it from the schema root
-			globalTypeNode = (NodeType) this.root().get(getGlobalType());
-		return globalTypeNode.isLeaf(); // should not cause NPE
+		if (globalType == null) // not bound yet, so get it from the schema root
+			globalType = (NodeType) root().get(t -> ((NodeType) t).getTypeName().equals(getGlobalType()));
+		return globalType.isLeaf(); // should not cause NPE
 	}
 
 	@Override /* handle type reference */
 	public final boolean isParent() {
 		
 		if (getGlobalType() == null) return super.isParent();
-		if (globalTypeNode == null) // not bound yet, so get it from the schema root
-			globalTypeNode = (NodeType) this.root().get(getGlobalType());
-		return globalTypeNode.isParent(); // should not cause NPE
+		if (globalType == null) // not bound yet, so get it from the schema root
+			globalType = (NodeType) root().get(t -> ((NodeType) t).getTypeName().equals(getGlobalType()));
+		return globalType.isParent(); // should not cause NPE
 	}
 	
 	
 	@Override
-	public Node toNode() {
+	public DataNode toSDA() {
 		
-		Node node = new Node(Components.NODE.tag);
+		final DataNode node = new DataNode(Components.NODE.tag);
 		
 		// Omit the name for an unnamed any type, and for a type
 		// reference with the same name as the referenced type.
-		if (! (( getGlobalType() != null && getName().equals(getGlobalType()) )
+		if (! (( getGlobalType() != null && typeName.equals(getGlobalType()) )
 				|| ( this instanceof AnyType && !((AnyType) this).isNamed() )) ) {
-			node.setValue(getName());
+			node.setValue(typeName);
 		}
 	
-		// Render the type attribute for a global type reference,
-		// or for a simple (mixed) content type.
+		// Render the type attribute for a global type reference, or a data type
 		if (getGlobalType() != null)
-			node.add(new Node(Attribute.TYPE.tag, getGlobalType()));
-		else if (this instanceof MixedType)
-			node.add(new Node(Attribute.TYPE.tag, ((MixedType) this).getContentType().type));
+			node.add(new DataNode(Attribute.TYPE.tag, getGlobalType()));
+		else if (this instanceof DataType)
+			node.add(new DataNode(Attribute.TYPE.tag, ((DataType) this).getContentType().type));
 		
 		// Render the multiplicity if not default.
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
-			node.add(new Node(Attribute.OCCURS.tag, getMultiplicity().toString()));
+			node.add(new DataNode(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		// facets are rendered ONLY if we are not a type reference!
 		if (getGlobalType() == null) {
 
-			boolean stringType = (this instanceof AbstractStringType);
+			final boolean stringType = (this instanceof AbstractStringType);
+
 			if (stringType) {
 				AbstractStringType t = (AbstractStringType) this;
 				if (t.getLength().min != 0 || t.getLength().max != Integer.MAX_VALUE)
-					node.add(new Node(Attribute.LENGTH.tag, t.getLength().toString()));
+					node.add(new DataNode(Attribute.LENGTH.tag, t.getLength().toString()));
 			}
 	
 			if (this instanceof RangedType) {
 				RangedType<?> t = (RangedType<?>) this;
 				if (t.getRange().min != null || t.getRange().max != null)
-					node.add(new Node(Attribute.VALUE.tag, t.getRange().toString()));
+					node.add(new DataNode(Attribute.VALUE.tag, t.getRange().toString()));
 			}
 			
-			if (this instanceof MixedType) {
-				MixedType m = (MixedType) this;
+			if (this instanceof DataType) {
+				DataType t = (DataType) this;
 				
-				if (m.getPattern() != null)
-					node.add(new Node(Attribute.PATTERN.tag, m.getPattern().toString()));
+				if (t.getPattern() != null)
+					node.add(new DataNode(Attribute.PATTERN.tag, t.getPattern().toString()));
 				
-				if (stringType == !m.isNullable())
-					node.add(new Node(Attribute.NULLABLE.tag, String.valueOf(m.isNullable())));
+				if (stringType == !t.isNullable())
+					node.add(new DataNode(Attribute.NULLABLE.tag, String.valueOf(t.isNullable())));
 			}
 		}
 		
 		// Finally, render any children, unless we are a type reference
 		if (isParent() && getGlobalType() == null)
-			for (Node child : nodes()) node.add(((Component) child).toNode());
+			for (Node child : nodes()) node.add(((Component) child).toSDA());
 		
 		return node;
 	}
