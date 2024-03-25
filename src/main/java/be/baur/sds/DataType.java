@@ -28,6 +28,16 @@ public abstract class DataType extends NodeType {
 	}
 	
 	
+//	/**
+//	 * Returns a value of an appropriate type if the supplied string is within the
+//	 * lexical space of this SDS data type. Otherwise this method returns null.
+//	 * 
+//	 * @param str a String representing a value
+//	 * @return an Object or null
+//	 */
+//	public abstract Object valueOf(String str) ;
+
+
 	/**
 	 * Returns the simple content type.
 	 * 
@@ -75,4 +85,5 @@ public abstract class DataType extends NodeType {
 	public void setNullable(boolean nullable) {
 		this.nullable = nullable;
 	}
+
 }

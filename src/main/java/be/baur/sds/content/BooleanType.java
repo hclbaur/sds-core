@@ -27,20 +27,20 @@ public final class BooleanType extends DataType {
 
 
 	/**
-	 * Returns a Boolean value if the supplied string is within the lexical space of
-	 * an SDS boolean type.
-	 * 
-	 * @param str a String
-	 * @return a Boolean
+	 * @param str a String representing a boolean value
+	 * @return a Boolean or null
 	 */
-	public static Boolean valueFrom(String str) {
-
+	//@Override
+	public Boolean valueOf(String str) {
+		// only "true" or "false" is allowed in SDS
 		if (str != null && (str.equals(TRUE) || str.equals(FALSE)))
 			return Boolean.valueOf(str);
 		return null;
 	}
 
+
 	public Content getContentType() {
 		return Content.BOOLEAN;
 	}
+
 }

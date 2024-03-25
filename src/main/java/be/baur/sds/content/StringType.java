@@ -21,6 +21,17 @@ public final class StringType extends AbstractStringType {
 		super(name);
 	}
 	
+	
+	/**
+	 * @param str a String
+	 * @return a String or null
+	 */
+	//@Override
+	public String valueOf(String str) {
+		// any string that is not null is allowed
+		return str; // may be null
+	}
+
 
 	public Content getContentType() { 
 		return Content.STRING; 

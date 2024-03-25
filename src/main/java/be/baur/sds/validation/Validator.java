@@ -264,7 +264,7 @@ public abstract class Validator {
 		}
 		
 		if (type instanceof BooleanType) {
-			if (BooleanType.valueFrom(value) == null)
+			if (((BooleanType)type).valueOf(value) == null)
 				return error(node, INVALID_BOOLEAN_VALUE, value);
 		}
 			
