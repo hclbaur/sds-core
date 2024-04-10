@@ -15,21 +15,12 @@ import be.baur.sds.Component;
 import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
-import be.baur.sds.common.Content;
-import be.baur.sds.common.Date;
-import be.baur.sds.common.DateTime;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.content.AbstractStringType;
 import be.baur.sds.content.AnyType;
-import be.baur.sds.content.BinaryType;
 import be.baur.sds.content.BooleanType;
-import be.baur.sds.content.DateTimeType;
-import be.baur.sds.content.DateType;
-import be.baur.sds.content.DecimalType;
-import be.baur.sds.content.IntegerType;
 import be.baur.sds.content.RangedType;
-import be.baur.sds.content.StringType;
 import be.baur.sds.model.ChoiceGroup;
 import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.SequenceGroup;
@@ -75,7 +66,7 @@ public final class SDSParser implements Parser<Schema> {
 	private static final String ATTRIBUTE_EMPTY = "attribute '%s' is empty";
 	private static final String ATTRIBUTE_INVALID = "%s '%s' is invalid; %s";
 
-	private static final String CONTENT_TYPE_UNKNOWN = "content type '%s' is unknown";
+	private static final String TYPE_IS_UNKNOWN = "type '%s' is unknown";
 	private static final String NODE_NAME_INVALID = "'%s' is not a valid node name";
 	private static final String NAME_NOT_EXPECTED = "name '%s' is not expected";
 	private static final String NAME_IS_EXPECTED = "a name is expected";
@@ -189,7 +180,7 @@ public final class SDSParser implements Parser<Schema> {
 		 * A component is either a node type (simple and/or complex), a model group, or
 		 * a type reference. If there are no child nodes with complex content, it must
 		 * be a simple type or a reference, which looks like a simple type but refers to
-		 * a global type rather than a string, integer, boolean, etc.
+		 * a global type rather than a data type (string, integer, boolean, etc).
 		 */
 		Component component; // the component to be returned at the end of this method
 		boolean isNodeType = sds.getName().equals(Components.NODE.tag); // will be false for a model group
@@ -197,20 +188,21 @@ public final class SDSParser implements Parser<Schema> {
 		
 		// simple types and references MUSt have a content type, complex types MAY have one
 		DataNode type = getAttribute(sds, Attribute.TYPE, isNodeType && complexChildren.isEmpty());
-		Content content = (type == null) ? null : Content.get(type.getValue());
+		boolean isDataType = (type == null) ? false : Schema.isDataType(type.getValue());
 		
 		if (isNodeType && complexChildren.isEmpty()) {
 			
-			if (content != null) // simple content type
-				component = parseNodeType(sds, content); 
+			if (isDataType) // a known simple type
+				component = parseNodeType(sds, type); 
 			else // otherwise it must be a reference
 				component = parseTypeReference(sds, type);
 		}
-		else if (isNodeType) { // a complex type
-			if (content == Content.ANY) // any type cannot contain type definitions
-				throw exception(sds, ATTRIBUTE_INVALID, Attribute.TYPE.tag, Content.ANY.type, "node defines content");
+		else if (isNodeType) { // a complex type, with or without data type
 			
-			component = parseNodeType(sds, content);
+			if (type != null && type.getValue().equals(AnyType.TYPE)) // any type cannot contain type definitions
+				throw exception(sds, ATTRIBUTE_INVALID, Attribute.TYPE.tag, AnyType.TYPE, "node defines content");
+			
+			component = parseNodeType(sds, type);
 		}
 		else // a model group
 			component = parseModelGroup(sds);
@@ -309,7 +301,8 @@ public final class SDSParser implements Parser<Schema> {
 		 * named). We also set the global type on this component, so that when rendering
 		 * back to SDS, we can recreate the correct reference. 
 		 * Preconditions: the caller (parseComponentType) has already verified that this 
-		 * node has a valid tag, no child components, and only attributes with valid tags. 
+		 * node has a valid tag, no child components, only attributes with valid tags,
+		 * and that there is a type attribute (e.g. type is not null).
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
 		
@@ -322,7 +315,7 @@ public final class SDSParser implements Parser<Schema> {
 		
 		Node root = sds.root();
 		if (root.equals(sds)) // if we are the root ourself, we bail out right away.
-			throw exception(type, CONTENT_TYPE_UNKNOWN, type.getValue());
+			throw exception(type, TYPE_IS_UNKNOWN, type.getValue());
 		
 		// search all node declarations in the schema root for the referenced type
 		Node refNode = null;
@@ -330,7 +323,7 @@ public final class SDSParser implements Parser<Schema> {
 			if ( ((DataNode) cnode).getValue().equals(type.getValue()) ) refNode = cnode;
 		}
 		if (refNode == null || refNode.equals(sds)) // if we found nothing or ourself, we raise an error.
-			throw exception(type, CONTENT_TYPE_UNKNOWN, type.getValue());
+			throw exception(type, TYPE_IS_UNKNOWN, type.getValue());
 		
 		/*
 		 * If we get here, we can parse the referenced type into a new component, but
@@ -357,20 +350,19 @@ public final class SDSParser implements Parser<Schema> {
 
 	/**
 	 * This method is called from parseComponent() to create a NodeType from an SDS
-	 * type definition. Note that this method is called for both simple and complex
-	 * types. For complex types without simple content, the content (type) will be
-	 * null, whereas for data types, it will be a known simple content type.
+	 * type definition, for both simple and complex types. The type parameter is a
+	 * valid type attribute, or null for complex types with node content only.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static <T extends Comparable> 
-		NodeType parseNodeType(DataNode sds, Content content) throws SDSParseException {
+		NodeType parseNodeType(DataNode sds, DataNode type) throws SDSParseException {
 		/*
 		 * Preconditions: the caller has already verified this node has a valid tag, 
 		 * and that all attributes have valid tags as well. 
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
 		
-		boolean isAnyType = (content == Content.ANY); // we need this a few times
+		boolean isAnyType = type != null && type.getValue().equals(AnyType.TYPE);
 
 		/*
 		 * A name is required for regular types only, and optional for the "any" type,
@@ -385,11 +377,11 @@ public final class SDSParser implements Parser<Schema> {
 		}
 		
 		/*
-		 * If content type is null, it is a complex type definition and content type
+		 * If type is null, it is a complex type without a data type, so data type
 		 * validations do not apply. The only attribute allowed in a complex type is
 		 * OCCURS, so we do check that before we return a node type.
 		 */
-		if (content == null) {
+		if (type == null) {
 
 			List<Node> alist = sds.find(n -> n.isLeaf() && ! n.getName().equals(Attribute.OCCURS.tag) );
 			if (! alist.isEmpty())
@@ -398,25 +390,14 @@ public final class SDSParser implements Parser<Schema> {
 			return new NodeType(name); // remaining code does not apply in this case
 		}
 		
-		DataType dataType;	// the type returned at the end of this method
-		
-		switch (content) {
-			case STRING   : dataType = new StringType(name); break;
-			case BINARY   : dataType = new BinaryType(name); break;
-			case BOOLEAN  : dataType = new BooleanType(name); break;
-			case INTEGER  : dataType = new IntegerType(name); break;
-			case DECIMAL  : dataType = new DecimalType(name); break;
-			case DATETIME : dataType = new DateTimeType(name); break;
-			case DATE     : dataType = new DateType(name); break;
-			case ANY      : dataType = new AnyType(name); break;
-			default: // will never get here, unless we forgot to implement something...
-				throw new RuntimeException("SDS type '" + content + "' not implemented!");
-		}	
-			
-		// Handle remaining attributes, some of which are forbidden on the "any" type !
+		/*
+		 * Create an instance of the requested data type and handle remaining
+		 * attributes, some of which are forbidden on the "any" type !
+		 */
+		DataType dataType = Schema.getDataType(type.getValue(), name);
 		
 		// Set the null-ability (not allowed on the any type).
-		DataNode nullable = getAttribute(sds, Attribute.NULLABLE, isAnyType? null : false);
+		DataNode nullable = getAttribute(sds, Attribute.NULLABLE, isAnyType ? null : false);
 		if (nullable != null) switch(nullable.getValue()) {
 			case BooleanType.TRUE : dataType.setNullable(true); break;
 			case BooleanType.FALSE : dataType.setNullable(false); break;
@@ -450,21 +431,15 @@ public final class SDSParser implements Parser<Schema> {
 		// Set the value range (only allowed on ranged types).
 		DataNode range = getAttribute(sds, Attribute.VALUE, dataType instanceof RangedType ? false : null);
 		if (range != null) {
+			Interval interval;
+			RangedType rangedType = (RangedType) dataType;
 			try {	
-				Interval<T> interval;
-				switch (content) {
-					case INTEGER  : interval = (Interval<T>) Interval.from(range.getValue(), Integer.class); break;
-					case DECIMAL  : interval = (Interval<T>) Interval.from(range.getValue(), Double.class); break;
-					case DATETIME : interval = (Interval<T>) Interval.from(range.getValue(), DateTime.class); break;
-					case DATE     : interval = (Interval<T>) Interval.from(range.getValue(), Date.class); break;
-					default: // we will never get here, unless we forgot to implement something
-						throw new RuntimeException("SDS type '" + content + "' not implemented!");
-				}
-				((RangedType<Comparable<?>>) dataType).setRange((Interval<T>) interval);
+				interval = Interval.from(range.getValue(), rangedType.valueClass());
 			} catch (IllegalArgumentException e) {
 				throw exception(range, 
 					ATTRIBUTE_INVALID, Attribute.VALUE.tag, range.getValue(), e.getMessage());
 			}
+			rangedType.setRange(interval);
 		}
 		
 		return dataType;

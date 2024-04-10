@@ -85,11 +85,11 @@ public final class Interval <T extends Comparable> {
 	/**
 	 * Creates an interval from two limit points and a type.
 	 * 
-	 * @param <T>  interval class
+	 * @param <T>  a value type
 	 * @param min  the lower limit, null means unbounded
 	 * @param max  the upper limit, null means unbounded
 	 * @param type one of OPEN, LEFT_OPEN, RIGHT_OPEN or CLOSED
-	 * @return an interval
+	 * @return an Interval
 	 * @throws IllegalArgumentException for an invalid interval
 	 */
 	@SuppressWarnings("unchecked")
@@ -107,7 +107,7 @@ public final class Interval <T extends Comparable> {
 	 * @param <T>      a value type
 	 * @param interval a valid interval notation, not null or empty
 	 * @param cls      the value class, not null
-	 * @return an interval
+	 * @return an Interval
 	 * @throws IllegalArgumentException for an invalid interval
 	 */
 	public static <T extends Comparable> Interval<T> from(String interval, Class<T> cls) {
@@ -185,7 +185,7 @@ public final class Interval <T extends Comparable> {
 	/**
 	 * Returns this interval as a string in interval notation.
 	 * 
-	 * @return interval notation
+	 * @return an interval string
 	 */
 	public String toString() {
 		

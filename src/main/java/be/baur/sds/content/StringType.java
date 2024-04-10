@@ -1,14 +1,13 @@
 package be.baur.sds.content;
 
-import be.baur.sds.common.Content;
-
 /**
  * A <code>StringType</code> represents an SDA node with string content. When
  * setting an allowed length interval, note that length is counted in number of
- * characters.<br>
- * See also {@link BinaryType}.
+ * characters.
  */
 public final class StringType extends AbstractStringType {
+
+	public static final String TYPE = "string";
 
 
 	/**
@@ -21,8 +20,19 @@ public final class StringType extends AbstractStringType {
 		super(name);
 	}
 	
+	
+	/**
+	 * @param str a String
+	 * @return a String or null
+	 */
+	//@Override
+	public String valueOf(String str) {
+		// any string that is not null is allowed
+		return str; // may be null
+	}
 
-	public Content getContentType() { 
-		return Content.STRING; 
+
+	public String getType() {
+		return TYPE;
 	}
 }

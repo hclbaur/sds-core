@@ -1,12 +1,13 @@
 package be.baur.sds.content;
 
-import be.baur.sds.common.Content;
+import java.util.function.Function;
 
 /**
- * A <code>DecimalType</code> represents an SDA node with decimal content.<br>
- * See also {@link IntegerType}.
+ * A <code>DecimalType</code> represents an SDA node with decimal content.
  */
 public final class DecimalType extends RangedType<Double> {
+
+	public static final String TYPE = "decimal";
 
 
 	/**
@@ -20,7 +21,17 @@ public final class DecimalType extends RangedType<Double> {
 	}
 	
 
-	public Content getContentType() { 
-		return Content.DECIMAL; 
+	public String getType() {
+		return TYPE;
+	}
+
+
+	public Class<Double> valueClass() {
+		return Double.class;
+	}
+	
+
+	public Function<String, Double> valueConstructor() {
+		return Double::new;
 	}
 }

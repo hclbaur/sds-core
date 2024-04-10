@@ -1,18 +1,20 @@
 package be.baur.sds.content;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import be.baur.sds.DataType;
 import be.baur.sds.common.Interval;
 
 /**
- * A <code>RangedType</code> represents an SDA node with a value that lies
- * within an interval, like an integer, a decimal or a date(time).<br>
- * See also {@link Interval}.
+ * A {@code RangedType} defines an SDA node with a value that lies within an
+ * interval, like an integer, a decimal or a date(time).
+ * 
+ * @see Interval
  */
-public abstract class RangedType <T extends Comparable<?>> extends DataType {
+public abstract class RangedType <T extends Comparable<? super T>> extends DataType {
 
-	private Interval<?> range = Interval.MIN_TO_MAX; // default any value is allowed.
+	private Interval<?> range = Interval.MIN_TO_MAX; // default is to allow any value
 	
 	
 	/**
@@ -42,7 +44,29 @@ public abstract class RangedType <T extends Comparable<?>> extends DataType {
 	 * 
 	 * @param range an interval, not null
 	 */
-	public void setRange(Interval<?> range) {
+	public void setRange(Interval<T> range) {
 		this.range = Objects.requireNonNull(range, "range must not be null");
 	}
+	
+
+	/**
+	 * Returns the Class of a value for this type.
+	 * 
+	 * @return a Class
+	 */
+	public abstract Class<T> valueClass();
+	
+	
+	/**
+	 * Returns a constructor function that accepts a string and returns an instance
+	 * of a value appropriate for this data type.
+	 * <p>
+	 * Note: when applied, the function may throw an exception if the argument is
+	 * not within the lexical space for this type (that is, when the supplied string
+	 * cannot be converted to a valid value).
+	 * 
+	 * @return a Function
+	 * @throws RuntimeException
+	 */
+	public abstract Function<String, T> valueConstructor();
 }

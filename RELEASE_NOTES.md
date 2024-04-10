@@ -1,6 +1,18 @@
 # Release Notes
 
-## [2.3.0] - 2024-03-23
+## [2.4.0] - In development.
+
+- `Removed` be.baur.sds.common.Content.
+- `Changed` DataType.getContentType() to getType().
+- Added Schema.registerDataType(), and get/isDataType().
+
+## Compatibility
+
+- Requires at least Java 8 and sda-core 2.2.0.
+
+## Previous releases
+
+### [2.3.0] - 2024-03-23
 
 This started out as a compatibility release for sda-core 2.2.x, 
 until I decided to change the SDS syntax and disallow a type 
@@ -21,12 +33,6 @@ a schema no longer has a "default type", whatever that was.
 - Added Schema.newValidator() and getGlobalType().
 - Added Validator.setTypeName().
 - Added docs/SPECIFICATION.
-
-## Compatibility
-
-- Requires at least Java 8 and sda-core 2.2.0.
-
-## Previous releases
 
 ### [2.2.0] - 2023-10-04
 

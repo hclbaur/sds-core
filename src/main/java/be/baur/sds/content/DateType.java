@@ -1,14 +1,16 @@
 package be.baur.sds.content;
 
-import be.baur.sds.common.Content;
+import java.util.function.Function;
+
 import be.baur.sds.common.Date;
 
 /**
  * A <code>DateType</code> represents an SDA node with temporal content (a
- * calendar date without time zone).<br>
- * See also {@link DateTimeType}.
+ * calendar date without time zone).
  */
 public final class DateType extends RangedType<Date> {
+
+	public static final String TYPE = "date";
 
 
 	/**
@@ -22,7 +24,17 @@ public final class DateType extends RangedType<Date> {
 	}
 	
 
-	public Content getContentType() { 
-		return Content.DATE; 
+	public String getType() {
+		return TYPE;
+	}
+
+
+	public Class<Date> valueClass() {
+		return Date.class;
+	}
+	
+
+	public Function<String, Date> valueConstructor() {
+		return Date::new;
 	}
 }

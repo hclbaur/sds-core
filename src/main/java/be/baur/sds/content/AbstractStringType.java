@@ -6,10 +6,8 @@ import be.baur.sds.DataType;
 import be.baur.sds.common.NaturalInterval;
 
 /**
- * An {@code AbstractStringType} represents an SDA node with string content and
- * a minimum and maximum length. Unlike other types, it is null-able by default.
- * <br>
- * See also {@link StringType} and {@link BinaryType}.
+ * An {@code AbstractStringType} defines an SDA node with string content and a
+ * minimum and maximum length. Unlike other types, it is null-able by default.
  */
 public abstract class AbstractStringType extends DataType {
 

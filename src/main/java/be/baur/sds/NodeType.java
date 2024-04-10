@@ -15,14 +15,15 @@ import be.baur.sds.serialization.Components;
 
 /**
  * A {@code NodeType} is an SDA node type definition. It is one of the building
- * blocks of a {@code Schema} that defines content, the other being a
+ * blocks of a {@code Schema} that defines SDA node content, the other being a
  * {@code ModelGroup}.
  * 
- * Note that an instance of this class is a <i>complex type</i>. For a <i>simple
- * type</i>, instantiate a {@code MixedType} subclass, like {@code StringType},
+ * Note that an instance of this class is a complex type. For a type with simple
+ * content, instantiate a {@code DataType} subclass, like {@code StringType},
  * {@code IntegerType}, {@code BooleanType}, etc.
  * 
  * @see ModelGroup
+ * @see DataType
  **/
 public class NodeType extends Component {
 
@@ -119,7 +120,7 @@ public class NodeType extends Component {
 		if (getGlobalType() != null)
 			node.add(new DataNode(Attribute.TYPE.tag, getGlobalType()));
 		else if (this instanceof DataType)
-			node.add(new DataNode(Attribute.TYPE.tag, ((DataType) this).getContentType().type));
+			node.add(new DataNode(Attribute.TYPE.tag, ((DataType) this).getType()));
 		
 		// Render the multiplicity if not default.
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 

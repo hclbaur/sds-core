@@ -1,12 +1,13 @@
 package be.baur.sds.content;
 
-import be.baur.sds.common.Content;
+import java.util.function.Function;
 
 /**
- * A <code>IntegerType</code> represents an SDA node with integer content.<br>
- * See also {@link DecimalType}.
+ * A <code>IntegerType</code> represents an SDA node with integer content.
  */
 public final class IntegerType extends RangedType<Integer> {
+
+	public static final String TYPE = "integer";
 
 
 	/**
@@ -18,9 +19,19 @@ public final class IntegerType extends RangedType<Integer> {
 	public IntegerType(String name) {
 		super(name);
 	}
-	
 
-	public Content getContentType() { 
-		return Content.INTEGER; 
+
+	public String getType() {
+		return TYPE;
+	}
+
+
+	public Class<Integer> valueClass() {
+		return Integer.class;
+	}
+
+
+	public Function<String, Integer> valueConstructor() {
+		return Integer::new;
 	}
 }

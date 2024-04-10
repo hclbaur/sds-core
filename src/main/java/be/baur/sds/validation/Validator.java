@@ -17,8 +17,6 @@ import be.baur.sds.Component;
 import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
-import be.baur.sds.common.Date;
-import be.baur.sds.common.DateTime;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.content.AbstractStringType;
@@ -264,7 +262,7 @@ public abstract class Validator {
 		}
 		
 		if (type instanceof BooleanType) {
-			if (! (value.equals(BooleanType.TRUE) || value.equals(BooleanType.FALSE)) )
+			if (((BooleanType)type).valueOf(value) == null)
 				return error(node, INVALID_BOOLEAN_VALUE, value);
 		}
 			
@@ -319,16 +317,9 @@ public abstract class Validator {
 
 		Comparable<?> value = null;
 		try {
-			switch (type.getContentType()) {
-				case INTEGER  : value = new Integer(node.getValue()); break;
-				case DECIMAL  : value = new Double(node.getValue()); break;
-				case DATETIME : value = new DateTime(node.getValue()); break;
-				case DATE     : value = new Date(node.getValue()); break;
-				default: // we will never get here, unless we forgot to implement something
-					throw new RuntimeException("validation of '" + type.getContentType() + "' not implemented!");
-			}
+			value = type.valueConstructor().apply(node.getValue());
 		} catch (Exception e) {
-			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getContentType(), e.getMessage());
+			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
 		}
 		
 		Interval<?> range = type.getRange(); 

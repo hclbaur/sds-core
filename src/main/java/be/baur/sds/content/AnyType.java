@@ -1,10 +1,9 @@
 package be.baur.sds.content;
 
 import be.baur.sds.DataType;
-import be.baur.sds.common.Content;
 
 /**
- * An {@code AnyType} represents any SDA node, with any simple or complex
+ * An {@code AnyType} defines any SDA node, with any simple or complex
  * content, and possibly any (valid) node name. Or, in SDS notation:<br>
  * <br>
  * <code>node "name" { type "any" }</code> (where 'name' must be a valid node
@@ -14,8 +13,10 @@ import be.baur.sds.common.Content;
  */
 public final class AnyType extends DataType {
 
-	private final boolean named; // true if the any type is explicitly named
+	public static final String TYPE = "any";
 	
+	private final boolean named; // true if the any type is explicitly named
+
 
 	/**
 	 * Creates this with the specified name. The name may be null or empty to
@@ -41,7 +42,7 @@ public final class AnyType extends DataType {
 	}
 	
 
-	public Content getContentType() {
-		return Content.ANY;
+	public String getType() {
+		return TYPE;
 	}
 }
