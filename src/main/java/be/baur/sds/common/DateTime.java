@@ -29,6 +29,7 @@ public final class DateTime implements Comparable<Object> {
 	 * 
 	 * @return a formatted date and time
 	 */
+	@Override
 	public String toString() {
 		return value.format(formatter);
 	}

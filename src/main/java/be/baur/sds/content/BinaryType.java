@@ -7,7 +7,7 @@ package be.baur.sds.content;
  */
 public final class BinaryType extends AbstractStringType {
 
-	public static final String TYPE = "binary";
+	public static final String NAME = "binary";
 	
 	
 	/**
@@ -21,7 +21,8 @@ public final class BinaryType extends AbstractStringType {
 	}
 	
 
+	@Override
 	public String getType() {
-		return TYPE;
+		return NAME;
 	}
 }

@@ -40,7 +40,7 @@ public abstract class DataType extends NodeType {
 	/**
 	 * Returns the name of this data type, e.g. "string", "integer", "boolean", etc.
 	 * 
-	 * @return a type, not null
+	 * @return a type name, not null
 	 */
 	public abstract String getType();
 	

@@ -10,7 +10,6 @@ import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.serialization.SDAFormatter;
-import be.baur.sds.content.AnyType;
 import be.baur.sds.content.BinaryType;
 import be.baur.sds.content.BooleanType;
 import be.baur.sds.content.DateTimeType;
@@ -87,14 +86,13 @@ public final class Schema extends AbstractNode {
 
 	// Register native SDS data types.
 	static {
-		registerDataType(StringType.TYPE, name -> { return new StringType(name); } );
-		registerDataType(BinaryType.TYPE, name -> { return new BinaryType(name); } );
-		registerDataType(IntegerType.TYPE, name -> { return new IntegerType(name); } );
-		registerDataType(DecimalType.TYPE, name -> { return new DecimalType(name); } );
-		registerDataType(DateType.TYPE, name -> { return new DateType(name); } );
-		registerDataType(DateTimeType.TYPE, name -> { return new DateTimeType(name); } );
-		registerDataType(BooleanType.TYPE, name -> { return new BooleanType(name); } );
-		registerDataType(AnyType.TYPE, name -> { return new AnyType(name); } );
+		registerDataType(StringType.NAME, name -> { return new StringType(name); } );
+		registerDataType(BinaryType.NAME, name -> { return new BinaryType(name); } );
+		registerDataType(IntegerType.NAME, name -> { return new IntegerType(name); } );
+		registerDataType(DecimalType.NAME, name -> { return new DecimalType(name); } );
+		registerDataType(DateType.NAME, name -> { return new DateType(name); } );
+		registerDataType(DateTimeType.NAME, name -> { return new DateTimeType(name); } );
+		registerDataType(BooleanType.NAME, name -> { return new BooleanType(name); } );
 	}
 
 
@@ -175,6 +173,7 @@ public final class Schema extends AbstractNode {
 	 */
 	public Validator newValidator() {
 		Validator val = new Validator() {
+			@Override
 			protected Schema getSchema() {
 				return Schema.this;
 			}

@@ -10,7 +10,7 @@ import be.baur.sds.common.Date;
  */
 public final class DateType extends RangedType<Date> {
 
-	public static final String TYPE = "date";
+	public static final String NAME = "date";
 
 
 	/**
@@ -24,16 +24,19 @@ public final class DateType extends RangedType<Date> {
 	}
 	
 
+	@Override
 	public String getType() {
-		return TYPE;
+		return NAME;
 	}
 
 
+	@Override
 	public Class<Date> valueClass() {
 		return Date.class;
 	}
 	
 
+	@Override
 	public Function<String, Date> valueConstructor() {
 		return Date::new;
 	}

@@ -7,7 +7,7 @@ package be.baur.sds.content;
  */
 public final class StringType extends AbstractStringType {
 
-	public static final String TYPE = "string";
+	public static final String NAME = "string";
 
 
 	/**
@@ -32,7 +32,8 @@ public final class StringType extends AbstractStringType {
 	}
 
 
+	@Override
 	public String getType() {
-		return TYPE;
+		return NAME;
 	}
 }

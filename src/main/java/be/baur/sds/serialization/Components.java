@@ -22,6 +22,7 @@ public enum Components {
 	 * 
 	 * @return the name tag
 	 */
+	@Override
 	public String toString() { 
 		return tag; 
 	}

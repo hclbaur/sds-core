@@ -7,7 +7,7 @@ import java.util.function.Function;
  */
 public final class IntegerType extends RangedType<Integer> {
 
-	public static final String TYPE = "integer";
+	public static final String NAME = "integer";
 
 
 	/**
@@ -21,16 +21,19 @@ public final class IntegerType extends RangedType<Integer> {
 	}
 
 
+	@Override
 	public String getType() {
-		return TYPE;
+		return NAME;
 	}
 
 
+	@Override
 	public Class<Integer> valueClass() {
 		return Integer.class;
 	}
 
 
+	@Override
 	public Function<String, Integer> valueConstructor() {
 		return Integer::new;
 	}

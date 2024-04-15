@@ -187,6 +187,7 @@ public final class Interval <T extends Comparable> {
 	 * 
 	 * @return an interval string
 	 */
+	@Override
 	public String toString() {
 		
 		if (min == max && min != null) return min.toString(); // fixed value

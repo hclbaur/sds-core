@@ -28,6 +28,7 @@ public final class Date implements Comparable<Object> {
 	 * 
 	 * @return a formatted date
 	 */
+	@Override
 	public String toString() {
 		return value.format(formatter);
 	}

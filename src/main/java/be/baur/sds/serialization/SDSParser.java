@@ -11,6 +11,7 @@ import be.baur.sda.Node;
 import be.baur.sda.SDA;
 import be.baur.sda.serialization.Parser;
 import be.baur.sda.serialization.SDAParseException;
+import be.baur.sds.AnyType;
 import be.baur.sds.Component;
 import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
@@ -18,7 +19,6 @@ import be.baur.sds.Schema;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.content.AbstractStringType;
-import be.baur.sds.content.AnyType;
 import be.baur.sds.content.BooleanType;
 import be.baur.sds.content.RangedType;
 import be.baur.sds.model.ChoiceGroup;
@@ -78,6 +78,7 @@ public final class SDSParser implements Parser<Schema> {
 	 * @throws IOException       if an I/O operation failed
 	 * @throws SDSParseException if an SDS parse exception occurs
 	 */
+	@Override
 	public Schema parse(Reader input) throws IOException, SDSParseException {
 
 		DataNode sds = null;
@@ -137,17 +138,6 @@ public final class SDSParser implements Parser<Schema> {
 			schema.add(parseComponent((DataNode) node, false));
 		}
 
-//		// set the designated root type reference (if specified and valid)
-//		DataNode type = getAttribute(sds, Attribute.TYPE, false);
-//		
-//		if (type != null) try {
-//			schema.setDefaultTypeName(type.getValue());
-//		}
-//		catch (IllegalArgumentException e) {
-//			throw exception(sds, ATTRIBUTE_INVALID, 
-//				Attribute.TYPE.tag, type.getValue(), "no such global type");
-//		}
-
 		return schema;
 	}
 
@@ -177,37 +167,52 @@ public final class SDSParser implements Parser<Schema> {
 				throw exception(node, ATTRIBUTE_UNKNOWN, node.getName());
 		
 		/*
-		 * A component is either a node type (simple and/or complex), a model group, or
-		 * a type reference. If there are no child nodes with complex content, it must
-		 * be a simple type or a reference, which looks like a simple type but refers to
-		 * a global type rather than a data type (string, integer, boolean, etc).
+		 * A component is either a node type (simple and/or complex), a model group, an
+		 * any type, or a type reference. If there are no child nodes with complex
+		 * content, it must be a simple type or a reference, which looks like a simple
+		 * type but refers to a global type.
 		 */
-		Component component; // the component to be returned at the end of this method
 		boolean isNodeType = sds.getName().equals(Components.NODE.tag); // will be false for a model group
-		List<Node> complexChildren = sds.find(n -> ! n.isLeaf()); // empty if simple type or reference
+		List<Node> complexChildren = sds.find(n -> ! n.isLeaf()); // list of complex children (if any)
 		
-		// simple types and references MUSt have a content type, complex types MAY have one
+		// Simple types and references MUSt have a content type, complex types MAY have one
 		DataNode type = getAttribute(sds, Attribute.TYPE, isNodeType && complexChildren.isEmpty());
+		boolean isAnyType = (type == null) ? false : type.getValue().equals(AnyType.NAME);
 		boolean isDataType = (type == null) ? false : Schema.isDataType(type.getValue());
 		
-		if (isNodeType && complexChildren.isEmpty()) {
+		Component component; // the component to be returned at the end of this method
+		
+		if (! isNodeType) { // component is a model group
+			component = parseModelGroup(sds);
+		} 
+		else {  // component is a node type (of any kind)
 			
-			if (isDataType) // a known simple type
-				component = parseNodeType(sds, type); 
-			else // otherwise it must be a reference
+			if (isAnyType) { // an any type cannot have components or attributes (except NAME and OCCURS)
+				
+				if (! complexChildren.isEmpty())
+					throw exception(sds, ATTRIBUTE_INVALID, Attribute.TYPE.tag, AnyType.NAME, "node defines content");
+				
+				List<Node> alist = sds.find(n -> n.isLeaf() && 
+					! (n.getName().equals(Attribute.OCCURS.tag) || n.getName().equals(Attribute.TYPE.tag)));
+				if (! alist.isEmpty())
+					throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
+				
+				String name = sds.getValue();  // a name is optional, but if there is one it must be valid
+				if (! name.isEmpty() && ! SDA.isName(name))
+					throw exception(sds, NODE_NAME_INVALID, name);
+				
+				component = new AnyType(name);
+			}
+			
+			else if (isDataType || type == null) // a known data type or complex type
+				component = parseNodeType(sds, type);
+			
+			else // component must be a type reference
 				component = parseTypeReference(sds, type);
 		}
-		else if (isNodeType) { // a complex type, with or without data type
-			
-			if (type != null && type.getValue().equals(AnyType.TYPE)) // any type cannot contain type definitions
-				throw exception(sds, ATTRIBUTE_INVALID, Attribute.TYPE.tag, AnyType.TYPE, "node defines content");
-			
-			component = parseNodeType(sds, type);
-		}
-		else // a model group
-			component = parseModelGroup(sds);
+
 		
-		// Set the (optional) multiplicity of this component
+		// We have a component, so set the (optional) multiplicity
 		DataNode occurs = getAttribute(sds, Attribute.OCCURS, false);
 		try {
 			if (occurs != null)
@@ -240,7 +245,7 @@ public final class SDSParser implements Parser<Schema> {
 	 * @returns a {@link SequenceGroup}, {@link ChoiceGroup} or
 	 *          {@link UnorderedGroup},
 	 */
-	private static Component parseModelGroup(DataNode sds) throws SDSParseException {
+	private static ModelGroup parseModelGroup(DataNode sds) throws SDSParseException {
 		/*
 		 * Preconditions: the caller (parseComponent) has already verified that this
 		 * component has a valid tag, attributes with valid tags only, and one or more
@@ -248,7 +253,7 @@ public final class SDSParser implements Parser<Schema> {
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
 
-		// Model groups should not have attributes other than OCCURS (maybe TYPE in the future).
+		// Model groups should not have attributes other than OCCURS (maybe NAME in the future).
 //		Optional<Node> attribute = sds.getNodes().find(n -> n.isLeaf()).stream()
 //			.filter(n -> ! (/* n.getName().equals(Attribute.TYPE.tag) 
 //				|| */ n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
@@ -351,30 +356,21 @@ public final class SDSParser implements Parser<Schema> {
 	/**
 	 * This method is called from parseComponent() to create a NodeType from an SDS
 	 * type definition, for both simple and complex types. The type parameter is a
-	 * valid type attribute, or null for complex types with node content only.
+	 * valid data type attribute, or null for complex types with node content only.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <T extends Comparable> 
+	private static //<T extends Comparable<? super T>> 
 		NodeType parseNodeType(DataNode sds, DataNode type) throws SDSParseException {
 		/*
 		 * Preconditions: the caller has already verified this node has a valid tag, 
-		 * and that all attributes have valid tags as well. 
+		 * and that all attributes have valid tags as well. This method is NOT called
+		 * for an AnyType.
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
-		
-		boolean isAnyType = type != null && type.getValue().equals(AnyType.TYPE);
 
-		/*
-		 * A name is required for regular types only, and optional for the "any" type,
-		 * but if there IS a name, it should always be a valid node name.
-		 */
-		String name = sds.getValue();
-		if (! isAnyType || ! name.isEmpty()) {
-			if (name.isEmpty())
-				throw exception(sds, NAME_IS_EXPECTED);
-			if (! SDA.isName(name))
-				throw exception(sds, NODE_NAME_INVALID, name);
-		}
+		String name = sds.getValue(); // a name is required and should be valid
+		if (name.isEmpty())	throw exception(sds, NAME_IS_EXPECTED);
+		if (! SDA.isName(name)) throw exception(sds, NODE_NAME_INVALID, name);
 		
 		/*
 		 * If type is null, it is a complex type without a data type, so data type
@@ -391,13 +387,12 @@ public final class SDSParser implements Parser<Schema> {
 		}
 		
 		/*
-		 * Create an instance of the requested data type and handle remaining
-		 * attributes, some of which are forbidden on the "any" type !
+		 * Get an instance of the requested data type and handle remaining attributes.
 		 */
 		DataType dataType = Schema.getDataType(type.getValue(), name);
 		
-		// Set the null-ability (not allowed on the any type).
-		DataNode nullable = getAttribute(sds, Attribute.NULLABLE, isAnyType ? null : false);
+		// Set the optional null-ability.
+		DataNode nullable = getAttribute(sds, Attribute.NULLABLE, false);
 		if (nullable != null) switch(nullable.getValue()) {
 			case BooleanType.TRUE : dataType.setNullable(true); break;
 			case BooleanType.FALSE : dataType.setNullable(false); break;
@@ -406,8 +401,8 @@ public final class SDSParser implements Parser<Schema> {
 					Attribute.NULLABLE.tag, nullable.getValue(), "must be 'true' or 'false'");
 		}
 		
-		// Set the pattern (not allowed on the any type).
-		DataNode regexp = getAttribute(sds, Attribute.PATTERN, isAnyType ? null : false);
+		// Set the optional pattern.
+		DataNode regexp = getAttribute(sds, Attribute.PATTERN, false);
 		if ( regexp != null) 
 		try { 
 			dataType.setPattern( Pattern.compile(regexp.getValue()) ); 

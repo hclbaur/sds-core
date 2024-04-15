@@ -7,7 +7,7 @@ import java.util.function.Function;
  */
 public final class DecimalType extends RangedType<Double> {
 
-	public static final String TYPE = "decimal";
+	public static final String NAME = "decimal";
 
 
 	/**
@@ -21,16 +21,19 @@ public final class DecimalType extends RangedType<Double> {
 	}
 	
 
+	@Override
 	public String getType() {
-		return TYPE;
+		return NAME;
 	}
 
 
+	@Override
 	public Class<Double> valueClass() {
 		return Double.class;
 	}
 	
 
+	@Override
 	public Function<String, Double> valueConstructor() {
 		return Double::new;
 	}

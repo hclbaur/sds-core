@@ -13,14 +13,15 @@ import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.util.Result;
 import be.baur.sda.util.Results;
+import be.baur.sds.AnyType;
 import be.baur.sds.Component;
 import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
+import be.baur.sds.Type;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.content.AbstractStringType;
-import be.baur.sds.content.AnyType;
 import be.baur.sds.content.BinaryType;
 import be.baur.sds.content.BooleanType;
 import be.baur.sds.content.RangedType;
@@ -87,6 +88,7 @@ public abstract class Validator {
 			super(false, node, message);
 		}
 
+		@Override
 		public String toString() {
 			return this.getValue().path() + ": " + this.getMessage();
 		}
@@ -178,7 +180,7 @@ public abstract class Validator {
 		}
 		
 		// recursively validate the entire document against the selected type
-		if (! matchNodeType(node, nodeType, errors))
+		if (! matchType(node, nodeType, errors))
 			errors.add(error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName(nodeType)));
 		
 		return errors;
@@ -197,7 +199,7 @@ public abstract class Validator {
 	 * If there is a match, we assert that the node content is valid, or add an
 	 * error to the list otherwise. This does not apply to "any" type components.
 	 */
-	private static boolean matchNodeType(DataNode node, NodeType type, Errors errors) {
+	private static boolean matchType(DataNode node, Type type, Errors errors) {
 		
 		String nodename = node.getName();
 		boolean namesmatch = nodename.equals(type.getTypeName());
@@ -217,7 +219,7 @@ public abstract class Validator {
 				errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
 
 			if (! node.isLeaf()) // validate complex content if we have it
-				errors.add(validateComplexContent(node, type, errors));
+				errors.add(validateComplexContent(node, (NodeType) type, errors));
 
 			return true;
 		}
@@ -227,7 +229,7 @@ public abstract class Validator {
 			if (type.isLeaf()) // no complex content is expected
 				errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
 			else // validate complex content if we have it
-				errors.add(validateComplexContent(node, type, errors));
+				errors.add(validateComplexContent(node, (NodeType) type, errors));
 		} 
 		else if (! type.isLeaf()) // report missing complex content
 			errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
@@ -382,7 +384,7 @@ public abstract class Validator {
 				//System.out.println("validateComplex: matching " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
 				if (childcomp instanceof ModelGroup)
 					match = matchGroup(inode, childnode, (ModelGroup) childcomp, errors);
-				else match = matchNodeType(childnode, (NodeType) childcomp, errors);
+				else match = matchType(childnode, (Type) childcomp, errors);
 				
 				//System.out.println("validateComplex: " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
 				if (match) { // count match and get the next node (or none) to match against this component
@@ -448,7 +450,7 @@ public abstract class Validator {
 			//System.out.println("matchChoice: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 			if (component instanceof ModelGroup)
 				match = matchGroup(inode, node, (ModelGroup) component, errors);
-			else match = matchNodeType(node, (NodeType) component, errors);
+			else match = matchType(node, (Type) component, errors);
 			//System.out.println("matchChoice: " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + (match ? " == " : " <> ") + "component " + component.getName());
 			if (match) return true;  // return true at the first match
 		}
@@ -498,7 +500,7 @@ public abstract class Validator {
 				//System.out.println("matchSequence: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 				if (component instanceof ModelGroup)
 					match = matchGroup(inode, node, (ModelGroup) component, errors);
-				else match = matchNodeType(node, (NodeType) component, errors);
+				else match = matchType(node, (Type) component, errors);
 				
 				//System.out.println("matchSequence: " + node + (match ? " == " : " <> ") + "component " + component.getName());
 				if (match) { 
@@ -592,7 +594,7 @@ public abstract class Validator {
 					//System.out.println("matchUnordered: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 					if (component instanceof ModelGroup)
 						match = matchGroup(inode, node, (ModelGroup) component, errors);
-					else match = matchNodeType(node, (NodeType) component, errors);
+					else match = matchType(node, (Type) component, errors);
 	
 					/*
 					 * If we have a match, count it. If there are more nodes to be matched, resume
@@ -710,7 +712,7 @@ public abstract class Validator {
 
 
 	/** Returns the type name in single quotes, or "any node" for an unnamed {@code AnyType}. */
-	private static String quoteName(NodeType type) {
+	private static String quoteName(Type type) {
 		
 		return (type instanceof AnyType && !((AnyType) type).isNamed()) 
 			? "any node" : "'" + type.getTypeName() + "'";
@@ -718,7 +720,7 @@ public abstract class Validator {
 
 
 	/** Returns list of quoted type names in the format: 'a'[, 'b' ...] or 'z'. */
-	private static String quoteNames(List<NodeType> list) {
+	private static String quoteNames(List<Type> list) {
 		
 		String result = list.stream()
 			.map(n -> quoteName(n)).collect(Collectors.joining(","));
@@ -734,7 +736,7 @@ public abstract class Validator {
 	 * model groups). This recursive method returns a set of candidate types when
 	 * matching a particular component (type or model group).
 	 */
-	private static List<NodeType> expectedTypes(Component comp) {
+	private static List<Type> expectedTypes(Component comp) {
 
 		if (comp instanceof NodeType)  // ends recursion 
 			return Collections.singletonList( (NodeType) comp );
@@ -749,9 +751,9 @@ public abstract class Validator {
 		 * follow (in any order).
 		 */
 		if (group instanceof ChoiceGroup || group instanceof UnorderedGroup) {
-			List<NodeType> result = group.nodes().stream()
+			List<Type> result = group.nodes().stream()
 				.flatMap(n -> expectedTypes( (Component) n ).stream())
-				.collect(Collectors.toCollection(ArrayList<NodeType>::new));
+				.collect(Collectors.toCollection(ArrayList<Type>::new));
 			return result;
 		}
 		
@@ -762,9 +764,9 @@ public abstract class Validator {
 		 * mandatory component.
 		 */
 		if (group instanceof SequenceGroup) {
-			List<NodeType> result = new ArrayList<>();
+			List<Type> result = new ArrayList<>();
 			for (Node n : group.nodes()) {
-				for (NodeType t : expectedTypes((Component) n)) result.add(t); // correct?
+				for (Type t : expectedTypes((Component) n)) result.add(t); // correct?
 				if (((Component) n).minOccurs() > 0) break;
 			}
 			return result;
@@ -780,11 +782,11 @@ public abstract class Validator {
 	 * component, this method returns a set of candidate types based on a
 	 * <i>list</i> of (equally applicable) components.
 	 */
-	private static List<NodeType> expectedTypes(List<Component> list) {
+	private static List<Type> expectedTypes(List<Component> list) {
 		
-		List<NodeType> result = 
+		List<Type> result = 
 			list.stream().flatMap(n -> expectedTypes(n).stream())
-			.collect(Collectors.toCollection(ArrayList<NodeType>::new));
+			.collect(Collectors.toCollection(ArrayList<Type>::new));
 		return result;
 	}
 
@@ -794,7 +796,7 @@ public abstract class Validator {
 		
 		if (comp instanceof ModelGroup)
 			return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteNames(expectedTypes(comp)));
-		else return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((NodeType) comp));
+		else return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((Type) comp));
 	}
 
 

@@ -5,6 +5,7 @@
 - `Removed` be.baur.sds.common.Content.
 - `Changed` DataType.getContentType() to getType().
 - Added Schema.registerDataType(), and get/isDataType().
+- Added abstract Type, which AnyType and NodeType extend.
 
 ## Compatibility
 
