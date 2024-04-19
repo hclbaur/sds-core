@@ -3,6 +3,7 @@
 ## [2.4.0] - In development.
 
 - `Removed` be.baur.sds.common.Content.
+- `Removed` be.baur.sds.common.Date and DateTime.
 - `Changed` DataType.getContentType() to getType().
 - `Changed` Interval.from(String, Class) to from(String, Function).
 - Added Schema.registerDataType(), and get/isDataType().

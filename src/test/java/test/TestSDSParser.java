@@ -75,8 +75,8 @@ public final class TestSDSParser {
 		s.ts1("S18", "schema { node \"one\" { type \"integer\" value \"1\" } }", null);
 		s.ts1("S19", "schema { node \"pi\" { type \"decimal\" value \"3.14\" } }", null);
 		s.ts1("S20", "schema { node \"kelvin\" { type \"decimal\" value \"[-273.15..*)\" } }", null);
-		s.ts1("S21", "schema { node \"now\" { type \"datetime\" value \"2020-08-11T17:55:00+02:00\" } }", null);
-		s.ts1("S22", "schema { node \"today\" { type \"datetime\" value \"[2020-08-11T00:00:00+02:00..2020-08-12T00:00:00+02:00)\" } }", null);
+		s.ts1("S21", "schema { node \"now\" { type \"datetime\" value \"2020-08-11T17:55:00+02:00\" } }", "schema { node \"now\" { type \"datetime\" value \"2020-08-11T17:55+02:00\" } }");
+		s.ts1("S22", "schema { node \"today\" { type \"datetime\" value \"[2020-08-11T00:00:00+02:00..2020-08-12T00:00:00+02:00)\" } }", "schema { node \"today\" { type \"datetime\" value \"[2020-08-11T00:00+02:00..2020-08-12T00:00+02:00)\" } }");
 		s.ts1("S23", "schema { node \"today\" { type \"date\" value \"2020-08-11\" } }", null);
 		s.ts1("S24", "schema { node \"august\" { type \"date\" value \"[2020-08-01..2020-09-01)\" } }", null);
 		s.ts1("S25", "schema { node { type \"any\" } }", null);

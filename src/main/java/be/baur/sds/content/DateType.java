@@ -1,20 +1,23 @@
 package be.baur.sds.content;
 
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
-
-import be.baur.sds.common.Date;
 
 /**
  * A <code>DateType</code> represents an SDA node with temporal content (a
  * calendar date without time zone).
  */
-public final class DateType extends RangedType<Date> {
+public final class DateType extends RangedType<LocalDate> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "date";
 	
 	/** A function that constructs a date value from a string. */
-	public static final Function<String, Date> VALUE_CONSTRUCTOR = Date::new;	
+	public static final Function<String, LocalDate> VALUE_CONSTRUCTOR = s -> {
+		return LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE);
+	};
 
 
 	/**
@@ -41,19 +44,19 @@ public final class DateType extends RangedType<Date> {
 	
 
 	@Override
-	public Function<String, Date> valueConstructor() {
+	public Function<String, LocalDate> valueConstructor() {
 		return VALUE_CONSTRUCTOR;
 	}
 	
 	
 	/**
-	 * Returns a Date if the supplied string is within the lexical space of this type.
+	 * Returns a LocalDate if the supplied string is within the lexical space of this type.
 	 * 
 	 * @param s the string to be converted
-	 * @return a Date
+	 * @return a LocalDate
 	 * @throws DateTimeException if conversion is not possible
 	 */
-	public static Date valueOf(String s) {
+	public static LocalDate valueOf(String s) {
 		return VALUE_CONSTRUCTOR.apply(s);
 	}
 }

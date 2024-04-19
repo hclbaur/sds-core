@@ -1,21 +1,23 @@
 package be.baur.sds.content;
 
 import java.time.DateTimeException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
-
-import be.baur.sds.common.DateTime;
 
 /**
  * A <code>DateTimeType</code> represents an SDA node with temporal content
  * (date, time and time zone).
  */
-public final class DateTimeType extends RangedType<DateTime> {
+public final class DateTimeType extends RangedType<ZonedDateTime> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "datetime";
 
 	/** A function that constructs a date-time value from a string. */
-	public static final Function<String, DateTime> VALUE_CONSTRUCTOR = DateTime::new;
+	public static final Function<String, ZonedDateTime> VALUE_CONSTRUCTOR = s -> {
+		return ZonedDateTime.parse(s, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+	};
 
 	/**
 	 * Creates the type with the specified name.
@@ -41,19 +43,19 @@ public final class DateTimeType extends RangedType<DateTime> {
 	
 
 	@Override
-	public Function<String, DateTime> valueConstructor() {
+	public Function<String, ZonedDateTime> valueConstructor() {
 		return VALUE_CONSTRUCTOR;
 	}
 	
 	
 	/**
-	 * Returns a DateTime if the supplied string is within the lexical space of this type.
+	 * Returns a ZonedDateTime if the supplied string is within the lexical space of this type.
 	 * 
 	 * @param s the string to be converted
-	 * @return a DateTime
+	 * @return a ZonedDateTime
 	 * @throws DateTimeException if conversion is not possible
 	 */
-	public static DateTime valueOf(String s) {
+	public static ZonedDateTime valueOf(String s) {
 		return VALUE_CONSTRUCTOR.apply(s);
 	}
 }
