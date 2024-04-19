@@ -7,7 +7,11 @@ import java.util.function.Function;
  */
 public final class DecimalType extends RangedType<Double> {
 
+	/** The SDS name of this data type. */
 	public static final String NAME = "decimal";
+	
+	/** A function that constructs a decimal value from a string. */
+	public static final Function<String, Double> VALUE_CONSTRUCTOR = Double::new;
 
 
 	/**
@@ -27,14 +31,26 @@ public final class DecimalType extends RangedType<Double> {
 	}
 
 
-	@Override
-	public Class<Double> valueClass() {
-		return Double.class;
-	}
+//	@Override
+//	public Class<Double> valueClass() {
+//		return Double.class;
+//	}
 	
 
 	@Override
 	public Function<String, Double> valueConstructor() {
 		return Double::new;
+	}
+	
+	
+	/**
+	 * Returns a Double if the supplied string is within the lexical space of this type.
+	 * 
+	 * @param s the string to be converted
+	 * @return a Double
+	 * @throws NumberFormatException if conversion is not possible
+	 */
+	public static Double valueOf(String s) {
+		return VALUE_CONSTRUCTOR.apply(s);
 	}
 }

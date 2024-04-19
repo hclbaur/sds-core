@@ -1,5 +1,6 @@
 package be.baur.sds.content;
 
+import java.time.DateTimeException;
 import java.util.function.Function;
 
 import be.baur.sds.common.DateTime;
@@ -10,8 +11,11 @@ import be.baur.sds.common.DateTime;
  */
 public final class DateTimeType extends RangedType<DateTime> {
 
+	/** The SDS name of this data type. */
 	public static final String NAME = "datetime";
 
+	/** A function that constructs a date-time value from a string. */
+	public static final Function<String, DateTime> VALUE_CONSTRUCTOR = DateTime::new;
 
 	/**
 	 * Creates the type with the specified name.
@@ -30,14 +34,26 @@ public final class DateTimeType extends RangedType<DateTime> {
 	}
 
 
-	@Override
-	public Class<DateTime> valueClass() {
-		return DateTime.class;
-	}
+//	@Override
+//	public Class<DateTime> valueClass() {
+//		return DateTime.class;
+//	}
 	
 
 	@Override
 	public Function<String, DateTime> valueConstructor() {
-		return DateTime::new;
+		return VALUE_CONSTRUCTOR;
+	}
+	
+	
+	/**
+	 * Returns a DateTime if the supplied string is within the lexical space of this type.
+	 * 
+	 * @param s the string to be converted
+	 * @return a DateTime
+	 * @throws DateTimeException if conversion is not possible
+	 */
+	public static DateTime valueOf(String s) {
+		return VALUE_CONSTRUCTOR.apply(s);
 	}
 }

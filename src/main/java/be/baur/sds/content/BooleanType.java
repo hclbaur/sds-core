@@ -8,6 +8,7 @@ import be.baur.sds.DataType;
  */
 public final class BooleanType extends DataType {
 
+	/** The SDS name of this data type. */
 	public static final String NAME = "boolean";
 	public static final String TRUE = "true";
 	public static final String FALSE = "false";

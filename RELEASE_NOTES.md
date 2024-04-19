@@ -4,8 +4,10 @@
 
 - `Removed` be.baur.sds.common.Content.
 - `Changed` DataType.getContentType() to getType().
+- `Changed` Interval.from(String, Class) to from(String, Function).
 - Added Schema.registerDataType(), and get/isDataType().
 - Added abstract Type, which AnyType and NodeType extend.
+- Added static valueOf() methods for native RangedTypes.
 
 ## Compatibility
 

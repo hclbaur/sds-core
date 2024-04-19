@@ -54,7 +54,19 @@ public abstract class RangedType <T extends Comparable<? super T>> extends DataT
 	 * 
 	 * @return a Class
 	 */
-	public abstract Class<T> valueClass();
+	//public abstract Class<T> valueClass();
+	
+	
+	/**
+	 * Creates an interval from a string in interval notation.
+	 * 
+	 * @param interval an interval string, not null or empty
+	 * @return an Interval
+	 * @throws IllegalArgumentException if the specified interval is invalid
+	 */
+//	public Interval<T> intervalOf(String interval) {
+//		return Interval.from(interval, valueConstructor());
+//	}
 	
 	
 	/**

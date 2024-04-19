@@ -1,5 +1,7 @@
 package be.baur.sds.common;
 
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,19 +101,26 @@ public final class Interval <T extends Comparable> {
 		return new Interval<T>(min, max, type);
 	}
 
-
+	
 	/**
-	 * Creates an interval from a string in interval notation, for a specific type
-	 * of value.
-	 * 
+	 * Creates an interval from a string in interval notation. This method requires
+	 * a constructor Function that accepts a string and returns a value of the type
+	 * appropriate for this interval. For example:
+	 * <pre>
+	 * Interval.from("[0..42]", IntegerType.VALUE_CONSTRUCTOR);
+	 * </pre>
 	 * @param <T>      a value type
-	 * @param interval a valid interval notation, not null or empty
-	 * @param cls      the value class, not null
+	 * @param interval an interval string, not null or empty
+	 * @param func     a constructor Function accepting a string
 	 * @return an Interval
-	 * @throws IllegalArgumentException for an invalid interval
+	 * @throws IllegalArgumentException if the specified interval is invalid
 	 */
-	public static <T extends Comparable> Interval<T> from(String interval, Class<T> cls) {
-		
+	public static <T extends Comparable> Interval<T> from(String interval, Function<String, T> func) {
+		/*
+		 * This function used to accept a class and use reflection to create a value from a string:
+		 * value = class.getConstructor(String.class).newInstance(string);
+		 * Now it uses a functional interface, so it no longer depends on a string constructor.
+		 */
 		T min = null, max = null; // null means unbounded, or * in interval notation
 		
 		interval = (interval == null) ? "" : interval.trim();
@@ -122,10 +131,10 @@ public final class Interval <T extends Comparable> {
 
 		if (! matcher.matches()) { // no match; could be a degenerate interval
 			
-			if (interval.contains(".."))
+			if (interval.contains("..")) // but has dots, so must be invalid
 				throw new IllegalArgumentException("invalid interval notation");
 			try {
-				min = cls.getConstructor(String.class).newInstance(interval);
+				min = func.apply(interval);
 			} catch (Exception e) {
 				throw new IllegalArgumentException("invalid limiting value", e);
 			}
@@ -139,7 +148,7 @@ public final class Interval <T extends Comparable> {
 		String lowerlimit = matcher.group(1).trim();
 		try {
 			if (! lowerlimit.equals("*")) 
-				min = cls.getConstructor(String.class).newInstance(lowerlimit);
+				min = func.apply(lowerlimit);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("invalid lower limit", e);
 		}
@@ -147,7 +156,7 @@ public final class Interval <T extends Comparable> {
 		String upperlimit = matcher.group(2).trim();
 		try {
 			if (! upperlimit.equals("*")) 
-				max = cls.getConstructor(String.class).newInstance(upperlimit);
+				max = func.apply(upperlimit);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("invalid upper limit", e);
 		}
@@ -166,8 +175,10 @@ public final class Interval <T extends Comparable> {
 	 * @param value the value to be evaluated, not null
 	 * @return -1, 0 or 1
 	 */
-	@SuppressWarnings({ "unchecked", "hiding" }) // add illegal argument exception later
+	@SuppressWarnings({ "unchecked", "hiding" })
 	public <T extends Comparable> int contains(T value) {
+		
+		Objects.requireNonNull(value, "value must not be null");
 		
 		int comp;
 		if (min != null) {

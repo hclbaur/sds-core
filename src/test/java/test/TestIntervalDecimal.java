@@ -1,6 +1,7 @@
 package test;
 
 import be.baur.sds.common.Interval;
+import be.baur.sds.content.DecimalType;
 
 public final class TestIntervalDecimal {
 
@@ -8,13 +9,13 @@ public final class TestIntervalDecimal {
 
 		Test t1 = new Test(s -> {
 			try {
-				return Interval.from(s, Double.class).toString();
+				return Interval.from(s, DecimalType.VALUE_CONSTRUCTOR).toString();
 			} catch (Exception e) {	return e.getMessage(); }
 		});
 		
 		Test t2 = new Test( (s1,s2) -> {
 			try {
-				return Interval.from(s2, Double.class).contains(new Double(s1)) + "";
+				return Interval.from(s2, DecimalType.VALUE_CONSTRUCTOR).contains(DecimalType.valueOf(s1))+"";
 			} catch (Exception e) { return e.getMessage(); }
 		});
 
@@ -23,8 +24,8 @@ public final class TestIntervalDecimal {
 		t1.ts1("S01", "-.50", "-0.5");
 		t1.ts1("S02", "03.141", "3.141");
 		t1.ts1("S03", "99.90e-09", "9.99E-8");
-		t1.ts1("S04", "[-1.1..1]", "[-1.1..1.0]");
-		t1.ts1("S05", "(-2.2..2)", "(-2.2..2.0)");
+		t1.ts1("S04", "[-1.1 ..1]", "[-1.1..1.0]");
+		t1.ts1("S05", "(-2.2.. 2)", "(-2.2..2.0)");
 		t1.ts1("S06", "[3.3..*)", "[3.3..*)");
 		t1.ts1("S07", "(*..-3.3]", "(*..-3.3]");
 		t1.ts1("S08", "[*..*]", "(*..*)");

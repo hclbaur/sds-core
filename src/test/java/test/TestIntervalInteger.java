@@ -1,6 +1,7 @@
 package test;
 
 import be.baur.sds.common.Interval;
+import be.baur.sds.content.IntegerType;
 
 public final class TestIntervalInteger {
 
@@ -8,13 +9,13 @@ public final class TestIntervalInteger {
 
 		Test t1 = new Test(s -> {
 			try {
-				return Interval.from(s, Integer.class).toString();
+				return Interval.from(s, IntegerType.VALUE_CONSTRUCTOR).toString();
 			} catch (Exception e) {	return e.getMessage(); }
 		});
 		
 		Test t2 = new Test( (s1,s2) -> {
 			try {
-				return Interval.from(s2, Integer.class).contains(new Integer(s1)) + "";
+				return Interval.from(s2, IntegerType.VALUE_CONSTRUCTOR).contains(IntegerType.valueOf(s1))+"";
 			} catch (Exception e) { return e.getMessage(); }
 		});
 		
@@ -22,8 +23,8 @@ public final class TestIntervalInteger {
 		t1.ts1("S01", "00", "0");
 		t1.ts1("S02", "-9", "-9");
 		t1.ts1("S03", "99", "99");
-		t1.ts1("S04", "[-1..1]", "[-1..1]");
-		t1.ts1("S05", "(-2..2)", "(-2..2)");
+		t1.ts1("S04", "[-1 ..1]", "[-1..1]");
+		t1.ts1("S05", "(-2.. 2)", "(-2..2)");
 		t1.ts1("S06", "[3..*)", "[3..*)");
 		t1.ts1("S07", "(*..-3]", "(*..-3]");
 		t1.ts1("S08", "[*..*]", "(*..*)");

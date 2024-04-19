@@ -7,6 +7,7 @@ package be.baur.sds.content;
  */
 public final class StringType extends AbstractStringType {
 
+	/** The SDS name of this data type. */
 	public static final String NAME = "string";
 
 

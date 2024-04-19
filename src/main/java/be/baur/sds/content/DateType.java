@@ -10,7 +10,11 @@ import be.baur.sds.common.Date;
  */
 public final class DateType extends RangedType<Date> {
 
+	/** The SDS name of this data type. */
 	public static final String NAME = "date";
+	
+	/** A function that constructs a date value from a string. */
+	public static final Function<String, Date> VALUE_CONSTRUCTOR = Date::new;	
 
 
 	/**
@@ -30,14 +34,26 @@ public final class DateType extends RangedType<Date> {
 	}
 
 
-	@Override
-	public Class<Date> valueClass() {
-		return Date.class;
-	}
+//	@Override
+//	public Class<Date> valueClass() {
+//		return Date.class;
+//	}
 	
 
 	@Override
 	public Function<String, Date> valueConstructor() {
-		return Date::new;
+		return VALUE_CONSTRUCTOR;
+	}
+	
+	
+	/**
+	 * Returns a Date if the supplied string is within the lexical space of this type.
+	 * 
+	 * @param s the string to be converted
+	 * @return a Date
+	 * @throws DateTimeException if conversion is not possible
+	 */
+	public static Date valueOf(String s) {
+		return VALUE_CONSTRUCTOR.apply(s);
 	}
 }
