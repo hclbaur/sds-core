@@ -86,13 +86,13 @@ public final class Schema extends AbstractNode {
 
 	// Register native SDS data types.
 	static {
-		registerDataType(StringType.NAME, name -> { return new StringType(name); } );
-		registerDataType(BinaryType.NAME, name -> { return new BinaryType(name); } );
-		registerDataType(IntegerType.NAME, name -> { return new IntegerType(name); } );
-		registerDataType(DecimalType.NAME, name -> { return new DecimalType(name); } );
-		registerDataType(DateType.NAME, name -> { return new DateType(name); } );
-		registerDataType(DateTimeType.NAME, name -> { return new DateTimeType(name); } );
-		registerDataType(BooleanType.NAME, name -> { return new BooleanType(name); } );
+		registerDataType(StringType.NAME, StringType::new );
+		registerDataType(BinaryType.NAME, BinaryType::new );
+		registerDataType(IntegerType.NAME, IntegerType::new );
+		registerDataType(DecimalType.NAME, DecimalType::new );
+		registerDataType(DateType.NAME, DateType::new );
+		registerDataType(DateTimeType.NAME, DateTimeType::new );
+		registerDataType(BooleanType.NAME, BooleanType::new );
 	}
 
 

@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
 /**
- * A <code>DateTimeType</code> represents an SDA node with temporal content
+ * A <code>DateTimeType</code> defines an SDA node with temporal content
  * (date, time and time zone).
  */
 public final class DateTimeType extends RangedType<ZonedDateTime> {

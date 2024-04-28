@@ -1,7 +1,7 @@
 addressbook {
 	owner "0" {
 		person "Harold" { 
-			lastname "Baur" birthdate "1968-02-28" 
+			lastname "Baur" birthday "--02-28" 
 			about { nickname "Bo" }
 		}
 		address "home" { 

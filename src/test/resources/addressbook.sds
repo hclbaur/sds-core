@@ -2,7 +2,7 @@ schema {
 	node "person" {
 		type "string" nullable "false"
 		node "lastname" { type "string" occurs "0..1" }
-		node "birthdate" { type "date" occurs "0..1" }
+		node "birthday" { type "gmonthday" occurs "0..1" }
 		node "about" {
 			occurs "0..1"
 			node { type "any" occurs "1..*" }

@@ -3,7 +3,7 @@ package be.baur.sds.content;
 import java.util.function.Function;
 
 /**
- * A <code>IntegerType</code> represents an SDA node with integer content.
+ * A <code>IntegerType</code> defines an SDA node with integer content.
  */
 public final class IntegerType extends RangedType<Integer> {
 

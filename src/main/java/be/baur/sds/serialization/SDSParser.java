@@ -311,15 +311,15 @@ public final class SDSParser implements Parser<Schema> {
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
 		
-		// References should not have attributes other than type and occurs.
-		List<Node> alist = sds.find(n -> n.isLeaf() && ! ( n.getName().equals(Attribute.TYPE.tag) 
-			||  n.getName().equals(Attribute.OCCURS.tag) ));
-		
-		if (! alist.isEmpty())
-			throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
+//		// References should not have attributes other than type and occurs.
+//		List<Node> alist = sds.find(n -> n.isLeaf() && ! ( n.getName().equals(Attribute.TYPE.tag) 
+//			||  n.getName().equals(Attribute.OCCURS.tag) ));
+//		
+//		if (! alist.isEmpty())
+//			throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
 		
 		Node root = sds.root();
-		if (root.equals(sds)) // if we are the root ourself, we bail out right away.
+		if (root.equals(sds)) // if we are the root ourself, we bail out right away
 			throw exception(type, TYPE_IS_UNKNOWN, type.getValue());
 		
 		// search all node declarations in the schema root for the referenced type
@@ -329,6 +329,13 @@ public final class SDSParser implements Parser<Schema> {
 		}
 		if (refNode == null || refNode.equals(sds)) // if we found nothing or ourself, we raise an error.
 			throw exception(type, TYPE_IS_UNKNOWN, type.getValue());
+		
+		// the reference is valid, but it should not have attributes other than type and occurs
+		List<Node> alist = sds.find(n -> n.isLeaf() && ! ( n.getName().equals(Attribute.TYPE.tag) 
+			||  n.getName().equals(Attribute.OCCURS.tag) ));
+		
+		if (! alist.isEmpty())
+			throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
 		
 		/*
 		 * If we get here, we can parse the referenced type into a new component, but

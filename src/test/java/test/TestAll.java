@@ -19,6 +19,9 @@ public final class TestAll {
 		System.out.print("\nDateIV      : ");
 		test.TestIntervalDate.main(args);
 		
+		System.out.print("\nGMonthDayIV : ");
+		test.TestIntervalGMonthDay.main(args);
+		
 		System.out.print("\nSDSParser   : ");
 		test.TestSDSParser.main(args);
 		

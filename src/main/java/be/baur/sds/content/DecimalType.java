@@ -3,7 +3,7 @@ package be.baur.sds.content;
 import java.util.function.Function;
 
 /**
- * A <code>DecimalType</code> represents an SDA node with decimal content.
+ * A <code>DecimalType</code> defines an SDA node with decimal content.
  */
 public final class DecimalType extends RangedType<Double> {
 

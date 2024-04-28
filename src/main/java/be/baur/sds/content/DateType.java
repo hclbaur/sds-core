@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
 /**
- * A <code>DateType</code> represents an SDA node with temporal content (a
+ * A <code>DateType</code> defines an SDA node with temporal content (a
  * calendar date without time zone).
  */
 public final class DateType extends RangedType<LocalDate> {

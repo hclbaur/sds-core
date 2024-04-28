@@ -9,6 +9,7 @@
 - Added Schema.registerDataType(), and get/isDataType().
 - Added abstract Type, which AnyType and NodeType extend.
 - Added static valueOf() methods for native RangedTypes.
+- Added GMonthDay custom type example and tests.
 
 ## Compatibility
 

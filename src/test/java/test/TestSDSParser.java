@@ -11,6 +11,7 @@ import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.Schema;
 import be.baur.sds.serialization.SDSParser;
+import samples.types.GMonthDayType;
 
 public final class TestSDSParser {
 
@@ -25,6 +26,8 @@ public final class TestSDSParser {
 			System.out.println("\nEXPECTED: " + sds);
 			System.out.println("RETURNED: " + schema);
 		}
+		
+		Schema.registerDataType(GMonthDayType.NAME, GMonthDayType::new);  // register custom type
 		
 		System.out.print("addressbook ");
 		input = TestSDSParser.class.getResourceAsStream("/addressbook.sds");
@@ -83,6 +86,10 @@ public final class TestSDSParser {
 		s.ts1("S26", "schema { node \"anything\" { type \"any\" } }", null);
 		s.ts1("S27", "schema { node \"anything\" { node { type \"any\" } } }", null);
 		s.ts1("S28", "schema { node \"x\" { type \"string\" node \"y\" { type \"string\" } } }", null);
+		
+		// test custom type gmonthday
+		s.ts1("S29", "schema { node \"today\" { type \"gmonthday\" value \"--08-11\" } }", null);
+		s.ts1("S30", "schema { node \"august\" { type \"gmonthday\" value \"[--08-01..--09-01)\" } }", null);
 		
 		/* test invalid SDS */
 		System.out.print("\n              ");
