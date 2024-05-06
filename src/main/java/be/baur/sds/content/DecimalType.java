@@ -39,7 +39,7 @@ public final class DecimalType extends RangedType<Double> {
 
 	@Override
 	public Function<String, Double> valueConstructor() {
-		return Double::new;
+		return VALUE_CONSTRUCTOR;
 	}
 	
 	

@@ -50,8 +50,8 @@ public final class Contacts {
 		t.ts1("F16", e.next() + "", "/contacts/contact[19]/phone: value '066-01234567' has length 12 but 11 is the maximum");
 		t.ts1("F17", e.next() + "", "/contacts/contact[20]/birthdate: value '1970-02-29' is invalid for type date: Text '1970-02-29' could not be parsed: Invalid date 'February 29' as '1970' is not a leap year");
 		t.ts1("F18", e.next() + "", "/contacts/contact[21]/birthdate: value '1870-02-28' subceeds the minimum of 1900-01-01");
-		t.ts1("F19", e.next() + "", "/contacts/contact[22]/star: value 'yes' is not a valid boolean");
-		t.ts1("F20", e.next() + "", "/contacts/contact[23]/icon: 'icon' has an invalid binary value: Input byte[] should at least have 2 bytes for base64 bytes");
+		t.ts1("F19", e.next() + "", "/contacts/contact[22]/star: value 'yes' is invalid for type boolean: either true or false is expected");
+		t.ts1("F20", e.next() + "", "/contacts/contact[23]/icon: value '*' is invalid for type binary: Input byte[] should at least have 2 bytes for base64 bytes");
 		t.ts1("F21", e.next() + "", "/contacts/contact[24]: value '24' is not inclusive");
 		t.ts1("F22", e.next() + "", "/contacts/contact[25]: value '0' is not inclusive");
 		t.ts1("F23", e.next() + "", "/contacts/contact[26]: value 'x' is invalid for type integer: For input string: \"x\"");

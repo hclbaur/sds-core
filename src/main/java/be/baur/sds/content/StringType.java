@@ -1,14 +1,21 @@
 package be.baur.sds.content;
 
+import java.util.function.Function;
+
 /**
  * A <code>StringType</code> defines an SDA node with string content. When
  * setting an allowed length interval, note that length is counted in number of
  * characters.
  */
-public final class StringType extends AbstractStringType {
+public final class StringType extends AbstractStringType<String> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "string";
+
+	/** A function that constructs an string value from a string. */
+	public static final Function<String, String> VALUE_CONSTRUCTOR = s -> {
+		return s; // strings are immutable so just return the original
+	};
 
 
 	/**
@@ -18,23 +25,24 @@ public final class StringType extends AbstractStringType {
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	public StringType(String name) {
-		super(name);
-	}
-	
-	
-	/**
-	 * @param str a String
-	 * @return a String or null
-	 */
-	//@Override
-	public String valueOf(String str) {
-		// any string that is not null is allowed
-		return str; // may be null
+		super(name); //setNullable(true);
 	}
 
 
 	@Override
 	public String getType() {
 		return NAME;
+	}
+	
+	
+	@Override
+	public Function<String, String> valueConstructor() {
+		return VALUE_CONSTRUCTOR;
+	}
+	
+	
+	@Override
+	public int valueLength(String value) {
+		return value.length();
 	}
 }

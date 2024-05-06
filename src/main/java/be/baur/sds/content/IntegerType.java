@@ -13,6 +13,7 @@ public final class IntegerType extends RangedType<Integer> {
 	/** A function that constructs an integer value from a string. */
 	public static final Function<String, Integer> VALUE_CONSTRUCTOR = Integer::new;
 
+
 	/**
 	 * Creates the type with the specified name.
 	 * 
@@ -38,7 +39,7 @@ public final class IntegerType extends RangedType<Integer> {
 
 	@Override
 	public Function<String, Integer> valueConstructor() {
-		return Integer::new;
+		return VALUE_CONSTRUCTOR;
 	}
 	
 	

@@ -15,8 +15,8 @@ import be.baur.sds.common.Interval;
 public abstract class RangedType <T extends Comparable<? super T>> extends DataType {
 
 	private Interval<?> range = Interval.MIN_TO_MAX; // default is to allow any value
-	
-	
+
+
 	/**
 	 * Creates the type with the specified name.
 	 * 

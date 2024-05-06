@@ -25,21 +25,22 @@ public final class BooleanType extends DataType {
 	}
 
 
-	/**
-	 * @param str a String representing a boolean value
-	 * @return a Boolean or null
-	 */
-	//@Override
-	public Boolean valueOf(String str) {
-		// only "true" or "false" is allowed in SDS
-		if (str != null && (str.equals(TRUE) || str.equals(FALSE)))
-			return Boolean.valueOf(str);
-		return null;
-	}
-
-
 	@Override
 	public String getType() {
 		return NAME;
+	}
+	
+	
+	/**
+	 * Returns a Boolean if the supplied string is within the lexical space of this type.
+	 * 
+	 * @param s the string to be converted
+	 * @return a Boolean
+	 * @throws IllegalArgumentException if conversion is not possible
+	 */
+	public static Boolean valueOf(String s) {
+		if (s != null && (s.equals(TRUE) || s.equals(FALSE)))
+			return Boolean.valueOf(s);
+		throw new IllegalArgumentException("either true or false is expected");
 	}
 }

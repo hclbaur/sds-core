@@ -1,7 +1,6 @@
 package be.baur.sds.validation;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +21,6 @@ import be.baur.sds.Type;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.content.AbstractStringType;
-import be.baur.sds.content.BinaryType;
 import be.baur.sds.content.BooleanType;
 import be.baur.sds.content.RangedType;
 import be.baur.sds.model.ChoiceGroup;
@@ -70,8 +68,6 @@ public abstract class Validator {
 	private static final String INVALID_VALUE_FOR_TYPE = "value '%s' is invalid for type %s: %s";
 	private static final String EMPTY_VALUE_NOT_ALLOWED = "empty value not allowed; '%s' is not nullable";
 	private static final String VALUE_DOES_NOT_MATCH= "value '%s' does not match pattern '%s'";
-	private static final String INVALID_BINARY_VALUE = "'%s' has an invalid binary value: %s";
-	private static final String INVALID_BOOLEAN_VALUE = "value '%s' is not a valid boolean";
 	private static final String LENGTH_SUBCEEDS_MIN = "value '%s' has length %d but %d is the minimum";
 	private static final String LENGTH_EXCEEDS_MAX = "value '%s' has length %d but %d is the maximum";
 	private static final String VALUE_SUBCEEDS_MIN = "value '%s' subceeds the minimum of %s";
@@ -254,7 +250,7 @@ public abstract class Validator {
 			return error(node, EMPTY_VALUE_NOT_ALLOWED, node.getName());
 		
 		if (type instanceof AbstractStringType) {
-			Error error = validateStringValue(node, (AbstractStringType) type);
+			Error error = validateStringValue(node, (AbstractStringType<?>) type);
 			if (error != null) return error;
 		}
 		
@@ -264,8 +260,11 @@ public abstract class Validator {
 		}
 		
 		if (type instanceof BooleanType) {
-			if (((BooleanType)type).valueOf(value) == null)
-				return error(node, INVALID_BOOLEAN_VALUE, value);
+			try {
+				BooleanType.valueOf(value);
+			} catch (Exception e) {
+				return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
+			}
 		}
 			
 		Pattern pattern = type.getPattern();
@@ -279,21 +278,18 @@ public abstract class Validator {
 	 * Any string is by definition a valid string representation of a string type.
 	 * However, this may not be true for a binary string type. Also, we check the
 	 * length (in characters for a string and bytes for a binary).
+	 * @param <T>
 	 */
-	private static Error validateStringValue(DataNode node, AbstractStringType type) {
+	private static <T> Error validateStringValue(DataNode node, AbstractStringType<T> type) {
 		
 		int length;
-
-		// The easiest way (probably not the most efficient) to validate a binary string
-		// is to decode it - and we need to determine its length anyway.
-		if (type instanceof BinaryType) {
-			try {
-				length = Base64.getDecoder().decode(node.getValue()).length;
-			} catch (IllegalArgumentException e) {
-				return error(node, INVALID_BINARY_VALUE, node.getName(), e.getMessage());
-			}
+		
+		try {
+			T value = type.valueConstructor().apply(node.getValue());
+			length = type.valueLength(value);
+		} catch (Exception e) {
+			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
 		}
-		else length = node.getValue().length();   // otherwise it is a regular string
 		
 		// Check if the length is within the acceptable range.
 		NaturalInterval range = type.getLength();

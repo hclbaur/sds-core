@@ -135,7 +135,7 @@ public class NodeType extends Type {
 			final boolean stringType = (this instanceof AbstractStringType);
 
 			if (stringType) {
-				AbstractStringType t = (AbstractStringType) this;
+				AbstractStringType<?> t = (AbstractStringType<?>) this;
 				if (t.getLength().min != 0 || t.getLength().max != Integer.MAX_VALUE)
 					node.add(new DataNode(Attribute.LENGTH.tag, t.getLength().toString()));
 			}
