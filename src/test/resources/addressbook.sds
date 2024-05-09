@@ -2,7 +2,7 @@ schema {
 	node "person" {
 		type "string" nullable "false"
 		node "lastname" { type "string" occurs "0..1" }
-		node "birthday" { type "gmonthday" occurs "0..1" }
+		node "birthday" { type "gMonthDay" occurs "0..1" }
 		node "about" {
 			occurs "0..1"
 			node { type "any" occurs "1..*" }
@@ -32,6 +32,7 @@ schema {
 			node "phone" { type "string" occurs "1..2" length "11" pattern "\\d{2,4}-\\d{6,8}" }
 			node "email" { type "string" occurs "0..2" }
 		}
+		node "bank" { type "IBAN" occurs "0..1" length "18" }
 	}
 	node "addressbook" {
 		node "owner" { type "contact" }

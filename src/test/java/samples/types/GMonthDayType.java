@@ -13,7 +13,7 @@ import be.baur.sds.content.RangedType;
 public final class GMonthDayType extends RangedType<GMonthDay> {
 
 	/** The SDS name of this data type. */
-	public static final String NAME = "gmonthday";
+	public static final String NAME = "gMonthDay";
 
 	/** A function that constructs a gMonthDay value from a string. */
 	public static final Function<String, GMonthDay> VALUE_CONSTRUCTOR = s -> {

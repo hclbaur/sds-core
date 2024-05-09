@@ -64,7 +64,7 @@ public abstract class AbstractStringType <T> extends DataType {
 	/**
 	 * Returns the length of a value appropriate for this data type. Unless
 	 * specified otherwise, this is the number of Unicode code units in the
-	 * specified value.
+	 * supplied value.
 	 * 
 	 * @return a non-negative integer
 	 */

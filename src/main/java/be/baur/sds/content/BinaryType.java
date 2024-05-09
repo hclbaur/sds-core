@@ -43,7 +43,7 @@ public final class BinaryType extends AbstractStringType<byte[]> {
 	
 	
 	/**
-	 * The number of bytes encoded by the specified value.
+	 * Returns the length of the supplied binary in bytes.
 	 */
 	@Override
 	public int valueLength(byte[] value) {

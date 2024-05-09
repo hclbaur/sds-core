@@ -12,10 +12,15 @@ import be.baur.sda.SDA;
 import be.baur.sds.Schema;
 import be.baur.sds.serialization.SDSParser;
 import samples.types.GMonthDayType;
+import samples.types.IBANType;
 
 public final class TestSDSParser {
 
 	public static void main(String[] args) throws Exception {
+		
+		/* register custom types */
+		Schema.registerDataType(IBANType.NAME, IBANType::new); 
+		Schema.registerDataType(GMonthDayType.NAME, GMonthDayType::new);
 		
 		/* test parsing SDS from files and formatting back to SDS */
 		System.out.print("contacts ");
@@ -26,8 +31,6 @@ public final class TestSDSParser {
 			System.out.println("\nEXPECTED: " + sds);
 			System.out.println("RETURNED: " + schema);
 		}
-		
-		Schema.registerDataType(GMonthDayType.NAME, GMonthDayType::new);  // register custom type
 		
 		System.out.print("addressbook ");
 		input = TestSDSParser.class.getResourceAsStream("/addressbook.sds");
@@ -66,30 +69,31 @@ public final class TestSDSParser {
 		s.ts1("S05", "schema { node \"phone\" { type \"string\" } node { type \"phone\" } }", null);
 		s.ts1("S06", "schema { node \"phone\" { type \"string\" } node \"mobile\" { type \"phone\" } }", null);
 
-		s.ts1("S09", "schema { node \"g\" { group { node \"x\" { type \"string\" } node \"y\" { type \"string\" } } } }", null);
-		s.ts1("S10", "schema { node \"c\" { choice { node \"x\" { type \"string\" } node \"y\" { type \"string\" } } } }", null);
-		s.ts1("S11", "schema { node \"u\" { unordered { node \"x\" { type \"string\" } node \"y\" { type \"string\" } } } }", null);
-		s.ts1("S12", "schema { node \"ean13\" { type \"string\" length \"13\" } }", null);
-		s.ts1("S13", "schema { node \"image\" { type \"binary\" length \"0..1024\" } }", null);
-		s.ts1("S14", "schema { node \"bool\" { type \"boolean\" nullable \"true\" } }", null);
-		s.ts1("S15", "schema { node \"id\" { type \"string\" nullable \"false\" } }", null);
-		s.ts1("S16", "schema { node \"id\" { type \"string\" pattern \"[^\\\\s]\" } }", null);
-		s.ts1("S17", "schema { node \"bit\" { type \"integer\" value \"[0..1]\" } }", null);
-		s.ts1("S18", "schema { node \"one\" { type \"integer\" value \"1\" } }", null);
-		s.ts1("S19", "schema { node \"pi\" { type \"decimal\" value \"3.14\" } }", null);
-		s.ts1("S20", "schema { node \"kelvin\" { type \"decimal\" value \"[-273.15..*)\" } }", null);
-		s.ts1("S21", "schema { node \"now\" { type \"datetime\" value \"2020-08-11T17:55:00+02:00\" } }", "schema { node \"now\" { type \"datetime\" value \"2020-08-11T17:55+02:00\" } }");
-		s.ts1("S22", "schema { node \"today\" { type \"datetime\" value \"[2020-08-11T00:00:00+02:00..2020-08-12T00:00:00+02:00)\" } }", "schema { node \"today\" { type \"datetime\" value \"[2020-08-11T00:00+02:00..2020-08-12T00:00+02:00)\" } }");
-		s.ts1("S23", "schema { node \"today\" { type \"date\" value \"2020-08-11\" } }", null);
-		s.ts1("S24", "schema { node \"august\" { type \"date\" value \"[2020-08-01..2020-09-01)\" } }", null);
-		s.ts1("S25", "schema { node { type \"any\" } }", null);
-		s.ts1("S26", "schema { node \"anything\" { type \"any\" } }", null);
-		s.ts1("S27", "schema { node \"anything\" { node { type \"any\" } } }", null);
-		s.ts1("S28", "schema { node \"x\" { type \"string\" node \"y\" { type \"string\" } } }", null);
+		s.ts1("S07", "schema { node \"g\" { group { node \"x\" { type \"string\" } node \"y\" { type \"string\" } } } }", null);
+		s.ts1("S08", "schema { node \"c\" { choice { node \"x\" { type \"string\" } node \"y\" { type \"string\" } } } }", null);
+		s.ts1("S10", "schema { node \"u\" { unordered { node \"x\" { type \"string\" } node \"y\" { type \"string\" } } } }", null);
+		s.ts1("S11", "schema { node \"ean13\" { type \"string\" length \"13\" } }", null);
+		s.ts1("S12", "schema { node \"image\" { type \"binary\" length \"0..1024\" } }", null);
+		s.ts1("S13", "schema { node \"bool\" { type \"boolean\" nullable \"true\" } }", null);
+		s.ts1("S14", "schema { node \"id\" { type \"string\" nullable \"false\" } }", null);
+		s.ts1("S15", "schema { node \"id\" { type \"string\" pattern \"[^\\\\s]\" } }", null);
+		s.ts1("S16", "schema { node \"bit\" { type \"integer\" value \"[0..1]\" } }", null);
+		s.ts1("S17", "schema { node \"one\" { type \"integer\" value \"1\" } }", null);
+		s.ts1("S18", "schema { node \"pi\" { type \"decimal\" value \"3.14\" } }", null);
+		s.ts1("S19", "schema { node \"kelvin\" { type \"decimal\" value \"[-273.15..*)\" } }", null);
+		s.ts1("S20", "schema { node \"now\" { type \"datetime\" value \"2020-08-11T17:55:00+02:00\" } }", "schema { node \"now\" { type \"datetime\" value \"2020-08-11T17:55+02:00\" } }");
+		s.ts1("S23", "schema { node \"today\" { type \"datetime\" value \"[2020-08-11T00:00:00+02:00..2020-08-12T00:00:00+02:00)\" } }", "schema { node \"today\" { type \"datetime\" value \"[2020-08-11T00:00+02:00..2020-08-12T00:00+02:00)\" } }");
+		s.ts1("S24", "schema { node \"today\" { type \"date\" value \"2020-08-11\" } }", null);
+		s.ts1("S25", "schema { node \"august\" { type \"date\" value \"[2020-08-01..2020-09-01)\" } }", null);
+		s.ts1("S26", "schema { node { type \"any\" } }", null);
+		s.ts1("S27", "schema { node \"anything\" { type \"any\" } }", null);
+		s.ts1("S28", "schema { node \"anything\" { node { type \"any\" } } }", null);
+		s.ts1("S29", "schema { node \"x\" { type \"string\" node \"y\" { type \"string\" } } }", null);
 		
-		// test custom type gmonthday
-		s.ts1("S29", "schema { node \"today\" { type \"gmonthday\" value \"--08-11\" } }", null);
-		s.ts1("S30", "schema { node \"august\" { type \"gmonthday\" value \"[--08-01..--09-01)\" } }", null);
+		// test custom types
+		s.ts1("S30", "schema { node \"bank\" { type \"IBAN\" length \"18\" } }", null);
+		s.ts1("S31", "schema { node \"today\" { type \"gMonthDay\" value \"--08-11\" } }", null);
+		s.ts1("S32", "schema { node \"august\" { type \"gMonthDay\" value \"[--08-01..--09-01)\" } }", null);
 		
 		/* test invalid SDS */
 		System.out.print("\n              ");

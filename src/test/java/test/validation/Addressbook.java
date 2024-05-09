@@ -56,15 +56,16 @@ public final class Addressbook {
 		t.ts1("F15", e.next() + "", "/addressbook/contact[6]: content missing at end of 'contact'; expected 'phone' or 'email'");
 		t.ts1("F16", e.next() + "", "/addressbook/contact[7]/person: empty value not allowed; 'person' is not nullable");
 		t.ts1("F17", e.next() + "", "/addressbook/contact[7]/address: value 'nowhere' does not match pattern 'home|work'");
-		t.ts1("F18", e.hasNext() + "", "false");
+		t.ts1("F18", e.next() + "", "/addressbook/contact[7]/bank: value 'NL64 ABNC 0417 1643 01' is invalid for type IBAN: invalid checksum");
+		t.ts1("F19", e.hasNext() + "", "false");
 		
 		validator.setTypeName("contact"); // now validate an actual contact (the first one)
 		errors = validator.validate(document.get("contact"));
 		e = errors.iterator();
 
-		t.ts1("F19", e.next() + "", "/addressbook/contact[1]/person/about: only complex content is expected for node 'about'");
-		t.ts1("F20", e.next() + "", "/addressbook/contact[1]/address/housenumber: got 'housenumber', but 'streetname' or 'postalcode' was expected");
-		t.ts1("F21", e.next() + "", "/addressbook/contact[1]/email[2]: 'email' was not expected in 'contact'");
-		t.ts1("F22", e.hasNext() + "", "false");
+		t.ts1("F20", e.next() + "", "/addressbook/contact[1]/person/about: only complex content is expected for node 'about'");
+		t.ts1("F21", e.next() + "", "/addressbook/contact[1]/address/housenumber: got 'housenumber', but 'streetname' or 'postalcode' was expected");
+		t.ts1("F22", e.next() + "", "/addressbook/contact[1]/email[2]: 'email' was not expected in 'contact'");
+		t.ts1("F23", e.hasNext() + "", "false");
 	}
 }

@@ -41,7 +41,7 @@ public final class GMonthDay implements Comparable<Object> {
 	private static final Pattern pattern = Pattern.compile("--\\d{2}-\\d{2}");
 	
 	/**
-	 * Returns a GMonthDay constructed obtained from a string.
+	 * Returns a GMonthDay obtained from a string.
 	 *
 	 * @param date a string in "--MM-DD" format
 	 * @return a GMonthDay
