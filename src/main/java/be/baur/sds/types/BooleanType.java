@@ -1,4 +1,4 @@
-package be.baur.sds.content;
+package be.baur.sds.types;
 
 import be.baur.sds.DataType;
 

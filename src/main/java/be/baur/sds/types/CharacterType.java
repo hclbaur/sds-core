@@ -1,4 +1,4 @@
-package be.baur.sds.content;
+package be.baur.sds.types;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -24,7 +24,7 @@ public abstract class CharacterType <T> extends DataType {
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	public CharacterType(String name) {
-		super(name); setNullable(true);
+		super(name);
 	}
 
 

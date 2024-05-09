@@ -1,9 +1,11 @@
-package be.baur.sds.content;
+package be.baur.sds.types;
 
 import java.util.function.Function;
 
 /**
- * A <code>StringType</code> defines an SDA node with character data.
+ * A <code>StringType</code> defines an SDA node with character data. This is
+ * the most basic type of all, without restrictions on value; any string is a
+ * valid string, and unlike other data types it is nullable by default.
  */
 public final class StringType extends CharacterType<String> {
 
@@ -23,7 +25,7 @@ public final class StringType extends CharacterType<String> {
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	public StringType(String name) {
-		super(name); //setNullable(true);
+		super(name); setNullable(true);
 	}
 
 

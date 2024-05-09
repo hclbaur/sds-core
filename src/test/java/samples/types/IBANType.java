@@ -1,7 +1,8 @@
 package samples.types;
 
 import java.util.function.Function;
-import be.baur.sds.content.CharacterType;
+
+import be.baur.sds.types.CharacterType;
 
 
 /**

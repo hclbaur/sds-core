@@ -1,4 +1,4 @@
-package be.baur.sds.content;
+package be.baur.sds.types;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;

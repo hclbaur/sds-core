@@ -2,7 +2,7 @@ package samples.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.content.ComparableType;
+import be.baur.sds.types.ComparableType;
 
 /**
  * A <code>GMonthDayType</code> defines an SDA node with temporal data (a local

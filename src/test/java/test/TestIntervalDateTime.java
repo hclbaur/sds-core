@@ -3,7 +3,7 @@ package test;
 import java.time.Instant;
 
 import be.baur.sds.common.Interval;
-import be.baur.sds.content.DateTimeType;
+import be.baur.sds.types.DateTimeType;
 
 public final class TestIntervalDateTime {
 

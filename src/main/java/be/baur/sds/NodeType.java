@@ -5,11 +5,12 @@ import java.util.List;
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
 import be.baur.sda.DataNode;
-import be.baur.sds.content.CharacterType;
-import be.baur.sds.content.ComparableType;
 import be.baur.sds.model.ModelGroup;
 import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.Components;
+import be.baur.sds.types.CharacterType;
+import be.baur.sds.types.ComparableType;
+import be.baur.sds.types.StringType;
 
 
 /**
@@ -152,7 +153,8 @@ public class NodeType extends Type {
 				if (t.getPattern() != null)
 					node.add(new DataNode(Attribute.PATTERN.tag, t.getPattern().toString()));
 				
-				if (isCharType == !t.isNullable())
+				// Add nullable only for a non-nullable string or a nullable other type
+				if ((this instanceof StringType) == !t.isNullable())
 					node.add(new DataNode(Attribute.NULLABLE.tag, String.valueOf(t.isNullable())));
 			}
 		}

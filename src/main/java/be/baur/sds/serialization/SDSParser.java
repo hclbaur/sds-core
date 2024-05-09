@@ -18,13 +18,13 @@ import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
-import be.baur.sds.content.CharacterType;
-import be.baur.sds.content.BooleanType;
-import be.baur.sds.content.ComparableType;
 import be.baur.sds.model.ChoiceGroup;
 import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
+import be.baur.sds.types.BooleanType;
+import be.baur.sds.types.CharacterType;
+import be.baur.sds.types.ComparableType;
 
 
 /**

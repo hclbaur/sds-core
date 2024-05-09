@@ -3,7 +3,7 @@ package test;
 import java.time.LocalDate;
 
 import be.baur.sds.common.Interval;
-import be.baur.sds.content.DateType;
+import be.baur.sds.types.DateType;
 
 public final class TestIntervalDate {
 

@@ -1,7 +1,7 @@
 package test;
 
 import be.baur.sds.common.Interval;
-import be.baur.sds.content.DecimalType;
+import be.baur.sds.types.DecimalType;
 
 public final class TestIntervalDecimal {
 

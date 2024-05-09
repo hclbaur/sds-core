@@ -10,15 +10,15 @@ import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.serialization.SDAFormatter;
-import be.baur.sds.content.BinaryType;
-import be.baur.sds.content.BooleanType;
-import be.baur.sds.content.DateTimeType;
-import be.baur.sds.content.DateType;
-import be.baur.sds.content.DecimalType;
-import be.baur.sds.content.IntegerType;
-import be.baur.sds.content.StringType;
 import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
+import be.baur.sds.types.BinaryType;
+import be.baur.sds.types.BooleanType;
+import be.baur.sds.types.DateTimeType;
+import be.baur.sds.types.DateType;
+import be.baur.sds.types.DecimalType;
+import be.baur.sds.types.IntegerType;
+import be.baur.sds.types.StringType;
 import be.baur.sds.validation.Validator;
 
 /**

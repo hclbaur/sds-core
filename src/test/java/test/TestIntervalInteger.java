@@ -1,7 +1,7 @@
 package test;
 
 import be.baur.sds.common.Interval;
-import be.baur.sds.content.IntegerType;
+import be.baur.sds.types.IntegerType;
 
 public final class TestIntervalInteger {
 
