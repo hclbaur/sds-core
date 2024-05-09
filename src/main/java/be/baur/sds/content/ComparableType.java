@@ -7,12 +7,14 @@ import be.baur.sds.DataType;
 import be.baur.sds.common.Interval;
 
 /**
- * A {@code RangedType} defines an SDA node with a value that lies within an
- * interval, like an integer, a decimal or a date(time).
+ * A {@code ComparableType} defines an SDA node with a value that lies within an
+ * interval and can be numerically compared to other values of the same type. It
+ * is used to implement the native integer, decimal and date(time) data types,
+ * and can be used to add more exotic ones, such as a {@code GMonthDay}.
  * 
  * @see Interval
  */
-public abstract class RangedType <T extends Comparable<? super T>> extends DataType {
+public abstract class ComparableType <T extends Comparable<? super T>> extends DataType {
 
 	private Interval<?> range = Interval.MIN_TO_MAX; // default is to allow any value
 
@@ -23,7 +25,7 @@ public abstract class RangedType <T extends Comparable<? super T>> extends DataT
 	 * @param name a valid node name
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public RangedType(String name) {
+	public ComparableType(String name) {
 		super(name);
 	}
 	
@@ -34,7 +36,7 @@ public abstract class RangedType <T extends Comparable<? super T>> extends DataT
 	 * 
 	 * @return an interval, never null
 	 */
-	public Interval<?> getRange() {
+	public Interval<?> getInterval() {
 		return range;
 	}
 
@@ -44,29 +46,9 @@ public abstract class RangedType <T extends Comparable<? super T>> extends DataT
 	 * 
 	 * @param range an interval, not null
 	 */
-	public void setRange(Interval<T> range) {
+	public void setInterval(Interval<T> range) {
 		this.range = Objects.requireNonNull(range, "range must not be null");
 	}
-	
-
-	/**
-	 * Returns the Class of a value for this type.
-	 * 
-	 * @return a Class
-	 */
-	//public abstract Class<T> valueClass();
-	
-	
-	/**
-	 * Creates an interval from a string in interval notation.
-	 * 
-	 * @param interval an interval string, not null or empty
-	 * @return an Interval
-	 * @throws IllegalArgumentException if the specified interval is invalid
-	 */
-//	public Interval<T> intervalOf(String interval) {
-//		return Interval.from(interval, valueConstructor());
-//	}
 	
 	
 	/**

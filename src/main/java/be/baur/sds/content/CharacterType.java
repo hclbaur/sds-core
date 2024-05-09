@@ -7,10 +7,12 @@ import be.baur.sds.DataType;
 import be.baur.sds.common.NaturalInterval;
 
 /**
- * An {@code AbstractStringType} defines an SDA node with string content and a
- * minimum and maximum length. Unlike other types, it is null-able by default.
+ * A {@code CharacterType} is an abstract type that defines an SDA node with
+ * character data and a minimum and maximum length. It is used to implement the
+ * native string and binary types, and can be used to add specialized types that
+ * are not easily validated with a regular expression, such as an {@code IBAN}.
  */
-public abstract class AbstractStringType <T> extends DataType {
+public abstract class CharacterType <T> extends DataType {
 
 	private NaturalInterval length = NaturalInterval.ZERO_TO_MAX; // default allows any length
 
@@ -21,7 +23,7 @@ public abstract class AbstractStringType <T> extends DataType {
 	 * @param name a valid node name
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public AbstractStringType(String name) {
+	public CharacterType(String name) {
 		super(name); setNullable(true);
 	}
 

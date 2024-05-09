@@ -4,11 +4,11 @@ import java.util.Base64;
 import java.util.function.Function;
 
 /**
- * A <code>BinaryType</code> defines an SDA node with binary content (in MIME
+ * A <code>BinaryType</code> defines an SDA node with binary data (in MIME
  * base64 encoding). When setting an allowed length interval, note that length
  * is counted in number of bytes rather than characters.
  */
-public final class BinaryType extends AbstractStringType<byte[]> {
+public final class BinaryType extends CharacterType<byte[]> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "binary";

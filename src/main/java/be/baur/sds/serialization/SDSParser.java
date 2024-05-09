@@ -18,9 +18,9 @@ import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
-import be.baur.sds.content.AbstractStringType;
+import be.baur.sds.content.CharacterType;
 import be.baur.sds.content.BooleanType;
-import be.baur.sds.content.RangedType;
+import be.baur.sds.content.ComparableType;
 import be.baur.sds.model.ChoiceGroup;
 import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.SequenceGroup;
@@ -418,30 +418,30 @@ public final class SDSParser implements Parser<Schema> {
 				ATTRIBUTE_INVALID, Attribute.PATTERN.tag, regexp.getValue(), e.getMessage());
 		}
 		
-		// Set the length (only allowed on string and binary types).
-		DataNode length = getAttribute(sds, Attribute.LENGTH, dataType instanceof AbstractStringType ? false : null);
+		// Set the length (only allowed on character data types).
+		DataNode length = getAttribute(sds, Attribute.LENGTH, dataType instanceof CharacterType ? false : null);
 		if (length != null) {
 			try {
 				NaturalInterval interval = NaturalInterval.from(length.getValue());
-				((AbstractStringType) dataType).setLength(interval);
+				((CharacterType) dataType).setLength(interval);
 			} catch (IllegalArgumentException e) {
 				throw exception(length, ATTRIBUTE_INVALID, 
 					Attribute.LENGTH.tag, length.getValue(), e.getMessage());
 			}
 		}
 		
-		// Set the value range (only allowed on ranged types).
-		DataNode range = getAttribute(sds, Attribute.VALUE, dataType instanceof RangedType ? false : null);
+		// Set the value range (only allowed on comparable types)
+		DataNode range = getAttribute(sds, Attribute.VALUE, dataType instanceof ComparableType ? false : null);
 		if (range != null) {
 			Interval interval;
-			RangedType rangedType = (RangedType) dataType;
+			ComparableType comparableType = (ComparableType) dataType;
 			try {	
-				interval = Interval.from(range.getValue(), rangedType.valueConstructor());
+				interval = Interval.from(range.getValue(), comparableType.valueConstructor());
 			} catch (IllegalArgumentException e) {
 				throw exception(range, 
 					ATTRIBUTE_INVALID, Attribute.VALUE.tag, range.getValue(), e.getMessage());
 			}
-			rangedType.setRange(interval);
+			comparableType.setInterval(interval);
 		}
 		
 		return dataType;

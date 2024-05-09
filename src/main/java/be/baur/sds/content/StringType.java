@@ -3,11 +3,9 @@ package be.baur.sds.content;
 import java.util.function.Function;
 
 /**
- * A <code>StringType</code> defines an SDA node with string content. When
- * setting an allowed length interval, note that length is counted in number of
- * characters.
+ * A <code>StringType</code> defines an SDA node with character data.
  */
-public final class StringType extends AbstractStringType<String> {
+public final class StringType extends CharacterType<String> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "string";

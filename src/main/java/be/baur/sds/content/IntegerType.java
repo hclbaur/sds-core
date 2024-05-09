@@ -3,9 +3,9 @@ package be.baur.sds.content;
 import java.util.function.Function;
 
 /**
- * A <code>IntegerType</code> defines an SDA node with integer content.
+ * A <code>IntegerType</code> defines an SDA node with integer data.
  */
-public final class IntegerType extends RangedType<Integer> {
+public final class IntegerType extends ComparableType<Integer> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "integer";
@@ -29,12 +29,6 @@ public final class IntegerType extends RangedType<Integer> {
 	public String getType() {
 		return NAME;
 	}
-
-
-//	@Override
-//	public Class<Integer> valueClass() {
-//		return Integer.class;
-//	}
 
 
 	@Override

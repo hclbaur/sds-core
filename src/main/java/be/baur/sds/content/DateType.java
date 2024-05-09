@@ -6,10 +6,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
 /**
- * A <code>DateType</code> defines an SDA node with temporal content (a
- * calendar date without time zone).
+ * A <code>DateType</code> defines an SDA node with temporal data (a calendar
+ * date without time zone).
  */
-public final class DateType extends RangedType<LocalDate> {
+public final class DateType extends ComparableType<LocalDate> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "date";
@@ -35,12 +35,6 @@ public final class DateType extends RangedType<LocalDate> {
 	public String getType() {
 		return NAME;
 	}
-
-
-//	@Override
-//	public Class<Date> valueClass() {
-//		return Date.class;
-//	}
 	
 
 	@Override

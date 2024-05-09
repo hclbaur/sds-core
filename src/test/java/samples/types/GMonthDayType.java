@@ -2,15 +2,15 @@ package samples.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.content.RangedType;
+import be.baur.sds.content.ComparableType;
 
 /**
- * A <code>GMonthDayType</code> defines an SDA node with temporal content (a
- * local recurring calendar date without a year or time zone).
+ * A <code>GMonthDayType</code> defines an SDA node with temporal data (a local
+ * recurring calendar date without a year or time zone).
  * 
  * @see GMonthDay
  */
-public final class GMonthDayType extends RangedType<GMonthDay> {
+public final class GMonthDayType extends ComparableType<GMonthDay> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "gMonthDay";

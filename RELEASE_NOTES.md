@@ -6,7 +6,8 @@
 - `Removed` be.baur.sds.common.Date and DateTime.
 - `Changed` DataType.getContentType() to getType().
 - `Changed` Interval.from(String, Class) to from(String, Function).
-- `Changed` AbstractStringType to a generic type.
+- `Changed` AbstractStringType to generic CharacterType<T>.
+- `Changed` RangedType to generic ComparableType<T>.
 - Added Schema.registerDataType(), and get/isDataType().
 - Added abstract Type, which AnyType and NodeType extend.
 - Added static valueOf() methods for native RangedTypes.

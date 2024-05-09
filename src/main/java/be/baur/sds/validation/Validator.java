@@ -20,9 +20,9 @@ import be.baur.sds.Schema;
 import be.baur.sds.Type;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
-import be.baur.sds.content.AbstractStringType;
+import be.baur.sds.content.CharacterType;
 import be.baur.sds.content.BooleanType;
-import be.baur.sds.content.RangedType;
+import be.baur.sds.content.ComparableType;
 import be.baur.sds.model.ChoiceGroup;
 import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.SequenceGroup;
@@ -249,13 +249,13 @@ public abstract class Validator {
 		if (value.isEmpty() && ! type.isNullable())
 			return error(node, EMPTY_VALUE_NOT_ALLOWED, node.getName());
 		
-		if (type instanceof AbstractStringType) {
-			Error error = validateStringValue(node, (AbstractStringType<?>) type);
+		if (type instanceof CharacterType) {
+			Error error = validateCharacterValue(node, (CharacterType<?>) type);
 			if (error != null) return error;
 		}
 		
-		if (type instanceof RangedType) {
-			Error error = validateRangedValue(node, (RangedType<?>) type);
+		if (type instanceof ComparableType) {
+			Error error = validateComparableValue(node, (ComparableType<?>) type);
 			if (error != null) return error;
 		}
 		
@@ -280,7 +280,7 @@ public abstract class Validator {
 	 * length (in characters for a string and bytes for a binary).
 	 * @param <T>
 	 */
-	private static <T> Error validateStringValue(DataNode node, AbstractStringType<T> type) {
+	private static <T> Error validateCharacterValue(DataNode node, CharacterType<T> type) {
 		
 		int length;
 		
@@ -291,7 +291,7 @@ public abstract class Validator {
 			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
 		}
 		
-		// Check if the length is within the acceptable range.
+		// Check if the length is within the acceptable range
 		NaturalInterval range = type.getLength();
 		int contains = range.contains(length);
 		
@@ -311,7 +311,7 @@ public abstract class Validator {
 	 * We assert that the node value is a valid string representation of this
 	 * content type by creating an instance, and check whether it is in range.
 	 */
-	private static Error validateRangedValue(DataNode node, RangedType<?> type) {
+	private static Error validateComparableValue(DataNode node, ComparableType<?> type) {
 
 		Comparable<?> value = null;
 		try {
@@ -320,7 +320,7 @@ public abstract class Validator {
 			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
 		}
 		
-		Interval<?> range = type.getRange(); 
+		Interval<?> range = type.getInterval(); 
 		int contains = range.contains(value);
 		if (contains < 0) {
 			if (value.equals(range.min)) 

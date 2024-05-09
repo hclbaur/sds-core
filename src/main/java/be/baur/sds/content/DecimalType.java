@@ -3,9 +3,9 @@ package be.baur.sds.content;
 import java.util.function.Function;
 
 /**
- * A <code>DecimalType</code> defines an SDA node with decimal content.
+ * A <code>DecimalType</code> defines an SDA node with decimal data.
  */
-public final class DecimalType extends RangedType<Double> {
+public final class DecimalType extends ComparableType<Double> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "decimal";
@@ -29,12 +29,6 @@ public final class DecimalType extends RangedType<Double> {
 	public String getType() {
 		return NAME;
 	}
-
-
-//	@Override
-//	public Class<Double> valueClass() {
-//		return Double.class;
-//	}
 	
 
 	@Override

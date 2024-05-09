@@ -1,15 +1,15 @@
 package samples.types;
 
 import java.util.function.Function;
+import be.baur.sds.content.CharacterType;
 
-import be.baur.sds.content.AbstractStringType;
 
 /**
  * A <code>BinaryType</code> defines an SDA node with a valid IBAN value.
  * 
  * @see IBAN
  */
-public final class IBANType extends AbstractStringType<IBAN> {
+public final class IBANType extends CharacterType<IBAN> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "IBAN";
