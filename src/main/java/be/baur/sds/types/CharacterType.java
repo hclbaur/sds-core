@@ -58,7 +58,6 @@ public abstract class CharacterType <T> extends DataType {
 	 * cannot be converted to a valid value).
 	 * 
 	 * @return a Function
-	 * @throws RuntimeException
 	 */
 	public abstract Function<String, T> valueConstructor();
 
@@ -68,6 +67,7 @@ public abstract class CharacterType <T> extends DataType {
 	 * specified otherwise, this is the number of Unicode code units in the
 	 * supplied value.
 	 * 
+	 * @param value a value
 	 * @return a non-negative integer
 	 */
 	public abstract int valueLength(T value);

@@ -48,13 +48,13 @@ With that in mind, this would be it (if at all I got it right):
 <b>occurs</b> = 'occurs' '"', <b>cardinality</b>, '"' ;
 <b>cardinality</b> = ? cardinality in natural interval notation ? ;
 
-<b>data_type</b> = < ( <b>string_type</b> | <b>value_type</b> | <b>boolean_type</b> ) <b>pattern</b>? <b>nullable</b>? > ;
+<b>data_type</b> = < ( <b>character_type</b> | <b>comparable_type</b> | <b>boolean_type</b> ) <b>pattern</b>? <b>nullable</b>? > ;
 
-<b>string_type</b> = < ( 'type' ( '"string"' | '"binary"' ) ) <b>length_facet</b>? > ;
+<b>character_type</b> = < ( 'type' ( '"string"' | '"binary"' ) ) <b>length_facet</b>? > ;
 <b>length_facet</b> = 'length' '"', <b>length</b>, '"' ;
 <b>length</b> = ? minimum and maximum length in natural interval notation ? ;
 
-<b>value_type</b> = < ( 'type' ( '"integer"' | '"decimal"' | '"date"' | '"datetime"' ) ) <b>value_facet</b>? > ;
+<b>comparable_type</b> = < ( 'type' ( '"integer"' | '"decimal"' | '"date"' | '"datetime"' ) ) <b>value_facet</b>? > ;
 <b>value_facet</b> = 'value' '"', <b>value</b>, '"' ;
 <b>value</b> = ? minimum and maximum value in interval notation ? ;
 
@@ -70,7 +70,6 @@ With that in mind, this would be it (if at all I got it right):
 
 ### In words
 
-An SDS document consists of a single schema node, which contains (global) node types. A node type may consist of a data type and/or "components" (at least either one) where a component is another node type, a type reference, a type of any (undefined) content or a model group. A model group is a choice - or (unordered) group - of two or more components. A data type is a simple type (string, integer, date, etc) with optional facets restricting length or value, lexical representation or specifying nullability.
- 
+An SDS document consists of a single schema node, which contains (global) node types. A node type may consist of a data type and/or "components" (at least either one) where a component is another node type, a type reference, a type of any (undefined) content or a model group. A model group is a choice - or (unordered) group - of two or more components. 
 
-
+A data type is either a character type (string or binary) with an optional facet restricting length, or a comparable type (integer, decimal, date or datetime) with an optional value facet, or a boolean type. Note that this does not take into account user defined type extensions. All data types support a pattern facet to restrict lexical representation and a facet to specify nullability.

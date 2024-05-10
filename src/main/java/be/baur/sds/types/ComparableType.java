@@ -60,7 +60,6 @@ public abstract class ComparableType <T extends Comparable<? super T>> extends D
 	 * cannot be converted to a valid value).
 	 * 
 	 * @return a Function
-	 * @throws RuntimeException
 	 */
 	public abstract Function<String, T> valueConstructor();
 }

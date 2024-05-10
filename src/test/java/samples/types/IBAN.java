@@ -46,7 +46,7 @@ public final class IBAN {
 		String countrycode = iban.substring(0, 2), checksum = iban.substring(2, 4), 
 			bban = iban.substring(4), checkstring = bban + countrycode + checksum;
 		
-		StringBuffer s = new StringBuffer(35);
+		StringBuffer s = new StringBuffer(32);
 		for(char c : checkstring.toCharArray()) {
 			if (c > 64)
 				s.append(c - 55);
@@ -67,7 +67,11 @@ public final class IBAN {
 	 */
 	@Override
 	public String toString() {
-		return countrycode + checksum + " " + bban;
+		int i = 0; StringBuffer readable = new StringBuffer(32);
+		for (int n = bban.length() - 4; i < n; i += 4)
+			readable.append(bban.substring(i, i+4)).append(" ");
+		readable.append(bban.substring(i));
+		return countrycode + checksum + " " + readable;
 	}
 	
 
@@ -81,6 +85,6 @@ public final class IBAN {
 
 
 	public static void main(String[] args) {
-		System.out.println(IBAN.parse("nl38ingb0005111236"));
+		System.out.println(IBAN.parse("NL64ABNC0417164300"));
 	}
 }

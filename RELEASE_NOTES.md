@@ -1,6 +1,10 @@
 # Release Notes
 
-## [2.4.0] - In development.
+## [2.4.0] - 2024-05-10
+
+This release add support for user defined data types. The internals 
+of the library have been changed quite a bit but the impact on most
+(if not all) application code should be limited.
 
 - `Removed` be.baur.sds.common.Content.
 - `Removed` be.baur.sds.common.Date and DateTime.
