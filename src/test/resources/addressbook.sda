@@ -1,14 +1,14 @@
 addressbook {
 	owner "0" {
 		person "Harold" { 
-			lastname "Baur" birthdate "1968-02-28" 
+			lastname "Baur" birthday "--02-28" 
 			about { nickname "Bo" }
 		}
 		address "home" { 
 			postalcode "5611 XG" housenumber "261" 
 			city "EINDHOVEN" latitude "51.430" longitude "5.470" altitude "4"
 		}
-		phone "06-11111111" email "harold@home" email "harold@work"
+		phone "06-11111111" email "harold@home" email "harold@work" bank "NL64 ABNC 0417 1643 00" 
 	}
 	contact "1" {
 		person "Alice" { about "" }
@@ -62,6 +62,6 @@ addressbook {
 		address "nowhere" { 
 			streetname "Diagon Ally" housenumber "7" city "EINDHOVEN"
 		}
-		phone "06-77777777"
+		phone "06-77777777" bank "NL64 ABNC 0417 1643 01"
 	}
 }

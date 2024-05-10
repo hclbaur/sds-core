@@ -14,16 +14,6 @@ import be.baur.sds.serialization.Attribute;
  */
 public abstract class ModelGroup extends Component {
 
-	/**
-	 * Creates a model group with the specified name.
-	 * 
-	 * @param name a valid node name, see also {@link Node}
-	 * @throws IllegalArgumentException if the name is invalid
-	 */
-//	public ModelGroup(String name) {
-//		super(name); add(null); // all groups must have child nodes
-//	}
-
 	
 	/**
 	 * Returns the effective minimum number of times that a group must occur within
@@ -63,14 +53,14 @@ public abstract class ModelGroup extends Component {
 	public final DataNode toSDA() {
 		
 		final DataNode node = new DataNode(getName()); // group, choice or unordered
-		
+
 		// maybe someday we will support named groups, but not today
 		
 //		if (getGlobalType() == null || ! getName().equals(getGlobalType()))
 //			node.setValue(getName());
 //	
 //		if (getGlobalType() != null) // Render the type attribute if we have one.
-//			node.add(new Node(Attribute.TYPE.tag, getGlobalType()));
+//			node.add(new DataNode(Attribute.TYPE.tag, getGlobalType()));
 	
 		// Render the multiplicity if not default.
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 

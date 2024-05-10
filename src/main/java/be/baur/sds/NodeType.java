@@ -5,35 +5,37 @@ import java.util.List;
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
 import be.baur.sda.DataNode;
-import be.baur.sds.content.AbstractStringType;
-import be.baur.sds.content.AnyType;
-import be.baur.sds.content.RangedType;
 import be.baur.sds.model.ModelGroup;
 import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.Components;
+import be.baur.sds.types.CharacterType;
+import be.baur.sds.types.ComparableType;
+import be.baur.sds.types.StringType;
 
 
 /**
  * A {@code NodeType} is an SDA node type definition. It is one of the building
- * blocks of a {@code Schema} that defines content, the other being a
+ * blocks of a {@code Schema} that defines SDA node content, the other being a
  * {@code ModelGroup}.
  * 
- * Note that an instance of this class is a <i>complex type</i>. For a <i>simple
- * type</i>, instantiate a {@code MixedType} subclass, like {@code StringType},
+ * Note that an instance of this class is a complex type. For a type with simple
+ * content, instantiate a {@code DataType} subclass, like {@code StringType},
  * {@code IntegerType}, {@code BooleanType}, etc.
  * 
  * @see ModelGroup
+ * @see DataType
  **/
-public class NodeType extends Component {
+public class NodeType extends Type {
 
 	private NodeType globalType = null; // the global type this type refers to, if any
-	private String typeName; // the name of this type
 
 
 	/**
-	 * Creates a node type with the specified name.
+	 * Creates a type with the specified name, which must be a valid node name.
 	 * 
-	 * @param name a valid node name, see {@link SDA#isName}
+	 * @see SDA#isName
+	 * 
+	 * @param name a valid node name
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	public NodeType(String name) {
@@ -42,26 +44,31 @@ public class NodeType extends Component {
 	
 
 	/**
-	 * Returns the name of this type.
+	 * Returns the name of this type. A type defines an instance of a data node, so
+	 * this method always returns a valid node name.
 	 * 
 	 * @return a valid node name, not null or empty
 	 */
-	public String getTypeName() {
-		return typeName;
+	@Override
+	public final String getTypeName() {
+		return super.getTypeName();
 	}
 
-
+	
 	/**
-	 * Sets the name of this type. Ultimately, a type represents an instance of a
-	 * data node, so the name of the type is restricted to valid node names.
+	 * Sets the name of this type. A type defines an instance of a data node, so the
+	 * name of this type is restricted to valid node names.
 	 * 
-	 * @param name a valid node name, see {@link SDA#isName}
+	 * @see SDA#isName
+	 * 
+	 * @param name a valid node name, may be null or empty
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
+	@Override
 	public final void setTypeName(String name) {
 		if (! SDA.isName(name)) 
 			throw new IllegalArgumentException("invalid node name (" + name + ")");
-		typeName = name;
+		super.setTypeName(name);
 	}
 
 
@@ -108,38 +115,36 @@ public class NodeType extends Component {
 		
 		final DataNode node = new DataNode(Components.NODE.tag);
 		
-		// Omit the name for an unnamed any type, and for a type
-		// reference with the same name as the referenced type.
-		if (! (( getGlobalType() != null && typeName.equals(getGlobalType()) )
-				|| ( this instanceof AnyType && !((AnyType) this).isNamed() )) ) {
-			node.setValue(typeName);
+		// Omit the name for a reference with the same name as the referenced type
+		if (! ( getGlobalType() != null && getTypeName().equals(getGlobalType()) )) {
+			node.setValue(getTypeName());
 		}
 	
 		// Render the type attribute for a global type reference, or a data type
 		if (getGlobalType() != null)
 			node.add(new DataNode(Attribute.TYPE.tag, getGlobalType()));
 		else if (this instanceof DataType)
-			node.add(new DataNode(Attribute.TYPE.tag, ((DataType) this).getContentType().type));
+			node.add(new DataNode(Attribute.TYPE.tag, ((DataType) this).getType()));
 		
-		// Render the multiplicity if not default.
+		// Render the multiplicity if not default
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
 			node.add(new DataNode(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		// facets are rendered ONLY if we are not a type reference!
 		if (getGlobalType() == null) {
 
-			final boolean stringType = (this instanceof AbstractStringType);
+			final boolean isCharType = (this instanceof CharacterType);
 
-			if (stringType) {
-				AbstractStringType t = (AbstractStringType) this;
+			if (isCharType) {
+				CharacterType<?> t = (CharacterType<?>) this;
 				if (t.getLength().min != 0 || t.getLength().max != Integer.MAX_VALUE)
 					node.add(new DataNode(Attribute.LENGTH.tag, t.getLength().toString()));
 			}
 	
-			if (this instanceof RangedType) {
-				RangedType<?> t = (RangedType<?>) this;
-				if (t.getRange().min != null || t.getRange().max != null)
-					node.add(new DataNode(Attribute.VALUE.tag, t.getRange().toString()));
+			if (this instanceof ComparableType) {
+				ComparableType<?> t = (ComparableType<?>) this;
+				if (t.getInterval().min != null || t.getInterval().max != null)
+					node.add(new DataNode(Attribute.VALUE.tag, t.getInterval().toString()));
 			}
 			
 			if (this instanceof DataType) {
@@ -148,7 +153,8 @@ public class NodeType extends Component {
 				if (t.getPattern() != null)
 					node.add(new DataNode(Attribute.PATTERN.tag, t.getPattern().toString()));
 				
-				if (stringType == !t.isNullable())
+				// Add nullable only for a non-nullable string or a nullable other type
+				if ((this instanceof StringType) == !t.isNullable())
 					node.add(new DataNode(Attribute.NULLABLE.tag, String.valueOf(t.isNullable())));
 			}
 		}

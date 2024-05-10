@@ -23,6 +23,7 @@ public enum Attribute {
 	 * 
 	 * @return the name tag
 	 */
+	@Override
 	public String toString() {
 		return tag;
 	}

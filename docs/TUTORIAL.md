@@ -244,25 +244,25 @@ Enough already, let’s go on to types!
 
 ## Typicalities
 
-So far, we primarily saw a `string` type in our schema definition. We are going to need a lot more than that, if our data is to be correctly interpreted. Without further ado, here are the value types supported by SDS:
+So far, we primarily saw a `string` type in our schema definition. We are going to need a lot more than that, if our data is to be correctly interpreted. Without further ado, here are the data types supported by SDS:
 
-**string**: the general purpose type, without restrictions other than that  the data is text (characters in the current encoding).
+**string**: the general purpose type, without restrictions other than that the data is text (characters in the current encoding).
 
 **binary**: a type suitable for binary data, represented as a string (MIME  base64 encoding).
 
-**integer**: this type implies that your data is to be interpreted as a  positive or negative number without a fractional part, and zero.
+**integer**: for a positive or negative number without a fractional part, or zero.
 
-**decimal**: a general numeric type, that includes the aforementioned integer  type, and decimal as well as scientific representations.
+**decimal**: a numeric type, that includes the aforementioned integer, decimal as well as scientific representations.
 
-**date**: a type for a calendar date, and
+**date**: a type that represents a calendar date, and
 
 **datetime**: for a specific point in time.	
 
-**boolean**: the truth value type.
+**boolean**: the truth data type.
 
-Compared to the myriad of types and sub-types that are supported in XML schema, this may seem limited. That is true; both SDA and SDS are a trade-off between versatility and simplicity (or necessity). And that approach can be limiting in some ways. On the other hand, when was the last time you actually used a `gMonthDate` type?
+Compared to the myriad of types and sub-types that are supported in XML schema, this may seem limited. That is true; both SDA and SDS are a trade-off between versatility and simplicity (or necessity). And that approach can be limiting in some ways. On the other hand, when was the last time you actually used a `gMonthDay` type?
 
-Having said that, you can use certain attributes called *facets* (covered later)  to restrict any of the built-in types and mimic most of the derived types that you feel are absent. But before we go there, I should explain the difference between the so-called "value space" and "lexical space".
+Having said that, you can use certain attributes called *facets* (covered later) to restrict any of the built-in types and mimic most of the derived types that you feel are absent. But before we go there, I should explain the difference between the so-called "value space" and "lexical space".
 
 
 ### Matters of space
@@ -306,13 +306,13 @@ For example, when I tell you I am born on “1968-02-28”, it goes without sayi
 
 #### datetime
 
-To make up for the inherent limitations of our `date` type, SDS supports the datetime type, which identifies a specific point in time and has a lexical space  more-or-less defined by the well-known ISO 8601 extended format: [-] CCYY-MM-DDThh:mm:ss\[.fff](Z|(+|-)hh:mm).
+SDS supports the datetime type, which identifies a specific point in time and has a lexical space  more-or-less defined by the well-known ISO 8601 extended format: [-] CCYY-MM-DDThh:mm:ss\[.fff](Z|(+|-)hh:mm).
 
 I say more-or-less, because there is a price to pay for accuracy. Unlike in the actual ISO 8601 format, in SDS the time zone is **mandatory**. This may seem harsh, but it fixes a common problem in data exchange: ambiguous time. Whether you assume UTC or local time, it is unlikely everyone will make the same assumption all of the time, causing all kinds of exotic issues if times have no time zone.
 
 #### boolean
 
-And finally, the humble Boolean, the lexical space of which allows only “true” or “false” in lowercase only - and “0” or “1” are not accepted either!
+And finally, the humble Boolean, the lexical space of which allows only “true” or “false” in lowercase. Note that “0” or “1” are not accepted.
 
 
 ### Facets of restriction
@@ -339,18 +339,18 @@ The value facet restricts the value space of integer, decimal and date(time) typ
 
 	node "signedByte" { type "integer" value "[-128..128]" }
 
-	node "temperature" { type "decimal" value "[-273.15..*)" }
+	node "temperature" { type "decimal" value "[-273.15 .. *)" }
 
 	node "PI" { type "decimal" value "3.1415926535" }
 
-	node "myBirthday" { type "date" value "1968-02-28" }
+	node "leapDay" { type "date" value "1968-02-29" }
 
-	node "thisYear" { type "date" value "[2020-01-01..2021-01-01)" }
+	node "year2020" { type "date" value "[2020-01-01 .. 2021-01-01)" }
 
-	node "now" { type "datetime" value "2020-08-12T11:46:00+02:00" }
+	node "newYear" { type "datetime" value "2020-01-01T00:00:00+01:00" }
 
-	node "today" { type "datetime"
-		value "[2020-08-12T00:00:00+02:00..2020-08-13T00:00:00+02:00)"
+	node "newYearsDay" { type "datetime"
+		value "[2020-01-01T00:00:00+01:00 .. 2020-01-02T00:00:00+01:00)"
 	}
 
 Omitting the value facet is equivalent to **(\*..\*)**.
@@ -366,6 +366,9 @@ The final facet is different from length and value in two ways: first, it  works
 	node "primaryColour" { type "string" pattern "red|yellow|blue" }
 
 In the first example we need to escape the backslash because it is the SDA escape character. The last example illustrates how to create an enumeration using a pattern.
+
+This concludes our discussion of native SDS data types. Although it is beyond the scope of this tutorial, let me just give away that the SDS core library is extensible, e.g. it allows you to add custom data types. So you can still have that `gMonthDay`, and much more.
+
 
 ### The nothing that is
 
@@ -456,6 +459,8 @@ It is never a bad idea to confine “undefined” content to a (complex) node wi
 	}
 
 then any number of nodes, of any name and any type may follow the phone number (which is probably not the best design choice). Also, these wildcard nodes should preferably come after the regular types, because the validation process may not be able to disambiguate the content otherwise.
+
+Note that - since there are no content restrictions - none of the *facets* discussed earlier apply to the "any" type.
 
 ## Model citizens
 

@@ -136,6 +136,7 @@ public final class NaturalInterval {
 	 * 
 	 * @return natural interval notation
 	 */
+	@Override
 	public String toString() {
 		return (min == max) ? "" + min
 			: min + ".." + ((max == Integer.MAX_VALUE) ? "*" : "" + max);

@@ -1,7 +1,6 @@
 package be.baur.sds.validation;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -13,23 +12,21 @@ import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.util.Result;
 import be.baur.sda.util.Results;
+import be.baur.sds.AnyType;
 import be.baur.sds.Component;
 import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
-import be.baur.sds.common.Date;
-import be.baur.sds.common.DateTime;
+import be.baur.sds.Type;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
-import be.baur.sds.content.AbstractStringType;
-import be.baur.sds.content.AnyType;
-import be.baur.sds.content.BinaryType;
-import be.baur.sds.content.BooleanType;
-import be.baur.sds.content.RangedType;
 import be.baur.sds.model.ChoiceGroup;
 import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
+import be.baur.sds.types.BooleanType;
+import be.baur.sds.types.CharacterType;
+import be.baur.sds.types.ComparableType;
 
 /**
  * This is the default validator; used to validate SDA content against a
@@ -71,8 +68,6 @@ public abstract class Validator {
 	private static final String INVALID_VALUE_FOR_TYPE = "value '%s' is invalid for type %s: %s";
 	private static final String EMPTY_VALUE_NOT_ALLOWED = "empty value not allowed; '%s' is not nullable";
 	private static final String VALUE_DOES_NOT_MATCH= "value '%s' does not match pattern '%s'";
-	private static final String INVALID_BINARY_VALUE = "'%s' has an invalid binary value: %s";
-	private static final String INVALID_BOOLEAN_VALUE = "value '%s' is not a valid boolean";
 	private static final String LENGTH_SUBCEEDS_MIN = "value '%s' has length %d but %d is the minimum";
 	private static final String LENGTH_EXCEEDS_MAX = "value '%s' has length %d but %d is the maximum";
 	private static final String VALUE_SUBCEEDS_MIN = "value '%s' subceeds the minimum of %s";
@@ -89,6 +84,7 @@ public abstract class Validator {
 			super(false, node, message);
 		}
 
+		@Override
 		public String toString() {
 			return this.getValue().path() + ": " + this.getMessage();
 		}
@@ -180,7 +176,7 @@ public abstract class Validator {
 		}
 		
 		// recursively validate the entire document against the selected type
-		if (! matchNodeType(node, nodeType, errors))
+		if (! matchType(node, nodeType, errors))
 			errors.add(error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName(nodeType)));
 		
 		return errors;
@@ -199,7 +195,7 @@ public abstract class Validator {
 	 * If there is a match, we assert that the node content is valid, or add an
 	 * error to the list otherwise. This does not apply to "any" type components.
 	 */
-	private static boolean matchNodeType(DataNode node, NodeType type, Errors errors) {
+	private static boolean matchType(DataNode node, Type type, Errors errors) {
 		
 		String nodename = node.getName();
 		boolean namesmatch = nodename.equals(type.getTypeName());
@@ -219,7 +215,7 @@ public abstract class Validator {
 				errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
 
 			if (! node.isLeaf()) // validate complex content if we have it
-				errors.add(validateComplexContent(node, type, errors));
+				errors.add(validateComplexContent(node, (NodeType) type, errors));
 
 			return true;
 		}
@@ -229,7 +225,7 @@ public abstract class Validator {
 			if (type.isLeaf()) // no complex content is expected
 				errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
 			else // validate complex content if we have it
-				errors.add(validateComplexContent(node, type, errors));
+				errors.add(validateComplexContent(node, (NodeType) type, errors));
 		} 
 		else if (! type.isLeaf()) // report missing complex content
 			errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
@@ -253,19 +249,22 @@ public abstract class Validator {
 		if (value.isEmpty() && ! type.isNullable())
 			return error(node, EMPTY_VALUE_NOT_ALLOWED, node.getName());
 		
-		if (type instanceof AbstractStringType) {
-			Error error = validateStringValue(node, (AbstractStringType) type);
+		if (type instanceof CharacterType) {
+			Error error = validateCharacterValue(node, (CharacterType<?>) type);
 			if (error != null) return error;
 		}
 		
-		if (type instanceof RangedType) {
-			Error error = validateRangedValue(node, (RangedType<?>) type);
+		if (type instanceof ComparableType) {
+			Error error = validateComparableValue(node, (ComparableType<?>) type);
 			if (error != null) return error;
 		}
 		
 		if (type instanceof BooleanType) {
-			if (! (value.equals(BooleanType.TRUE) || value.equals(BooleanType.FALSE)) )
-				return error(node, INVALID_BOOLEAN_VALUE, value);
+			try {
+				BooleanType.valueOf(value);
+			} catch (Exception e) {
+				return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
+			}
 		}
 			
 		Pattern pattern = type.getPattern();
@@ -279,23 +278,20 @@ public abstract class Validator {
 	 * Any string is by definition a valid string representation of a string type.
 	 * However, this may not be true for a binary string type. Also, we check the
 	 * length (in characters for a string and bytes for a binary).
+	 * @param <T>
 	 */
-	private static Error validateStringValue(DataNode node, AbstractStringType type) {
+	private static <T> Error validateCharacterValue(DataNode node, CharacterType<T> type) {
 		
 		int length;
-
-		// The easiest way (probably not the most efficient) to validate a binary string
-		// is to decode it - and we need to determine its length anyway.
-		if (type instanceof BinaryType) {
-			try {
-				length = Base64.getDecoder().decode(node.getValue()).length;
-			} catch (IllegalArgumentException e) {
-				return error(node, INVALID_BINARY_VALUE, node.getName(), e.getMessage());
-			}
-		}
-		else length = node.getValue().length();   // otherwise it is a regular string
 		
-		// Check if the length is within the acceptable range.
+		try {
+			T value = type.valueConstructor().apply(node.getValue());
+			length = type.valueLength(value);
+		} catch (Exception e) {
+			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
+		}
+		
+		// Check if the length is within the acceptable range
 		NaturalInterval range = type.getLength();
 		int contains = range.contains(length);
 		
@@ -315,23 +311,16 @@ public abstract class Validator {
 	 * We assert that the node value is a valid string representation of this
 	 * content type by creating an instance, and check whether it is in range.
 	 */
-	private static Error validateRangedValue(DataNode node, RangedType<?> type) {
+	private static Error validateComparableValue(DataNode node, ComparableType<?> type) {
 
 		Comparable<?> value = null;
 		try {
-			switch (type.getContentType()) {
-				case INTEGER  : value = new Integer(node.getValue()); break;
-				case DECIMAL  : value = new Double(node.getValue()); break;
-				case DATETIME : value = new DateTime(node.getValue()); break;
-				case DATE     : value = new Date(node.getValue()); break;
-				default: // we will never get here, unless we forgot to implement something
-					throw new RuntimeException("validation of '" + type.getContentType() + "' not implemented!");
-			}
+			value = type.valueConstructor().apply(node.getValue());
 		} catch (Exception e) {
-			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getContentType(), e.getMessage());
+			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
 		}
 		
-		Interval<?> range = type.getRange(); 
+		Interval<?> range = type.getInterval(); 
 		int contains = range.contains(value);
 		if (contains < 0) {
 			if (value.equals(range.min)) 
@@ -391,7 +380,7 @@ public abstract class Validator {
 				//System.out.println("validateComplex: matching " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
 				if (childcomp instanceof ModelGroup)
 					match = matchGroup(inode, childnode, (ModelGroup) childcomp, errors);
-				else match = matchNodeType(childnode, (NodeType) childcomp, errors);
+				else match = matchType(childnode, (Type) childcomp, errors);
 				
 				//System.out.println("validateComplex: " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
 				if (match) { // count match and get the next node (or none) to match against this component
@@ -457,7 +446,7 @@ public abstract class Validator {
 			//System.out.println("matchChoice: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 			if (component instanceof ModelGroup)
 				match = matchGroup(inode, node, (ModelGroup) component, errors);
-			else match = matchNodeType(node, (NodeType) component, errors);
+			else match = matchType(node, (Type) component, errors);
 			//System.out.println("matchChoice: " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + (match ? " == " : " <> ") + "component " + component.getName());
 			if (match) return true;  // return true at the first match
 		}
@@ -507,7 +496,7 @@ public abstract class Validator {
 				//System.out.println("matchSequence: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 				if (component instanceof ModelGroup)
 					match = matchGroup(inode, node, (ModelGroup) component, errors);
-				else match = matchNodeType(node, (NodeType) component, errors);
+				else match = matchType(node, (Type) component, errors);
 				
 				//System.out.println("matchSequence: " + node + (match ? " == " : " <> ") + "component " + component.getName());
 				if (match) { 
@@ -601,7 +590,7 @@ public abstract class Validator {
 					//System.out.println("matchUnordered: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 					if (component instanceof ModelGroup)
 						match = matchGroup(inode, node, (ModelGroup) component, errors);
-					else match = matchNodeType(node, (NodeType) component, errors);
+					else match = matchType(node, (Type) component, errors);
 	
 					/*
 					 * If we have a match, count it. If there are more nodes to be matched, resume
@@ -719,7 +708,7 @@ public abstract class Validator {
 
 
 	/** Returns the type name in single quotes, or "any node" for an unnamed {@code AnyType}. */
-	private static String quoteName(NodeType type) {
+	private static String quoteName(Type type) {
 		
 		return (type instanceof AnyType && !((AnyType) type).isNamed()) 
 			? "any node" : "'" + type.getTypeName() + "'";
@@ -727,7 +716,7 @@ public abstract class Validator {
 
 
 	/** Returns list of quoted type names in the format: 'a'[, 'b' ...] or 'z'. */
-	private static String quoteNames(List<NodeType> list) {
+	private static String quoteNames(List<Type> list) {
 		
 		String result = list.stream()
 			.map(n -> quoteName(n)).collect(Collectors.joining(","));
@@ -743,7 +732,7 @@ public abstract class Validator {
 	 * model groups). This recursive method returns a set of candidate types when
 	 * matching a particular component (type or model group).
 	 */
-	private static List<NodeType> expectedTypes(Component comp) {
+	private static List<Type> expectedTypes(Component comp) {
 
 		if (comp instanceof NodeType)  // ends recursion 
 			return Collections.singletonList( (NodeType) comp );
@@ -758,9 +747,9 @@ public abstract class Validator {
 		 * follow (in any order).
 		 */
 		if (group instanceof ChoiceGroup || group instanceof UnorderedGroup) {
-			List<NodeType> result = group.nodes().stream()
+			List<Type> result = group.nodes().stream()
 				.flatMap(n -> expectedTypes( (Component) n ).stream())
-				.collect(Collectors.toCollection(ArrayList<NodeType>::new));
+				.collect(Collectors.toCollection(ArrayList<Type>::new));
 			return result;
 		}
 		
@@ -771,9 +760,9 @@ public abstract class Validator {
 		 * mandatory component.
 		 */
 		if (group instanceof SequenceGroup) {
-			List<NodeType> result = new ArrayList<>();
+			List<Type> result = new ArrayList<>();
 			for (Node n : group.nodes()) {
-				for (NodeType t : expectedTypes((Component) n)) result.add(t); // correct?
+				for (Type t : expectedTypes((Component) n)) result.add(t); // correct?
 				if (((Component) n).minOccurs() > 0) break;
 			}
 			return result;
@@ -789,11 +778,11 @@ public abstract class Validator {
 	 * component, this method returns a set of candidate types based on a
 	 * <i>list</i> of (equally applicable) components.
 	 */
-	private static List<NodeType> expectedTypes(List<Component> list) {
+	private static List<Type> expectedTypes(List<Component> list) {
 		
-		List<NodeType> result = 
+		List<Type> result = 
 			list.stream().flatMap(n -> expectedTypes(n).stream())
-			.collect(Collectors.toCollection(ArrayList<NodeType>::new));
+			.collect(Collectors.toCollection(ArrayList<Type>::new));
 		return result;
 	}
 
@@ -803,7 +792,7 @@ public abstract class Validator {
 		
 		if (comp instanceof ModelGroup)
 			return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteNames(expectedTypes(comp)));
-		else return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((NodeType) comp));
+		else return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((Type) comp));
 	}
 
 

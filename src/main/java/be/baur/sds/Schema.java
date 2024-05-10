@@ -1,7 +1,10 @@
 package be.baur.sds;
 
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
@@ -9,53 +12,90 @@ import be.baur.sda.Node;
 import be.baur.sda.serialization.SDAFormatter;
 import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
+import be.baur.sds.types.BinaryType;
+import be.baur.sds.types.BooleanType;
+import be.baur.sds.types.DateTimeType;
+import be.baur.sds.types.DateType;
+import be.baur.sds.types.DecimalType;
+import be.baur.sds.types.IntegerType;
+import be.baur.sds.types.StringType;
 import be.baur.sds.validation.Validator;
 
 /**
  * A {@code Schema} node represents an SDA document definition that can be used
- * to validate SDA content (amongst others). It is a container for components
- * that define the content model, like node types and model groups. Schema is
- * usually not created "manually" but read and parsed from a definition in SDS
- * notation.
+ * to validate SDA content. It is a container for components that define the
+ * content model, like node types and model groups. Schema is usually not
+ * created "manually" but read and parsed from a definition in SDS notation.
  * 
  * @see Component
  * @see SDSParser
  */
 public final class Schema extends AbstractNode {
 
-	public static final String TAG = "schema";	
+	public static final String TAG = "schema";
 	
-//	/** The name of the default type, may be null. */
-//	private String defaultType = null;
+	/*
+	 * A map that holds functions to produce all native SDS data types. This allows
+	 * us to keep the factory code generic and extensible with new types.
+	 */
+	private static Map<String, Function<String,DataType>> dataTypeFunctions = new HashMap<String, Function<String,DataType>>();
 
+	/**
+	 * Registers a function that creates an instance of a specific SDS data type.
+	 * The type and function must not be null, and a type can be registered only
+	 * once, otherwise an exception will be thrown.
+	 * 
+	 * @param type     the name of the type to register
+	 * @param function a Function that returns a new DataType
+	 * @throws IllegalStateException if {@code type} was already registered
+	 */
+	public static void registerDataType(String type, Function<String,DataType> function) {
+		Objects.requireNonNull(type, "type must not be null");
+		Objects.requireNonNull(function, "function must not be null");
+		if (dataTypeFunctions.containsKey(type))
+			throw new IllegalStateException("type " + type + " has already been registered");
+		dataTypeFunctions.put(type, function);
+	}
 
-//	/**
-//	 * Returns the name of the default type. This method returns null if no default
-//	 * type has been set for this schema.
-//	 * 
-//	 * @return the default type name, may be null
-//	 */
-//	public String getDefaultTypeName() {
-//		return defaultType;
-//	}
-
+	/**
+	 * Returns a DataType instance of the specified type and name, or null if the
+	 * requested data type is unknown (has not been registered).
+	 * 
+	 * @param type a valid data type, not null
+	 * @param name a valid node name, not null
+	 * @return a DataType, or null
+	 */
+	public static DataType getDataType(String type, String name) {
+		Objects.requireNonNull(type, "type must not be null");
+		Objects.requireNonNull(name, "name must not be null");
+		if (dataTypeFunctions.containsKey(type))
+			return dataTypeFunctions.get(type).apply(name);
+		return null;
+	}
 	
-//	/**
-//	 * Specifies the default type. The name must refer to an existing global type,
-//	 * or an exception will be thrown. A null reference is allowed, and will
-//	 * effectively clear the default type.
-//	 * 
-//	 * @param name the default type name, may be null
-//	 * @throws IllegalArgumentException if the type is not found in the schema
-//	 */
-//	public void setDefaultTypeName(String name) {
-// 
-//		if (name != null && getGlobalType(name) == null)
-//			throw new IllegalArgumentException("no such global type (" + name + ")");
-//		this.defaultType = name; 
-//	}
+	/**
+	 * Returns true if the specified type is a registered data type.
+	 * 
+	 * @param type a data type, not null
+	 * @return true or false
+	 */
+	public static boolean isDataType(String type) {
+		Objects.requireNonNull(type, "type must not be null");
+		return dataTypeFunctions.containsKey(type);
+	}
 
-	
+	// Register native SDS data types.
+	static {
+		registerDataType(StringType.NAME, StringType::new );
+		registerDataType(BinaryType.NAME, BinaryType::new );
+		registerDataType(IntegerType.NAME, IntegerType::new );
+		registerDataType(DecimalType.NAME, DecimalType::new );
+		registerDataType(DateType.NAME, DateType::new );
+		registerDataType(DateTimeType.NAME, DateTimeType::new );
+		registerDataType(BooleanType.NAME, BooleanType::new );
+	}
+
+
 	/**
 	 * Returns a global type specified by name, or null if no appropriate type could
 	 * be found in the schema.
@@ -80,9 +120,6 @@ public final class Schema extends AbstractNode {
 		
 		final DataNode node = new DataNode(TAG); 
 		node.add(null); // just in case we have no child nodes
-		
-//		if (defaultType != null) // render type attribute if we have one
-//			node.add(new DataNode(Attribute.TYPE.tag, defaultType));
 
 		for (Node component : nodes()) // render all components
 			node.add(((Component) component).toSDA());
@@ -136,11 +173,11 @@ public final class Schema extends AbstractNode {
 	 */
 	public Validator newValidator() {
 		Validator val = new Validator() {
+			@Override
 			protected Schema getSchema() {
 				return Schema.this;
 			}
 		};
-		//val.setTypeName(getDefaultTypeName());
 		return val;
 	}
 }

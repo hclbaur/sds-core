@@ -1,6 +1,31 @@
 # Release Notes
 
-## [2.3.0] - 2024-03-23
+## [2.4.0] - 2024-05-10
+
+This release add support for user defined data types. The internals 
+of the library have been changed quite a bit but the impact on most
+(if not all) application code should be limited.
+
+- `Removed` be.baur.sds.common.Content.
+- `Removed` be.baur.sds.common.Date and DateTime.
+- `Changed` DataType.getContentType() to getType().
+- `Changed` Interval.from(String, Class) to from(String, Function).
+- `Changed` AbstractStringType to generic CharacterType<T>.
+- `Changed` RangedType to generic ComparableType<T>.
+- `Changed` Package .sds.content to .sds.types.
+- Added Schema.registerDataType(), and get/isDataType().
+- Added abstract Type, which AnyType and NodeType extend.
+- Added static valueOf() methods for native RangedTypes.
+- Added GMonthDay custom type example and tests.
+- Added IBAN custom type example and tests.
+
+## Compatibility
+
+- Requires at least Java 8 and sda-core 2.2.0.
+
+## Previous releases
+
+### [2.3.0] - 2024-03-23
 
 This started out as a compatibility release for sda-core 2.2.x, 
 until I decided to change the SDS syntax and disallow a type 
@@ -21,12 +46,6 @@ a schema no longer has a "default type", whatever that was.
 - Added Schema.newValidator() and getGlobalType().
 - Added Validator.setTypeName().
 - Added docs/SPECIFICATION.
-
-## Compatibility
-
-- Requires at least Java 8 and sda-core 2.2.0.
-
-## Previous releases
 
 ### [2.2.0] - 2023-10-04
 

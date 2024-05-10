@@ -2,8 +2,8 @@ package test;
 
 import java.time.LocalDate;
 
-import be.baur.sds.common.Date;
 import be.baur.sds.common.Interval;
+import be.baur.sds.types.DateType;
 
 public final class TestIntervalDate {
 
@@ -11,21 +11,21 @@ public final class TestIntervalDate {
 
 		Test t1 = new Test(s -> {
 			try {
-				return Interval.from(s, Date.class).toString();
+				return Interval.from(s, DateType.VALUE_CONSTRUCTOR).toString();
 			} catch (Exception e) { return e.getMessage(); }
 		});
 		
 		Test t2 = new Test( (s1,s2) -> {
 			try {
-				return Interval.from(s2, Date.class).contains(new Date(s1)) + "";
+				return Interval.from(s2, DateType.VALUE_CONSTRUCTOR).contains(DateType.valueOf(s1))+"";
 			} catch (Exception e) { return e.getMessage(); }
 		});
 		
 		/* test valid cases */
 		t1.ts1("S01", "1968-02-28", "1968-02-28");
 		t1.ts1("S02", "1968-02-29", "1968-02-29");
-		t1.ts1("S03", "[1968-02-28..1968-03-01]", "[1968-02-28..1968-03-01]");
-		t1.ts1("S04", "(1968-02-28..1968-03-01)", "(1968-02-28..1968-03-01)");
+		t1.ts1("S03", "[1968-02-28 ..1968-03-01]", "[1968-02-28..1968-03-01]");
+		t1.ts1("S04", "(1968-02-28.. 1968-03-01)", "(1968-02-28..1968-03-01)");
 		t1.ts1("S05", "[1968-02-28..*)", "[1968-02-28..*)");
 		t1.ts1("S06", "(*..1968-02-28]", "(*..1968-02-28]");
 		t1.ts1("S07", "[*..*]", "(*..*)");
