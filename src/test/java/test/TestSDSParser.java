@@ -1,9 +1,8 @@
 package test;
 
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.function.Function;
 
@@ -42,9 +41,7 @@ public final class TestSDSParser {
 		}
 		
 		/* test writing a schema to an output file */
-		OutputStreamWriter output = 
-			new OutputStreamWriter(new FileOutputStream("c:/temp/test.sds"), "UTF-8");
-		SDA.format(output, schema.toSDA()); output.close();
+		SDA.format(new File("c:/temp/test.sds"), sds);
 		
 		/* verify a schema */
 		schema.verify();

@@ -1,6 +1,16 @@
 # Release Notes
 
-## [2.4.0] - 2024-05-10
+## [2.4.1] - 2025-??-??
+
+In development. Compatibility release for sda-core 2.2.x.
+
+## Compatibility
+
+- Requires Java 8 and sda-core 2.2.1 or higher.
+
+## Previous releases
+
+### [2.4.0] - 2024-05-10
 
 This release add support for user defined data types. The internals 
 of the library have been changed quite a bit but the impact on most
@@ -19,13 +29,7 @@ of the library have been changed quite a bit but the impact on most
 - Added GMonthDay custom type example and tests.
 - Added IBAN custom type example and tests.
 
-## Compatibility
-
-- Requires at least Java 8 and sda-core 2.2.0.
-
-## Previous releases
-
-### [2.3.0] - 2024-03-23
+### [2.3.0] - 2024-03-23 (requires at least SDA v2.2.0)
 
 This started out as a compatibility release for sda-core 2.2.x, 
 until I decided to change the SDS syntax and disallow a type 
@@ -47,7 +51,7 @@ a schema no longer has a "default type", whatever that was.
 - Added Validator.setTypeName().
 - Added docs/SPECIFICATION.
 
-### [2.2.0] - 2023-10-04
+### [2.2.0] - 2023-10-04 (requires at least SDA v2.1.0)
 
 This is a compatibility release for sda-core 2.1.x with minor changes.
 
