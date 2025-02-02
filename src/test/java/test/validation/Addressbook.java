@@ -1,5 +1,6 @@
 package test.validation;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
@@ -23,19 +24,19 @@ public final class Addressbook {
 			return s;
 		});
 		
-		InputStream sda = Addressbook.class.getResourceAsStream("/addressbook.sda");
-		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
+
+		DataNode doc = SDA.parse(new File(Addressbook.class.getResource("/addressbook.sda").getFile()));
 
 		InputStream sds = Addressbook.class.getResourceAsStream("/addressbook.sds");
 		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
 		Validator validator = schema.newValidator();
 
 		validator.setTypeName("contact"); // set to existing type but not what we expect
-		Errors errors = validator.validate(document);
+		Errors errors = validator.validate(doc);
 		t.ts1("F01", errors.get(0) + "", "/addressbook: got 'addressbook', but 'contact' was expected");
 		
 		validator.setTypeName(null); // try again with any matching type
-		errors = validator.validate(document);
+		errors = validator.validate(doc);
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<?> e = errors.iterator();
 		
@@ -60,7 +61,7 @@ public final class Addressbook {
 		t.ts1("F19", e.hasNext() + "", "false");
 		
 		validator.setTypeName("contact"); // now validate an actual contact (the first one)
-		errors = validator.validate(document.get("contact"));
+		errors = validator.validate(doc.get("contact"));
 		e = errors.iterator();
 
 		t.ts1("F20", e.next() + "", "/addressbook/contact[1]/person/about: only complex content is expected for node 'about'");

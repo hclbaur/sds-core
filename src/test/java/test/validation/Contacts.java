@@ -1,5 +1,6 @@
 package test.validation;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
@@ -22,12 +23,12 @@ public final class Contacts {
 			return s;
 		});
 		
-		InputStream sda = Contacts.class.getResourceAsStream("/contacts.sda");
-		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
+
+		DataNode doc = SDA.parse(new File(Contacts.class.getResource("/contacts.sda").getFile()));
 
 		InputStream sds = Contacts.class.getResourceAsStream("/contacts.sds");
 		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
-		Errors errors = validator.validate(document);
+		Errors errors = validator.validate(doc);
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<?> e = errors.iterator();
 		

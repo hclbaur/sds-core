@@ -1,5 +1,6 @@
 package test.validation;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
@@ -22,13 +23,13 @@ public final class Cartesian {
 			return s;
 		});
 		
-		InputStream sda = Cartesian.class.getResourceAsStream("/cartesian.sda");
-		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
+
+		DataNode doc = SDA.parse(new File(Cartesian.class.getResource("/cartesian.sda").getFile()));
 
 		InputStream sds = Cartesian.class.getResourceAsStream("/cartesian.sds");
 		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		Errors errors = validator.validate(document);
+		Errors errors = validator.validate(doc);
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<?> e = errors.iterator();
 		

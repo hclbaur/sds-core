@@ -1,9 +1,6 @@
 package test;
 
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.util.function.Function;
 
 import be.baur.sda.DataNode;
@@ -23,8 +20,8 @@ public final class TestSDSParser {
 		
 		/* test parsing SDS from files and formatting back to SDS */
 		System.out.print("contacts ");
-		InputStream input = TestSDSParser.class.getResourceAsStream("/contacts.sds");
-		DataNode sds = SDA.parse(new InputStreamReader(input,"UTF-8"));
+		String sdsfile = TestSDSParser.class.getResource("/contacts.sds").getFile();
+		DataNode sds = SDA.parse(new File(sdsfile));
 		Schema schema = SDSParser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);
@@ -32,8 +29,8 @@ public final class TestSDSParser {
 		}
 		
 		System.out.print("addressbook ");
-		input = TestSDSParser.class.getResourceAsStream("/addressbook.sds");
-		sds = SDA.parse(new InputStreamReader(input,"UTF-8"));
+		sdsfile = TestSDSParser.class.getResource("/addressbook.sds").getFile();
+		sds = SDA.parse(new File(sdsfile));
 		schema = SDSParser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);
@@ -49,7 +46,7 @@ public final class TestSDSParser {
 		
 		Function<String, String> strfun = str -> {
 			try {
-				return SDSParser.parse( SDA.parse(new StringReader(str)) ).toString();
+				return SDSParser.parse( SDA.parse(str) ).toString();
 			} catch (Exception e) {
 				return e.getLocalizedMessage();
 			}

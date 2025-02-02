@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 
@@ -16,8 +17,7 @@ public class demo {
 		FileReader sds = new FileReader(args[0]);
 		Schema schema = SDS.parse(sds);
 		
-		FileReader sda = new FileReader(args[1]);
-		DataNode root = SDA.parse(sda);
+		DataNode root = SDA.parse(new File(args[1]));
 		
 		Validator validator = schema.newValidator();
 		Errors errors = validator.validate(root);

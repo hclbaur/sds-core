@@ -1,5 +1,6 @@
 package test.validation;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
@@ -21,14 +22,14 @@ public final class Unordered {
 		Test t = new Test(s -> {
 			return s;
 		});
-		
-		InputStream sda = Unordered.class.getResourceAsStream("/mgtest.sda");
-		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
+
+
+		DataNode doc = SDA.parse(new File(Unordered.class.getResource("/mgtest.sda").getFile()));
 
 		InputStream sds = Unordered.class.getResourceAsStream("/unordered.sds");
 		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
 
-		Errors errors = validator.validate(document);
+		Errors errors = validator.validate(doc);
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<?> e = errors.iterator();
 		
