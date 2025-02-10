@@ -2,11 +2,11 @@
 
 ## [2.4.1] - 2025-??-??
 
-In development. Compatibility release for sda-core 2.2.x.
+In development. Compatibility release for sda-core 2.3.0.
 
 ## Compatibility
 
-- Requires Java 8 and sda-core 2.2.1 or higher.
+- Requires Java 8 and sda-core 2.3.0.
 
 ## Previous releases
 

@@ -9,8 +9,8 @@ import java.util.regex.PatternSyntaxException;
 import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
-import be.baur.sda.serialization.Parser;
-import be.baur.sda.serialization.SDAParseException;
+import be.baur.sda.io.Parser;
+import be.baur.sda.io.SDAParseException;
 import be.baur.sds.AnyType;
 import be.baur.sds.Component;
 import be.baur.sds.DataType;
@@ -111,7 +111,7 @@ public final class SDSParser implements Parser<Schema> {
 //		List<Node> alist = sds.find(n -> n.isLeaf() && ! n.getName().equals(Attribute.TYPE.tag));
 		
 		// a schema must not have attributes
-		List<Node> alist = sds.find(n -> n.isLeaf());
+		List<Node> alist = sds.getAll(n -> n.isLeaf());
 		
 		if (! alist.isEmpty()) { // An unknown or forbidden attribute was found.
 			Node a = alist.get(0);
@@ -124,7 +124,7 @@ public final class SDSParser implements Parser<Schema> {
 		Schema schema = new Schema();
 
 		// parse global types, and add them to the schema (if all is in order).
-		for (Node node : sds.find(n -> ! n.isLeaf())) {
+		for (Node node : sds.getAll(n -> ! n.isLeaf())) {
 			
 			if (Components.get(node.getName()) == null) // component is unknown
 				throw exception(node, COMPONENT_UNKNOWN, node.getName());
@@ -162,7 +162,7 @@ public final class SDSParser implements Parser<Schema> {
 		if (! sds.isParent()) // components must have attributes and/or child components
 			throw exception(sds, COMPONENT_INCOMPLETE, sds.getName());
 		
-		for (Node node : sds.find(n -> n.isLeaf()))
+		for (Node node : sds.getAll(n -> n.isLeaf()))
 			if (Attribute.get(node.getName()) == null) // all attributes must have a known name tag
 				throw exception(node, ATTRIBUTE_UNKNOWN, node.getName());
 		
@@ -173,7 +173,7 @@ public final class SDSParser implements Parser<Schema> {
 		 * type but refers to a global type.
 		 */
 		boolean isNodeType = sds.getName().equals(Components.NODE.tag); // will be false for a model group
-		List<Node> complexChildren = sds.find(n -> ! n.isLeaf()); // list of complex children (if any)
+		List<Node> complexChildren = sds.getAll(n -> ! n.isLeaf()); // list of complex children (if any)
 		
 		// Simple types and references MUSt have a content type, complex types MAY have one
 		DataNode type = getAttribute(sds, Attribute.TYPE, isNodeType && complexChildren.isEmpty());
@@ -192,7 +192,7 @@ public final class SDSParser implements Parser<Schema> {
 				if (! complexChildren.isEmpty())
 					throw exception(sds, ATTRIBUTE_INVALID, Attribute.TYPE.tag, AnyType.NAME, "node defines content");
 				
-				List<Node> alist = sds.find(n -> n.isLeaf() && 
+				List<Node> alist = sds.getAll(n -> n.isLeaf() && 
 					! (n.getName().equals(Attribute.OCCURS.tag) || n.getName().equals(Attribute.TYPE.tag)));
 				if (! alist.isEmpty())
 					throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
@@ -258,7 +258,7 @@ public final class SDSParser implements Parser<Schema> {
 //			.filter(n -> ! (/* n.getName().equals(Attribute.TYPE.tag) 
 //				|| */ n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
 		
-		List<Node> alist = sds.find(n -> n.isLeaf() && ! ( /* n.getName().equals(Attribute.TYPE.tag) || */ 
+		List<Node> alist = sds.getAll(n -> n.isLeaf() && ! ( /* n.getName().equals(Attribute.TYPE.tag) || */ 
 			n.getName().equals(Attribute.OCCURS.tag)) );
 				
 		if (! alist.isEmpty())
@@ -270,7 +270,7 @@ public final class SDSParser implements Parser<Schema> {
 			throw exception(sds, NAME_NOT_EXPECTED, name);
 
 		// in a model group, there must be at least two components
-		if (sds.find(n -> ! n.isLeaf()).size() < 2)
+		if (sds.getAll(n -> ! n.isLeaf()).size() < 2)
 			throw exception(sds, COMPONENT_INCOMPLETE, sds.getName());
 
 		ModelGroup mgroup;
@@ -324,14 +324,14 @@ public final class SDSParser implements Parser<Schema> {
 		
 		// search all node declarations in the schema root for the referenced type
 		Node refNode = null;
-		for (Node cnode : root.find(n -> ! n.isLeaf() && n.getName().equals(Components.NODE.tag))) {
+		for (Node cnode : root.getAll(n -> ! n.isLeaf() && n.getName().equals(Components.NODE.tag))) {
 			if ( ((DataNode) cnode).getValue().equals(type.getValue()) ) refNode = cnode;
 		}
 		if (refNode == null || refNode.equals(sds)) // if we found nothing or ourself, we raise an error.
 			throw exception(type, TYPE_IS_UNKNOWN, type.getValue());
 		
 		// the reference is valid, but it should not have attributes other than type and occurs
-		List<Node> alist = sds.find(n -> n.isLeaf() && ! ( n.getName().equals(Attribute.TYPE.tag) 
+		List<Node> alist = sds.getAll(n -> n.isLeaf() && ! ( n.getName().equals(Attribute.TYPE.tag) 
 			||  n.getName().equals(Attribute.OCCURS.tag) ));
 		
 		if (! alist.isEmpty())
@@ -386,7 +386,7 @@ public final class SDSParser implements Parser<Schema> {
 		 */
 		if (type == null) {
 
-			List<Node> alist = sds.find(n -> n.isLeaf() && ! n.getName().equals(Attribute.OCCURS.tag) );
+			List<Node> alist = sds.getAll(n -> n.isLeaf() && ! n.getName().equals(Attribute.OCCURS.tag) );
 			if (! alist.isEmpty())
 				throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
 			
@@ -464,7 +464,7 @@ public final class SDSParser implements Parser<Schema> {
 	 */
 	private static DataNode getAttribute(DataNode sds, Attribute att, Boolean req) throws SDSParseException {
 
-		List<DataNode> alist = sds.find(n -> n.isLeaf() && n.getName().equals(att.tag) );
+		List<DataNode> alist = sds.getAll(n -> n.isLeaf() && n.getName().equals(att.tag) );
 		
 		int size = alist.size();
 		if (size == 0) {

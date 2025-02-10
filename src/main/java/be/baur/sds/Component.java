@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
-import be.baur.sda.serialization.SDAFormatter;
+import be.baur.sda.io.SDAFormatter;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.model.ModelGroup;
 

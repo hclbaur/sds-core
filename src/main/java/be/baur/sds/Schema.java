@@ -9,7 +9,7 @@ import java.util.function.Function;
 import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
 import be.baur.sda.Node;
-import be.baur.sda.serialization.SDAFormatter;
+import be.baur.sda.io.SDAFormatter;
 import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
 import be.baur.sds.types.BinaryType;
