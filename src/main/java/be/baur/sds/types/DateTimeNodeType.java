@@ -6,10 +6,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
 /**
- * A <code>DateTimeType</code> defines an SDA node with temporal data (date,
- * time and time zone).
+ * A <code>DateTimeNodeType</code> defines an SDA node with a temporal value (a
+ * date and time including the time zone).
  */
-public final class DateTimeType extends ComparableType<ZonedDateTime> {
+public final class DateTimeNodeType extends ComparableNodeType <ZonedDateTime> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "datetime";
@@ -21,18 +21,18 @@ public final class DateTimeType extends ComparableType<ZonedDateTime> {
 
 
 	/**
-	 * Creates the type with the specified name.
+	 * Creates a date-time node type with the specified name.
 	 * 
 	 * @param name a valid node name
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public DateTimeType(String name) {
+	public DateTimeNodeType(String name) {
 		super(name);
 	}
 
 
 	@Override
-	public String getType() {
+	public String getValueType() {
 		return NAME;
 	}
 

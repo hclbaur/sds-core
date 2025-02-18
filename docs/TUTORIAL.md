@@ -357,7 +357,7 @@ Omitting the value facet is equivalent to **(\*..\*)**.
 
 #### pattern
 
-The final facet is different from length and value in two ways: first, it  works on all simple types, and second, it restricts the lexical space rather than the value space. A pattern lets you derive all kinds of custom types using the power of a regular expression. The possibilities are literally endless, so here are just a few to whet your appetite:
+The final facet is different from length and value in two ways: first, it  works on all simple types, and second, it restricts the lexical space rather than the value space. A pattern lets you derive all kinds of custom types using the power of a regular expression. Here are some examples:
 
 	node "token" { type "string" pattern "[^\\s]+" }
 

@@ -3,9 +3,9 @@ package be.baur.sds.types;
 import java.util.function.Function;
 
 /**
- * A <code>IntegerType</code> defines an SDA node with integer data.
+ * A <code>IntegerNodeType</code> defines an SDA node with an integer value.
  */
-public final class IntegerType extends ComparableType<Integer> {
+public final class IntegerNodeType extends ComparableNodeType <Integer> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "integer";
@@ -15,18 +15,18 @@ public final class IntegerType extends ComparableType<Integer> {
 
 
 	/**
-	 * Creates the type with the specified name.
+	 * Creates an integer node type with the specified name.
 	 * 
 	 * @param name a valid node name
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public IntegerType(String name) {
+	public IntegerNodeType(String name) {
 		super(name);
 	}
 
 
 	@Override
-	public String getType() {
+	public String getValueType() {
 		return NAME;
 	}
 

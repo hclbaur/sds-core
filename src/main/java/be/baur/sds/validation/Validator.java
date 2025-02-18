@@ -12,21 +12,20 @@ import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.util.Result;
 import be.baur.sda.util.Results;
-import be.baur.sds.AnyType;
+import be.baur.sds.AbstractNodeType;
+import be.baur.sds.AnyNodeType;
 import be.baur.sds.Component;
-import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
-import be.baur.sds.Type;
+import be.baur.sds.ValueNodeType;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.model.ChoiceGroup;
 import be.baur.sds.model.ModelGroup;
 import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
-import be.baur.sds.types.BooleanType;
-import be.baur.sds.types.CharacterType;
-import be.baur.sds.types.ComparableType;
+import be.baur.sds.types.CharacterNodeType;
+import be.baur.sds.types.ComparableNodeType;
 
 /**
  * This is the default validator; used to validate SDA content against a
@@ -195,21 +194,21 @@ public abstract class Validator {
 	 * If there is a match, we assert that the node content is valid, or add an
 	 * error to the list otherwise. This does not apply to "any" type components.
 	 */
-	private static boolean matchType(DataNode node, Type type, Errors errors) {
+	private static boolean matchType(DataNode node, AbstractNodeType type, Errors errors) {
 		
 		String nodename = node.getName();
 		boolean namesmatch = nodename.equals(type.getTypeName());
 		
-		if (type instanceof AnyType) {
+		if (type instanceof AnyNodeType) {
 			// if the name is no match for an explicitly named "any" type, we return false
-			if (! namesmatch && ((AnyType) type).isNamed()) return false;
+			if (! namesmatch && ((AnyNodeType) type).isNamed()) return false;
 			return true;  // otherwise we return true without further validation
 		}
 		if (! namesmatch) return false; // specific type; if names differ, there is no match
 		
 		// we have a match, now proceed to check the content
 		
-		if (! (type instanceof DataType)) { // we are expecting complex content ONLY
+		if (! (type instanceof ValueNodeType)) { // we are expecting complex content ONLY
 			
 			if (node.isLeaf() || ! node.getValue().isEmpty())  // but we got something with a value
 				errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
@@ -231,7 +230,7 @@ public abstract class Validator {
 			errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
 	
 		// validate the simple content we were expecting
-		errors.add(validateSimpleContent(node, (DataType) type));
+		errors.add(validateValue(node, (ValueNodeType<?>) type));
 		return true;
 	}
 
@@ -241,7 +240,7 @@ public abstract class Validator {
 	 * appropriate with respect to this components content type, and any facets that
 	 * may apply. This method returns a validation error, or null otherwise.
 	 */
-	private static Error validateSimpleContent(DataNode node, DataType type) {
+	private static Error validateValue(DataNode node, ValueNodeType<?> type) {
 		
 		String value = node.getValue(); // need this a few times times
 		
@@ -249,21 +248,22 @@ public abstract class Validator {
 		if (value.isEmpty() && ! type.isNullable())
 			return error(node, EMPTY_VALUE_NOT_ALLOWED, node.getName());
 		
-		if (type instanceof CharacterType) {
-			Error error = validateCharacterValue(node, (CharacterType<?>) type);
+		if (type instanceof CharacterNodeType) {
+			Error error = validateCharacterValue(node, (CharacterNodeType<?>) type);
 			if (error != null) return error;
 		}
 		
-		if (type instanceof ComparableType) {
-			Error error = validateComparableValue(node, (ComparableType<?>) type);
+		else if (type instanceof ComparableNodeType) {
+			Error error = validateComparableValue(node, (ComparableNodeType<?>) type);
 			if (error != null) return error;
 		}
 		
-		if (type instanceof BooleanType) {
+		else if (type instanceof ValueNodeType) {
 			try {
-				BooleanType.valueOf(value);
+				// probably a BooleanNodeType then
+				type.valueConstructor().apply(node.getValue());
 			} catch (Exception e) {
-				return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
+				return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getValueType(), e.getMessage());
 			}
 		}
 			
@@ -274,21 +274,20 @@ public abstract class Validator {
 		return null;
 	}
 
+	
 	/**
-	 * Any string is by definition a valid string representation of a string type.
-	 * However, this may not be true for a binary string type. Also, we check the
-	 * length (in characters for a string and bytes for a binary).
-	 * @param <T>
+	 * Asserts that the node value is valid by creating an instance, and check
+	 * whether its length is within the allowed interval.
 	 */
-	private static <T> Error validateCharacterValue(DataNode node, CharacterType<T> type) {
+	private static <T> Error validateCharacterValue(DataNode node, CharacterNodeType<T> type) {
 		
 		int length;
 		
 		try {
-			T value = type.valueConstructor().apply(node.getValue());
+			T value = (T) type.valueConstructor().apply(node.getValue());
 			length = type.valueLength(value);
 		} catch (Exception e) {
-			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
+			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getValueType(), e.getMessage());
 		}
 		
 		// Check if the length is within the acceptable range
@@ -308,16 +307,16 @@ public abstract class Validator {
 
 	
 	/**
-	 * We assert that the node value is a valid string representation of this
-	 * content type by creating an instance, and check whether it is in range.
+	 * Asserts that the node value is valid by creating an instance, and check
+	 * whether it is within the allowed interval.
 	 */
-	private static Error validateComparableValue(DataNode node, ComparableType<?> type) {
+	private static Error validateComparableValue(DataNode node, ComparableNodeType<?> type) {
 
 		Comparable<?> value = null;
 		try {
-			value = type.valueConstructor().apply(node.getValue());
+			value = (Comparable<?>) type.valueConstructor().apply(node.getValue());
 		} catch (Exception e) {
-			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getType(), e.getMessage());
+			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getValueType(), e.getMessage());
 		}
 		
 		Interval<?> range = type.getInterval(); 
@@ -380,7 +379,7 @@ public abstract class Validator {
 				//System.out.println("validateComplex: matching " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
 				if (childcomp instanceof ModelGroup)
 					match = matchGroup(inode, childnode, (ModelGroup) childcomp, errors);
-				else match = matchType(childnode, (Type) childcomp, errors);
+				else match = matchType(childnode, (AbstractNodeType) childcomp, errors);
 				
 				//System.out.println("validateComplex: " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
 				if (match) { // count match and get the next node (or none) to match against this component
@@ -446,7 +445,7 @@ public abstract class Validator {
 			//System.out.println("matchChoice: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 			if (component instanceof ModelGroup)
 				match = matchGroup(inode, node, (ModelGroup) component, errors);
-			else match = matchType(node, (Type) component, errors);
+			else match = matchType(node, (AbstractNodeType) component, errors);
 			//System.out.println("matchChoice: " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + (match ? " == " : " <> ") + "component " + component.getName());
 			if (match) return true;  // return true at the first match
 		}
@@ -496,7 +495,7 @@ public abstract class Validator {
 				//System.out.println("matchSequence: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 				if (component instanceof ModelGroup)
 					match = matchGroup(inode, node, (ModelGroup) component, errors);
-				else match = matchType(node, (Type) component, errors);
+				else match = matchType(node, (AbstractNodeType) component, errors);
 				
 				//System.out.println("matchSequence: " + node + (match ? " == " : " <> ") + "component " + component.getName());
 				if (match) { 
@@ -590,7 +589,7 @@ public abstract class Validator {
 					//System.out.println("matchUnordered: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 					if (component instanceof ModelGroup)
 						match = matchGroup(inode, node, (ModelGroup) component, errors);
-					else match = matchType(node, (Type) component, errors);
+					else match = matchType(node, (AbstractNodeType) component, errors);
 	
 					/*
 					 * If we have a match, count it. If there are more nodes to be matched, resume
@@ -707,16 +706,16 @@ public abstract class Validator {
 	//
 
 
-	/** Returns the type name in single quotes, or "any node" for an unnamed {@code AnyType}. */
-	private static String quoteName(Type type) {
+	/** Returns the type name in single quotes, or "any node" for an unnamed {@code AnyNodeType}. */
+	private static String quoteName(AbstractNodeType abstractNodeType) {
 		
-		return (type instanceof AnyType && !((AnyType) type).isNamed()) 
-			? "any node" : "'" + type.getTypeName() + "'";
+		return (abstractNodeType instanceof AnyNodeType && !((AnyNodeType) abstractNodeType).isNamed()) 
+			? "any node" : "'" + abstractNodeType.getTypeName() + "'";
 	}
 
 
 	/** Returns list of quoted type names in the format: 'a'[, 'b' ...] or 'z'. */
-	private static String quoteNames(List<Type> list) {
+	private static String quoteNames(List<AbstractNodeType> list) {
 		
 		String result = list.stream()
 			.map(n -> quoteName(n)).collect(Collectors.joining(","));
@@ -732,7 +731,7 @@ public abstract class Validator {
 	 * model groups). This recursive method returns a set of candidate types when
 	 * matching a particular component (type or model group).
 	 */
-	private static List<Type> expectedTypes(Component comp) {
+	private static List<AbstractNodeType> expectedTypes(Component comp) {
 
 		if (comp instanceof NodeType)  // ends recursion 
 			return Collections.singletonList( (NodeType) comp );
@@ -747,9 +746,9 @@ public abstract class Validator {
 		 * follow (in any order).
 		 */
 		if (group instanceof ChoiceGroup || group instanceof UnorderedGroup) {
-			List<Type> result = group.nodes().stream()
+			List<AbstractNodeType> result = group.nodes().stream()
 				.flatMap(n -> expectedTypes( (Component) n ).stream())
-				.collect(Collectors.toCollection(ArrayList<Type>::new));
+				.collect(Collectors.toCollection(ArrayList<AbstractNodeType>::new));
 			return result;
 		}
 		
@@ -760,9 +759,9 @@ public abstract class Validator {
 		 * mandatory component.
 		 */
 		if (group instanceof SequenceGroup) {
-			List<Type> result = new ArrayList<>();
+			List<AbstractNodeType> result = new ArrayList<>();
 			for (Node n : group.nodes()) {
-				for (Type t : expectedTypes((Component) n)) result.add(t); // correct?
+				for (AbstractNodeType t : expectedTypes((Component) n)) result.add(t); // correct?
 				if (((Component) n).minOccurs() > 0) break;
 			}
 			return result;
@@ -778,11 +777,11 @@ public abstract class Validator {
 	 * component, this method returns a set of candidate types based on a
 	 * <i>list</i> of (equally applicable) components.
 	 */
-	private static List<Type> expectedTypes(List<Component> list) {
+	private static List<AbstractNodeType> expectedTypes(List<Component> list) {
 		
-		List<Type> result = 
+		List<AbstractNodeType> result = 
 			list.stream().flatMap(n -> expectedTypes(n).stream())
-			.collect(Collectors.toCollection(ArrayList<Type>::new));
+			.collect(Collectors.toCollection(ArrayList<AbstractNodeType>::new));
 		return result;
 	}
 
@@ -792,7 +791,7 @@ public abstract class Validator {
 		
 		if (comp instanceof ModelGroup)
 			return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteNames(expectedTypes(comp)));
-		else return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((Type) comp));
+		else return error(context, CONTENT_MISSING_AT_END, context.getName(), quoteName((AbstractNodeType) comp));
 	}
 
 

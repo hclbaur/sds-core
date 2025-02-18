@@ -9,15 +9,16 @@ import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.model.ModelGroup;
 
 /**
- * This is the abstract superclass of all schema components.
+ * This is the abstract superclass of all schema components (node types and
+ * model groups).
  * 
- * @see NodeType
+ * @see AbstractNodeType
  * @see ModelGroup
  */
 public abstract class Component extends AbstractNode {
 
 	private String globalTypeName = null; // name of the global type that this component refers to.
-	private NaturalInterval multiplicity = NaturalInterval.ONE_TO_ONE; // default is mandatory and singular.
+	private NaturalInterval multiplicity = NaturalInterval.EXACTLY_ONE; // default is mandatory and singular.
 
 	
 	/**
@@ -37,19 +38,18 @@ public abstract class Component extends AbstractNode {
 	 * defined in the root section of the schema. This method cannot be used to
 	 * clear or reset an existing reference as this is likely to cause a problem.
 	 * 
-	 * @param type the referenced type name, null is ignored
+	 * @param globaltype the referenced global type name, not null
 	 */
-	public void setGlobalType(String type) {
-		if (type != null) this.globalTypeName = type;
+	public void setGlobalType(String globaltype) {
+		this.globalTypeName = Objects.requireNonNull(globaltype, "globaltype must not be null");
 	}
 
 	
 	/**
 	 * Returns the multiplicity interval of this component. The default value is
-	 * {@code [1,1]}, which means the component must occur exactly once. This method
-	 * never returns null.
+	 * {@code [1,1]}, which means "exactly once". This method never returns null.
 	 * 
-	 * @return a natural interval, may be null
+	 * @return a natural interval, never null
 	 */
 	public NaturalInterval getMultiplicity() {
 		return multiplicity;

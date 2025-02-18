@@ -2,38 +2,38 @@ package samples.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.types.ComparableType;
+import be.baur.sds.types.ComparableNodeType;
 
 /**
- * A <code>GMonthDayType</code> defines an SDA node with temporal data (a local
+ * A <code>GMonthDayNodeType</code> defines an SDA node with temporal data (a local
  * recurring calendar date without a year or time zone).
  * 
  * @see GMonthDay
  */
-public final class GMonthDayType extends ComparableType<GMonthDay> {
+public final class GMonthDayNodeType extends ComparableNodeType <GMonthDay> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "gMonthDay";
 
-	/** A function that constructs a gMonthDay value from a string. */
+	/** A function that constructs a gMonthDay from a string. */
 	public static final Function<String, GMonthDay> VALUE_CONSTRUCTOR = s -> {
 		return GMonthDay.parse(s);
 	};
 
 	
 	/**
-	 * Creates the type with the specified name.
+	 * Creates an gMonthDay node type with the specified name.
 	 * 
 	 * @param name a valid node name
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public GMonthDayType(String name) {
+	public GMonthDayNodeType(String name) {
 		super(name);
 	}
 
 	
 	@Override
-	public String getType() {
+	public String getValueType() {
 		return NAME;
 	}
 

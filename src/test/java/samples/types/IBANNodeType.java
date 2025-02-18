@@ -2,38 +2,39 @@ package samples.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.types.CharacterType;
+import be.baur.sds.types.CharacterNodeType;
 
 
 /**
- * A <code>BinaryType</code> defines an SDA node with a valid IBAN value.
+ * A <code>IBANType</code> defines an SDA node with an international bank
+ * account as a value.
  * 
  * @see IBAN
  */
-public final class IBANType extends CharacterType<IBAN> {
+public final class IBANNodeType extends CharacterNodeType <IBAN> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "IBAN";
 	
-	/** A function that constructs an binary value from a string. */
+	/** A function that constructs an IBAN from a string. */
 	public static final Function<String, IBAN> VALUE_CONSTRUCTOR = s -> {
 		return IBAN.parse(s);
 	};
 
 
 	/**
-	 * Creates the type with the specified name.
+	 * Creates an IBAN node type with the specified name.
 	 * 
 	 * @param name a valid node name
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public IBANType(String name) {
+	public IBANNodeType(String name) {
 		super(name);
 	}
 	
 
 	@Override
-	public String getType() {
+	public String getValueType() {
 		return NAME;
 	}
 	

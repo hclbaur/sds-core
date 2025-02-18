@@ -26,10 +26,10 @@ public final class NaturalInterval {
 	public static final NaturalInterval ONE_TO_MAX = new NaturalInterval(1, Integer.MAX_VALUE);
 	
 	/** The unit interval from 0 to 1, e.g. {@code 0..1}. */
-	public static final NaturalInterval ZERO_TO_ONE = new NaturalInterval(0, 1);
+	public static final NaturalInterval ZERO_OR_ONE = new NaturalInterval(0, 1);
 	
 	/** The degenerate interval {@code 1..1}, so just 1. */
-	public static final NaturalInterval ONE_TO_ONE = new NaturalInterval(1, 1);
+	public static final NaturalInterval EXACTLY_ONE = new NaturalInterval(1, 1);
 	
 	
 	/** The lower interval limit */
@@ -71,11 +71,11 @@ public final class NaturalInterval {
 		 
 		 /* return static values for common intervals */
 		 if (min == 0) {
-			 if (max == 1) return ZERO_TO_ONE;
+			 if (max == 1) return ZERO_OR_ONE;
 			 if (max == Integer.MAX_VALUE) return ZERO_TO_MAX;
 		 }
 		 if (min == 1) {
-			 if (max == 1) return ONE_TO_ONE;
+			 if (max == 1) return EXACTLY_ONE;
 			 if (max == Integer.MAX_VALUE) return ONE_TO_MAX;
 		 } 
 		 return new NaturalInterval(min, max);

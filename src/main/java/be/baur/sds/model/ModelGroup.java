@@ -8,9 +8,11 @@ import be.baur.sds.Component;
 import be.baur.sds.serialization.Attribute;
 
 /**
- * The abstract superclass of all model groups. <br>
- * See also {@link SequenceGroup}, {@link ChoiceGroup} and
- * {@link UnorderedGroup}.
+ * This is the abstract superclass of all model groups.
+ * 
+ * @see SequenceGroup
+ * @see ChoiceGroup
+ * @see UnorderedGroup
  */
 public abstract class ModelGroup extends Component {
 

@@ -1,7 +1,7 @@
 package test;
 
 import be.baur.sds.common.Interval;
-import be.baur.sds.types.IntegerType;
+import be.baur.sds.types.IntegerNodeType;
 
 public final class TestIntervalInteger {
 
@@ -9,13 +9,13 @@ public final class TestIntervalInteger {
 
 		Test t1 = new Test(s -> {
 			try {
-				return Interval.from(s, IntegerType.VALUE_CONSTRUCTOR).toString();
+				return Interval.from(s, IntegerNodeType.VALUE_CONSTRUCTOR).toString();
 			} catch (Exception e) {	return e.getMessage(); }
 		});
 		
 		Test t2 = new Test( (s1,s2) -> {
 			try {
-				return Interval.from(s2, IntegerType.VALUE_CONSTRUCTOR).contains(IntegerType.valueOf(s1))+"";
+				return Interval.from(s2, IntegerNodeType.VALUE_CONSTRUCTOR).contains(IntegerNodeType.valueOf(s1))+"";
 			} catch (Exception e) { return e.getMessage(); }
 		});
 		

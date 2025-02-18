@@ -10,7 +10,7 @@ import be.baur.sds.Component;
 import be.baur.sds.serialization.Components;
 
 /**
- * A {@code ChoiceGroup} defines two (or more) mutually exclusive nodes or
+ * A choice group defines two (or more) mutually exclusive nodes or
  * content models, for example:
  * 
  * <pre>

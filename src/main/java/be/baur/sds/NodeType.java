@@ -2,40 +2,31 @@ package be.baur.sds;
 
 import java.util.List;
 
+import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
-import be.baur.sda.DataNode;
-import be.baur.sds.model.ModelGroup;
 import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.Components;
-import be.baur.sds.types.CharacterType;
-import be.baur.sds.types.ComparableType;
-import be.baur.sds.types.StringType;
+import be.baur.sds.types.CharacterNodeType;
+import be.baur.sds.types.ComparableNodeType;
+import be.baur.sds.types.StringNodeType;
 
 
 /**
- * A {@code NodeType} is an SDA node type definition. It is one of the building
- * blocks of a {@code Schema} that defines SDA node content, the other being a
- * {@code ModelGroup}.
+ * A {@code NodeType} defines an SDA node without a value. For a node that
+ * allows simple content, instantiate a subclass of a {@code ValueNodeType}.
  * 
- * Note that an instance of this class is a complex type. For a type with simple
- * content, instantiate a {@code DataType} subclass, like {@code StringType},
- * {@code IntegerType}, {@code BooleanType}, etc.
- * 
- * @see ModelGroup
- * @see DataType
+ * @see ValueNodeType
  **/
-public class NodeType extends Type {
+public class NodeType extends AbstractNodeType {
 
 	private NodeType globalType = null; // the global type this type refers to, if any
 
 
 	/**
-	 * Creates a type with the specified name, which must be a valid node name.
+	 * Creates a type that defines a node with the specified name.
 	 * 
-	 * @see SDA#isName
-	 * 
-	 * @param name a valid node name
+	 * @param name a valid node name, not null or empty
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	public NodeType(String name) {
@@ -44,10 +35,10 @@ public class NodeType extends Type {
 	
 
 	/**
-	 * Returns the name of this type. A type defines an instance of a data node, so
-	 * this method always returns a valid node name.
+	 * Returns the name of the node defined by this type. This method always returns
+	 * a valid node name.
 	 * 
-	 * @return a valid node name, not null or empty
+	 * @return a valid node name, never null or empty
 	 */
 	@Override
 	public final String getTypeName() {
@@ -56,12 +47,10 @@ public class NodeType extends Type {
 
 	
 	/**
-	 * Sets the name of this type. A type defines an instance of a data node, so the
-	 * name of this type is restricted to valid node names.
+	 * Sets the name of the node defined by this type. The name is restricted to
+	 * valid node names.
 	 * 
-	 * @see SDA#isName
-	 * 
-	 * @param name a valid node name, may be null or empty
+	 * @param name a valid node name, not null or empty
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	@Override
@@ -123,8 +112,8 @@ public class NodeType extends Type {
 		// Render the type attribute for a global type reference, or a data type
 		if (getGlobalType() != null)
 			node.add(new DataNode(Attribute.TYPE.tag, getGlobalType()));
-		else if (this instanceof DataType)
-			node.add(new DataNode(Attribute.TYPE.tag, ((DataType) this).getType()));
+		else if (this instanceof ValueNodeType)
+			node.add(new DataNode(Attribute.TYPE.tag, ((ValueNodeType<?>) this).getValueType()));
 		
 		// Render the multiplicity if not default
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
@@ -133,28 +122,28 @@ public class NodeType extends Type {
 		// facets are rendered ONLY if we are not a type reference!
 		if (getGlobalType() == null) {
 
-			final boolean isCharType = (this instanceof CharacterType);
+			final boolean isCharType = (this instanceof CharacterNodeType);
 
 			if (isCharType) {
-				CharacterType<?> t = (CharacterType<?>) this;
+				CharacterNodeType<?> t = (CharacterNodeType<?>) this;
 				if (t.getLength().min != 0 || t.getLength().max != Integer.MAX_VALUE)
 					node.add(new DataNode(Attribute.LENGTH.tag, t.getLength().toString()));
 			}
 	
-			if (this instanceof ComparableType) {
-				ComparableType<?> t = (ComparableType<?>) this;
+			if (this instanceof ComparableNodeType) {
+				ComparableNodeType<?> t = (ComparableNodeType<?>) this;
 				if (t.getInterval().min != null || t.getInterval().max != null)
 					node.add(new DataNode(Attribute.VALUE.tag, t.getInterval().toString()));
 			}
 			
-			if (this instanceof DataType) {
-				DataType t = (DataType) this;
+			if (this instanceof ValueNodeType) {
+				ValueNodeType<?> t = (ValueNodeType<?>) this;
 				
 				if (t.getPattern() != null)
 					node.add(new DataNode(Attribute.PATTERN.tag, t.getPattern().toString()));
 				
 				// Add nullable only for a non-nullable string or a nullable other type
-				if ((this instanceof StringType) == !t.isNullable())
+				if ((this instanceof StringNodeType) == !t.isNullable())
 					node.add(new DataNode(Attribute.NULLABLE.tag, String.valueOf(t.isNullable())));
 			}
 		}

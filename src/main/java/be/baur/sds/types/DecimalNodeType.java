@@ -3,9 +3,9 @@ package be.baur.sds.types;
 import java.util.function.Function;
 
 /**
- * A <code>DecimalType</code> defines an SDA node with decimal data.
+ * A <code>DecimalNodeType</code> defines an SDA node with a decimal value.
  */
-public final class DecimalType extends ComparableType<Double> {
+public final class DecimalNodeType extends ComparableNodeType <Double> {
 
 	/** The SDS name of this data type. */
 	public static final String NAME = "decimal";
@@ -15,18 +15,18 @@ public final class DecimalType extends ComparableType<Double> {
 
 
 	/**
-	 * Creates the type with the specified name.
+	 * Creates a decimal node type with the specified name.
 	 * 
 	 * @param name a valid node name
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public DecimalType(String name) {
+	public DecimalNodeType(String name) {
 		super(name);
 	}
 	
 
 	@Override
-	public String getType() {
+	public String getValueType() {
 		return NAME;
 	}
 	

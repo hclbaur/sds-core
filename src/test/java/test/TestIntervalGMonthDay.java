@@ -2,7 +2,7 @@ package test;
 
 import be.baur.sds.common.Interval;
 import samples.types.GMonthDay;
-import samples.types.GMonthDayType;
+import samples.types.GMonthDayNodeType;
 
 public final class TestIntervalGMonthDay {
 
@@ -10,13 +10,13 @@ public final class TestIntervalGMonthDay {
 
 		Test t1 = new Test(s -> {
 			try {
-				return Interval.from(s, GMonthDayType.VALUE_CONSTRUCTOR).toString();
+				return Interval.from(s, GMonthDayNodeType.VALUE_CONSTRUCTOR).toString();
 			} catch (Exception e) {	return e.getMessage(); }
 		});
 		
 		Test t2 = new Test( (s1,s2) -> {
 			try {
-				return Interval.from(s2, GMonthDayType.VALUE_CONSTRUCTOR).contains(GMonthDayType.valueOf(s1))+"";
+				return Interval.from(s2, GMonthDayNodeType.VALUE_CONSTRUCTOR).contains(GMonthDayNodeType.valueOf(s1))+"";
 			} catch (Exception e) { return e.getMessage(); }
 		});
 		

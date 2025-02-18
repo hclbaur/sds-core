@@ -12,17 +12,17 @@ import be.baur.sda.Node;
 import be.baur.sda.io.SDAFormatter;
 import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
-import be.baur.sds.types.BinaryType;
-import be.baur.sds.types.BooleanType;
-import be.baur.sds.types.DateTimeType;
-import be.baur.sds.types.DateType;
-import be.baur.sds.types.DecimalType;
-import be.baur.sds.types.IntegerType;
-import be.baur.sds.types.StringType;
+import be.baur.sds.types.BinaryNodeType;
+import be.baur.sds.types.BooleanNodeType;
+import be.baur.sds.types.DateTimeNodeType;
+import be.baur.sds.types.DateNodeType;
+import be.baur.sds.types.DecimalNodeType;
+import be.baur.sds.types.IntegerNodeType;
+import be.baur.sds.types.StringNodeType;
 import be.baur.sds.validation.Validator;
 
 /**
- * A {@code Schema} node represents an SDA document definition that can be used
+ * A {@code Schema} represents an SDA document definition that can be used
  * to validate SDA content. It is a container for components that define the
  * content model, like node types and model groups. Schema is usually not
  * created "manually" but read and parsed from a definition in SDS notation.
@@ -33,66 +33,71 @@ import be.baur.sds.validation.Validator;
 public final class Schema extends AbstractNode {
 
 	public static final String TAG = "schema";
+
 	
 	/*
-	 * A map that holds functions to produce all native SDS data types. This allows
-	 * us to keep the factory code generic and extensible with new types.
+	 * A map that holds constructor functions to produce SDS node types. This allows
+	 * us to keep the factory code generic and SDS extensible with new node types.
 	 */
-	private static Map<String, Function<String,DataType>> dataTypeFunctions = new HashMap<String, Function<String,DataType>>();
+	@SuppressWarnings("rawtypes")
+	private static Map<String, Function<String, ValueNodeType>> constructors = new HashMap<String, Function<String,ValueNodeType>>();
+
 
 	/**
-	 * Registers a function that creates an instance of a specific SDS data type.
-	 * The type and function must not be null, and a type can be registered only
-	 * once, otherwise an exception will be thrown.
+	 * Registers a function that returns an instance of a specific value node type.
+	 * The type and function must not be null, and the type can be registered only
+	 * once.
 	 * 
-	 * @param type     the name of the type to register
-	 * @param function a Function that returns a new DataType
-	 * @throws IllegalStateException if {@code type} was already registered
+	 * @param type     the data type to register
+	 * @param function a function that returns a {@code ValueNodeType}
+	 * @throws IllegalStateException if the type is already registered
 	 */
-	public static void registerDataType(String type, Function<String,DataType> function) {
+	@SuppressWarnings("rawtypes")
+	public static void registerType(String type, Function<String, ValueNodeType> function) {
 		Objects.requireNonNull(type, "type must not be null");
 		Objects.requireNonNull(function, "function must not be null");
-		if (dataTypeFunctions.containsKey(type))
+		if (constructors.containsKey(type))
 			throw new IllegalStateException("type " + type + " has already been registered");
-		dataTypeFunctions.put(type, function);
+		constructors.put(type, function);
 	}
 
+
 	/**
-	 * Returns a DataType instance of the specified type and name, or null if the
-	 * requested data type is unknown (has not been registered).
+	 * Returns an instance of a value node type for the specified data type, or null
+	 * if the requested type is unknown (e.g. has not been registered).
 	 * 
-	 * @param type a valid data type, not null
-	 * @param name a valid node name, not null
-	 * @return a DataType, or null
+	 * @param type a data type
+	 * @param type a valid node name
+	 * @return a {@code ValueNodeType}, or null
+	 * @throws IllegalArgumentException if name is not a valid node name
 	 */
-	public static DataType getDataType(String type, String name) {
-		Objects.requireNonNull(type, "type must not be null");
-		Objects.requireNonNull(name, "name must not be null");
-		if (dataTypeFunctions.containsKey(type))
-			return dataTypeFunctions.get(type).apply(name);
+	public static ValueNodeType<?> getRegisteredType(String type, String name) {
+		if (type != null && constructors.containsKey(type))
+			return constructors.get(type).apply(name);
 		return null;
 	}
-	
+
+
 	/**
-	 * Returns true if the specified type is a registered data type.
+	 * Returns true if the specified data type is registered.
 	 * 
-	 * @param type a data type, not null
+	 * @param type a data type
 	 * @return true or false
 	 */
-	public static boolean isDataType(String type) {
-		Objects.requireNonNull(type, "type must not be null");
-		return dataTypeFunctions.containsKey(type);
+	public static boolean isRegisteredType(String type) {
+		return type == null ? false : constructors.containsKey(type);
 	}
+
 
 	// Register native SDS data types.
 	static {
-		registerDataType(StringType.NAME, StringType::new );
-		registerDataType(BinaryType.NAME, BinaryType::new );
-		registerDataType(IntegerType.NAME, IntegerType::new );
-		registerDataType(DecimalType.NAME, DecimalType::new );
-		registerDataType(DateType.NAME, DateType::new );
-		registerDataType(DateTimeType.NAME, DateTimeType::new );
-		registerDataType(BooleanType.NAME, BooleanType::new );
+		registerType(StringNodeType.NAME, StringNodeType::new );
+		registerType(BinaryNodeType.NAME, BinaryNodeType::new );
+		registerType(IntegerNodeType.NAME, IntegerNodeType::new );
+		registerType(DecimalNodeType.NAME, DecimalNodeType::new );
+		registerType(DateNodeType.NAME, DateNodeType::new );
+		registerType(DateTimeNodeType.NAME, DateTimeNodeType::new );
+		registerType(BooleanNodeType.NAME, BooleanNodeType::new );
 	}
 
 

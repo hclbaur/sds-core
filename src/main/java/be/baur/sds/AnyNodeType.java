@@ -6,18 +6,18 @@ import be.baur.sds.serialization.Attribute;
 import be.baur.sds.serialization.Components;
 
 /**
- * An {@code AnyType} defines any SDA node, with any simple or complex content,
- * and possibly any (valid) node name. For example:
+ * This type defines an SDA node with any value and/or child nodes, and any
+ * (valid) node name. For example:
  * <p>
  * <code>node "name" { type "any" }</code>
  * <p>
- * where {@code name} is a valid node name, or
+ * defines a node with any content and the specified name, whereas
  * <p>
  * <code>node { type "any" }</code>
  * <p>
- * to define an unnamed type (with any valid node name).
+ * defines one with any content and any (valid) name.
  */
-public final class AnyType extends Type {
+public final class AnyNodeType extends AbstractNodeType {
 
 	public static final String NAME = "any";
 	
@@ -25,23 +25,21 @@ public final class AnyType extends Type {
 
 
 	/**
-	 * Creates a type with the specified name. The name may be null or empty to
-	 * create an unnamed type, otherwise it must be a valid node name.
-	 * 
-	 * @see SDA#isName
+	 * Creates a type that defines a node with any content. If the supplied name is
+	 * null or empty, the name of the node can be any valid node name. Otherwise it
+	 * must be equal to the specified name.
 	 * 
 	 * @param name a valid node name, may be null or empty
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public AnyType(String name) {
-		setTypeName(name);
+	public AnyNodeType(String name) {
+		this.setTypeName(name);
 	}
 
 	
 	/**
-	 * Returns the name of this type. A type defines an instance of a data node, so
-	 * this method returns a valid node name or (in case of an unnamed type) an
-	 * empty string.
+	 * Returns the name of the node defined by this type or an empty string for a
+	 * type defining a node with any (valid) name.
 	 * 
 	 * @return a valid node name, or empty
 	 */
@@ -52,11 +50,8 @@ public final class AnyType extends Type {
 
 	
 	/**
-	 * Sets the name of this type. A type defines an instance of a data node, so the
-	 * name of this type is restricted to valid node names. Null or an empty string
-	 * may be supplied for an unnamed type.
-	 * 
-	 * @see SDA#isName
+	 * Sets the name of the node defined by this type. Null or an empty string may
+	 * be supplied for a type defining a node with any (valid) name.
 	 * 
 	 * @param name a valid node name, may be null or empty
 	 * @throws IllegalArgumentException if the name is invalid
@@ -74,7 +69,7 @@ public final class AnyType extends Type {
 
 	
 	/**
-	 * Returns true if this type is explicitly named.
+	 * Returns true if this type defines an explicitly named node.
 	 * 
 	 * @return true or false
 	 */

@@ -1,8 +1,15 @@
 # Release Notes
 
-## [2.4.1] - 2025-??-??
+## [2.5.0] - 2025-??-??
 
-In development. Compatibility release for sda-core 2.3.0.
+In development. This is a compatibility release for sda-core 2.3.0 with internal 
+renaming and refactoring. However, unless you are writing schema parsers, this is
+still likely to be a drop-in replacement for the previous release.
+
+- `Renamed` Type to AbstractNodeType, AnyType to AnyNodeType, DataType to ValueNodeType.
+- `Renamed` CharacterType to CharacterNodeType, ComparableType to ComparableNodeType.
+- `Renamed` StringType to StringNodeType, IntegerType to IntegerNodeType, etc.
+- `Renamed` Schema methods that support data type registration.
 
 ## Compatibility
 
