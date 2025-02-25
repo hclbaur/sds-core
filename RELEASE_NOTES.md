@@ -10,6 +10,10 @@ still likely to be a drop-in replacement for the previous release.
 - `Renamed` CharacterType to CharacterNodeType, ComparableType to ComparableNodeType.
 - `Renamed` StringType to StringNodeType, IntegerType to IntegerNodeType, etc.
 - `Renamed` Schema methods that support data type registration.
+- `Removed` Validator.setTypeName() - use validate(node,type) instead.
+- `Changed` Validator.validate(node) - no longer uses a default or set type.
+- Added Validator.validate(node,type) and validateType(node,type) methods.
+
 
 ## Compatibility
 

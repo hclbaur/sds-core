@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -73,8 +74,6 @@ public abstract class Validator {
 	private static final String VALUE_EXCEEDS_MAX = "value '%s' exceeds the maximum of %s";
 	private static final String VALUE_NOT_INCLUSIVE = "value '%s' is not inclusive";
 	
-	/** The name of the type for validation, may be null. */
-	private String typeName;
 
 	/** A private class to hold a validation error */
 	private static final class Error extends Result<Node> {
@@ -114,99 +113,135 @@ public abstract class Validator {
 			return super.addError(error);
 		}
 	}
-
+	
 	
 	/**
-	 * Sets the name of the type to validate against. The specified name must refer
-	 * to an existing global type, or an exception will be thrown. A null reference
-	 * is allowed, and will make the validator look for any appropriate global type.
+	 * This method validates a data node (and any child nodes) against the schema
+	 * associated with this validator and returns a list of errors (which will be
+	 * empty if the node is valid).
 	 * <p>
-	 * Applications must not (re)set the type while validation is in progress or
-	 * when multiple threads are using the validator.
-	 * <p>
+	 * The supplied node will be validated against an appropriate global type, e.g.
+	 * a type with the same name as the node being validated.
 	 * 
-	 * @param name a global type name, may be null
-	 * @throws IllegalArgumentException if the type is not found in the schema
+	 * @param node the node to be validated, not null
+	 * @return an error list, never null but may be empty
+	 * @see #validate(DataNode, String)
 	 */
-	public void setTypeName(String name) {
- 
-		if (name != null && getSchema().getGlobalType(name) == null)
-			throw new IllegalArgumentException("no such global type (" + name + ")");
-		this.typeName = name; 
+	public Errors validate(DataNode node) {
+
+		return validateNode(node, null, false);
+	}
+
+
+	/**
+	 * This method validates a data node (and any child nodes) against the schema
+	 * associated with this validator and returns a list of errors (which will be
+	 * empty if the node is valid).
+	 * <p>
+	 * The supplied node will be validated against the type that is specified.
+	 * 
+	 * @param node the node to be validated, not null
+	 * @param type the name of the global type, not null or empty
+	 * @return an error list, never null but may be empty
+	 * @throws IllegalArgumentException if the type is not found in the schema
+	 * @see #validate(DataNode)
+	 */
+	public Errors validate(DataNode node, String type) {
+
+		if (type == null || type.isEmpty())
+			throw new IllegalArgumentException("type must not be null or empty");
+		return validateNode(node, type, false);
 	}
 	
 	
 	/**
 	 * This method validates a data node (and any child nodes) against the schema
-	 * associated with this validator.
+	 * associated with this validator and returns a list of errors (which will be
+	 * empty if the node is valid).
 	 * <p>
-	 * The supplied node will be validated against any appropriate global type. The
-	 * validator may be instructed to validate against a specific type by calling
-	 * {@code #setTypeName} prior to validation.
+	 * The supplied node will be validated against the type that is specified,
+	 * without taking the node name into account; e.g. only content will be
+	 * validated and any instance of the specified type will be acceptable.
 	 * 
-	 * @param node the node to be validated
-	 * @return an error list, empty if no validation errors were found
-	 * @see #setTypeName
+	 * @param node the node to be validated, not null
+	 * @param type the name of the global type, not null or empty
+	 * @return an error list, never null but may be empty
+	 * @throws IllegalArgumentException if the type is not found in the schema
+	 * @see #validate(DataNode)
 	 */
-	public Errors validate(DataNode node) {
+	public Errors validateType(DataNode node, String type) {
 
-		final Schema schema = getSchema();  // the schema we are associated with
-		Errors errors = new Errors();	// result that will be returned at the end
-		NodeType nodeType; // the type to validate against, determination logic below
+		if (type == null || type.isEmpty())
+			throw new IllegalArgumentException("type must not be null or empty");
+		return validateNode(node, type, true);
+	}
+
+
+	// code below this line is the actual validation logic
+
+
+	/**
+	 * This helper method validates a data node against the specified type, or - if
+	 * null is supplied - against any node name matching type.
+	 */
+	private Errors validateNode(DataNode node, String type, boolean typeOnly) {
+
+		Objects.requireNonNull(node, "node must not be null");
 		
-		if (typeName == null || typeName.isEmpty()) {
-			/*
-			 * no type name has been set, so try to find an appropriate type to validate
-			 * the supplied node against. If no type is found quit right away (fatal).
-			 */
-			nodeType = schema.getGlobalType(node.getName());
+		Schema schema = getSchema(); // the schema we are associated with
+		Errors errors = new Errors(); // result that will be returned at the end
+		
+		// if no type was specified, use the name of the data node
+		if (type == null)
+			type = node.getName();
 
-			if (nodeType == null) {
-				errors.add(error(node, NO_DECLARATION_FOUND, node.getName()));
-				return errors;
-			}
-		}
-		else 
-		{
-			// a type was specified, so get it (should never return null)
-			nodeType = schema.getGlobalType(typeName);
-			if (nodeType == null) // impossible, unless associated schema was modified
-				throw new IllegalStateException(String.format(NO_DECLARATION_FOUND, typeName));
+		NodeType nodeType = schema.getGlobalType(type);
+		if (nodeType == null) {
+			errors.add(error(node, NO_DECLARATION_FOUND, type));
+			return errors;
 		}
 		
 		// recursively validate the entire document against the selected type
-		if (! matchType(node, nodeType, errors))
+		if (! matchType(node, nodeType, typeOnly, errors))
 			errors.add(error(node, GOT_NODE_BUT_EXPECTED, node.getName(), quoteName(nodeType)));
 		
 		return errors;
 	}
 
 	
-	// code below this line is the actual validation logic
-
-	
 	/**
 	 * Validation of a node roughly works like this: we try to match the node
-	 * against its corresponding schema component by comparing the name tags. If
-	 * there is no match, we return false and it is up to the caller of this method
-	 * to decide if that constitutes a validation error. After all, the current
-	 * component could be optional, and node might match the next component.<br>
+	 * against its corresponding schema component by comparing the name tags.
+	 * <p>
+	 * If there is no match, we return false and it is up to the caller of this
+	 * method to decide if that constitutes a validation error. After all, the
+	 * current component could be optional, and node might match the next component.
 	 * If there is a match, we assert that the node content is valid, or add an
-	 * error to the list otherwise. This does not apply to "any" type components.
+	 * error to the list otherwise. This does not apply to "any" type components,
+	 * which by definition may have any content.
+	 * <p>
+	 * This method can be called with {@code typeOnly} set to true, in which case
+	 * the node is validated by type only, e.g. names are not relevant, and merely
+	 * content is validated.
 	 */
-	private static boolean matchType(DataNode node, AbstractNodeType type, Errors errors) {
+	private static boolean matchType(DataNode node, AbstractNodeType type, boolean typeOnly, Errors errors) {
 		
 		String nodename = node.getName();
-		boolean namesmatch = nodename.equals(type.getTypeName());
-		
-		if (type instanceof AnyNodeType) {
-			// if the name is no match for an explicitly named "any" type, we return false
-			if (! namesmatch && ((AnyNodeType) type).isNamed()) return false;
-			return true;  // otherwise we return true without further validation
+
+		if (!typeOnly) {
+			boolean namesmatch = nodename.equals(type.getTypeName());
+
+			if (type instanceof AnyNodeType) {
+				// if the name is no match for an explicitly named "any" type, we return false
+				if (!namesmatch && ((AnyNodeType) type).isNamed())
+					return false;
+				return true; // otherwise we return true without further validation
+			}
+			if (!namesmatch)
+				return false; // specific type; if names differ, there is no match
 		}
-		if (! namesmatch) return false; // specific type; if names differ, there is no match
 		
-		// we have a match, now proceed to check the content
+		// proceed to validate the content
 		
 		if (! (type instanceof ValueNodeType)) { // we are expecting complex content ONLY
 			
@@ -379,7 +414,7 @@ public abstract class Validator {
 				//System.out.println("validateComplex: matching " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + " to " + childcomp.getName());
 				if (childcomp instanceof ModelGroup)
 					match = matchGroup(inode, childnode, (ModelGroup) childcomp, errors);
-				else match = matchType(childnode, (AbstractNodeType) childcomp, errors);
+				else match = matchType(childnode, (AbstractNodeType) childcomp, false, errors);
 				
 				//System.out.println("validateComplex: " + (! childnode.isLeaf() ? childnode.getName() + "{}" : childnode) + (match ? " == " : " <> ") + "component " + childcomp.getName());
 				if (match) { // count match and get the next node (or none) to match against this component
@@ -445,7 +480,7 @@ public abstract class Validator {
 			//System.out.println("matchChoice: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 			if (component instanceof ModelGroup)
 				match = matchGroup(inode, node, (ModelGroup) component, errors);
-			else match = matchType(node, (AbstractNodeType) component, errors);
+			else match = matchType(node, (AbstractNodeType) component, false, errors);
 			//System.out.println("matchChoice: " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + (match ? " == " : " <> ") + "component " + component.getName());
 			if (match) return true;  // return true at the first match
 		}
@@ -495,7 +530,7 @@ public abstract class Validator {
 				//System.out.println("matchSequence: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 				if (component instanceof ModelGroup)
 					match = matchGroup(inode, node, (ModelGroup) component, errors);
-				else match = matchType(node, (AbstractNodeType) component, errors);
+				else match = matchType(node, (AbstractNodeType) component, false, errors);
 				
 				//System.out.println("matchSequence: " + node + (match ? " == " : " <> ") + "component " + component.getName());
 				if (match) { 
@@ -589,7 +624,7 @@ public abstract class Validator {
 					//System.out.println("matchUnordered: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 					if (component instanceof ModelGroup)
 						match = matchGroup(inode, node, (ModelGroup) component, errors);
-					else match = matchType(node, (AbstractNodeType) component, errors);
+					else match = matchType(node, (AbstractNodeType) component, false, errors);
 	
 					/*
 					 * If we have a match, count it. If there are more nodes to be matched, resume
