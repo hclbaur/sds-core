@@ -54,8 +54,12 @@ public class Test {
 	
 	BiFunction<String, String, String> bifunction;
 	
+	Test(BiFunction<String, String, String> bifunction, String prefix) {
+		this.bifunction = bifunction; this.prefix = prefix;
+	}
+	
 	Test(BiFunction<String, String, String> bifunction) {
-		this.bifunction = bifunction;
+		this(bifunction, "");
 	}
 	
 	public void ts2(String scenario, String input1, String input2, String expected) {

@@ -15,7 +15,7 @@ import be.baur.sds.AnyNodeType;
 import be.baur.sds.Component;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
-import be.baur.sds.ValueNodeType;
+import be.baur.sds.DataNodeType;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.model.ChoiceGroup;
@@ -178,7 +178,7 @@ public final class SDSParser implements Parser<Schema> {
 		// Simple types and references MUST have a content type, complex types MAY have one
 		DataNode type = getAttribute(sds, Attribute.TYPE, isNodeType && complexChildren.isEmpty());
 		boolean isAnyType = (type == null) ? false : type.getValue().equals(AnyNodeType.NAME);
-		boolean isRegType = (type == null) ? false : Schema.isRegisteredType(type.getValue());
+		boolean isRegType = (type == null) ? false : Schema.isDataType(type.getValue());
 		
 		Component component; // the component to be returned at the end of this method
 		
@@ -187,7 +187,7 @@ public final class SDSParser implements Parser<Schema> {
 		} 
 		else {  // component is a node type (of any kind)
 			
-			if (isAnyType) { // an any type cannot have components or attributes (except NAME and OCCURS)
+			if (isAnyType) { // an any type cannot have components or attributes (except TYPE and OCCURS)
 				
 				if (! complexChildren.isEmpty())
 					throw exception(sds, ATTRIBUTE_INVALID, Attribute.TYPE.tag, AnyNodeType.NAME, "node defines content");
@@ -253,7 +253,7 @@ public final class SDSParser implements Parser<Schema> {
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
 
-		// Model groups should not have attributes other than OCCURS (maybe NAME in the future).
+		// Model groups should not have attributes other than OCCURS (maybe TYPE in the future).
 //		Optional<Node> attribute = sds.getNodes().find(n -> n.isLeaf()).stream()
 //			.filter(n -> ! (/* n.getName().equals(Attribute.TYPE.tag) 
 //				|| */ n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
@@ -394,16 +394,16 @@ public final class SDSParser implements Parser<Schema> {
 		}
 		
 		/*
-		 * Get an instance of the requested data type and handle remaining attributes.
+		 * Get a value node type of the requested data type and handle remaining attributes.
 		 */
-		ValueNodeType vntype = Schema.getRegisteredType(type.getValue(), name);
+		DataNodeType dnt = Schema.nodeTypeConstructor(type.getValue()).apply(name);
 		
 		// Set the optional null-ability.
 		DataNode nullable = getAttribute(sds, Attribute.NULLABLE, false);
 		if (nullable != null) 
 			switch(nullable.getValue()) {
-				case "true" : vntype.setNullable(true); break;
-				case "false" : vntype.setNullable(false); break;
+				case "true" : dnt.setNullable(true); break;
+				case "false" : dnt.setNullable(false); break;
 				default : throw exception(nullable, ATTRIBUTE_INVALID, 
 					Attribute.NULLABLE.tag, nullable.getValue(), "must be 'true' or 'false'");
 		}
@@ -412,18 +412,18 @@ public final class SDSParser implements Parser<Schema> {
 		DataNode regexp = getAttribute(sds, Attribute.PATTERN, false);
 		if ( regexp != null) 
 		try { 
-			vntype.setPattern( Pattern.compile(regexp.getValue()) ); 
+			dnt.setPattern( Pattern.compile(regexp.getValue()) ); 
 		} catch (PatternSyntaxException e) {
 			throw exception(regexp, 
 				ATTRIBUTE_INVALID, Attribute.PATTERN.tag, regexp.getValue(), e.getMessage());
 		}
 		
 		// Set the length (only allowed on character data types).
-		DataNode length = getAttribute(sds, Attribute.LENGTH, vntype instanceof CharacterNodeType ? false : null);
+		DataNode length = getAttribute(sds, Attribute.LENGTH, dnt instanceof CharacterNodeType ? false : null);
 		if (length != null) {
 			try {
 				NaturalInterval interval = NaturalInterval.from(length.getValue());
-				((CharacterNodeType) vntype).setLength(interval);
+				((CharacterNodeType) dnt).setLength(interval);
 			} catch (IllegalArgumentException e) {
 				throw exception(length, ATTRIBUTE_INVALID, 
 					Attribute.LENGTH.tag, length.getValue(), e.getMessage());
@@ -431,10 +431,10 @@ public final class SDSParser implements Parser<Schema> {
 		}
 		
 		// Set the value range (only allowed on comparable types)
-		DataNode range = getAttribute(sds, Attribute.VALUE, vntype instanceof ComparableNodeType ? false : null);
+		DataNode range = getAttribute(sds, Attribute.VALUE, dnt instanceof ComparableNodeType ? false : null);
 		if (range != null) {
 			Interval interval;
-			ComparableNodeType comparableType = (ComparableNodeType) vntype;
+			ComparableNodeType comparableType = (ComparableNodeType) dnt;
 			try {	
 				interval = Interval.from(range.getValue(), comparableType.valueConstructor());
 			} catch (IllegalArgumentException e) {
@@ -444,7 +444,7 @@ public final class SDSParser implements Parser<Schema> {
 			comparableType.setInterval(interval);
 		}
 		
-		return vntype;
+		return dnt;
 	}
 
 	

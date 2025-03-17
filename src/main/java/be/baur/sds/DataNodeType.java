@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * {@code StringNodeType}, {@code IntegerNodeType}, {@code BooleanNodeType},
  * etc.
  */
-public abstract class ValueNodeType <T> extends NodeType {
+public abstract class DataNodeType <T> extends NodeType {
 
 	private Pattern pattern = null;		// pre-compiled pattern.
 	private boolean nullable = false; 	// null-ability (if that is a word).	
@@ -22,18 +22,18 @@ public abstract class ValueNodeType <T> extends NodeType {
 	 * @param name a valid node name
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
-	public ValueNodeType(String name) {
+	public DataNodeType(String name) {
 		super(name);
 	}
 
 
 	/**
-	 * Returns the name of the value data type, e.g. "string", "integer", "boolean",
+	 * Returns the name of the data type, e.g. "string", "integer", "boolean",
 	 * etc.
 	 * 
-	 * @return a value data type name, not null
+	 * @return a data type, not null
 	 */
-	public abstract String getValueType();
+	public abstract String getDataType();
 
 
 	/**

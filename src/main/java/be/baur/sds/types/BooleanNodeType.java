@@ -2,23 +2,15 @@ package be.baur.sds.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.ValueNodeType;
+import be.baur.sds.SDS;
+import be.baur.sds.DataNodeType;
 
 /**
  * A <code>BooleanNodeType</code> defines an SDA node with a boolean value
  * (the allowed values are merely "true" and "false", and nothing else).
  */
-public final class BooleanNodeType extends ValueNodeType <Boolean> {
+public final class BooleanNodeType extends DataNodeType <Boolean> {
 
-	/** The SDS name of this data type. */
-	public static final String NAME = "boolean";
-
-	/** A function that constructs a boolean value from a string. */
-	public static final Function<String, Boolean> VALUE_CONSTRUCTOR = s -> {
-		if (s != null && (s.equals("true") || s.equals("false")))
-			return Boolean.valueOf(s);
-		throw new IllegalArgumentException("either true or false is expected");
-	};
 	
 	/**
 	 * Creates a boolean node type with the specified name.
@@ -32,14 +24,14 @@ public final class BooleanNodeType extends ValueNodeType <Boolean> {
 
 
 	@Override
-	public String getValueType() {
-		return NAME;
+	public String getDataType() {
+		return SDS.BOOLEAN_TYPE;
 	}
 
 	
 	@Override
 	public Function<String, Boolean> valueConstructor() {
-		return VALUE_CONSTRUCTOR;
+		return SDS.BOOLEAN_CONSTRUCTOR;
 	}
 
 }

@@ -2,8 +2,8 @@ package test;
 
 import java.time.Instant;
 
+import be.baur.sds.SDS;
 import be.baur.sds.common.Interval;
-import be.baur.sds.types.DateTimeNodeType;
 
 public final class TestIntervalDateTime {
 
@@ -11,13 +11,13 @@ public final class TestIntervalDateTime {
 
 		Test t1 = new Test(s -> {
 			try {
-				return Interval.from(s, DateTimeNodeType.VALUE_CONSTRUCTOR).toString();
+				return Interval.from(s, SDS.DATETIME_CONSTRUCTOR).toString();
 			} catch (Exception e) { return e.getMessage(); }
 		});
 		
 		Test t2 = new Test( (s1,s2) -> {
 			try {
-				return Interval.from(s2, DateTimeNodeType.VALUE_CONSTRUCTOR).contains(DateTimeNodeType.valueOf(s1))+"";
+				return Interval.from(s2, SDS.DATETIME_CONSTRUCTOR).contains(SDS.DATETIME_CONSTRUCTOR.apply(s1))+"";
 			} catch (Exception e) { return e.getMessage(); }
 		});
 		

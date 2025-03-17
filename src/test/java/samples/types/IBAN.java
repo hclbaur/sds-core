@@ -2,6 +2,7 @@ package samples.types;
 
 import java.math.BigInteger;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -13,7 +14,6 @@ import java.util.regex.Pattern;
 public final class IBAN {
 	
 	private final String countrycode, checksum, bban; // basic bank account number
-
 	
 	/** Private constructor */
 	private IBAN(String countrycode, String checksum, String bban) {
@@ -22,9 +22,21 @@ public final class IBAN {
 		this.bban = bban;
 	}
 
-
 	private static final Pattern pattern = Pattern.compile("[A-Z]{2}\\d{2}[A-Z0-9]{1,30}");
 	private static final BigInteger BI97 = BigInteger.valueOf(97);
+	
+
+	/** Name of the custom IBAN type. */
+	public static final String TYPE = "IBAN";
+	
+	/**
+	 * Function to construct a IBAN value from a string.
+	 * @throws IllegalArgumentException if the string cannot be converted to an IBAN.
+	 */
+	public static final Function<String, IBAN> CONSTRUCTOR = s -> {
+		return IBAN.parse(s);
+	};
+	
 	
 	/**
 	 * Returns a IBAN obtained from a string in ISO 13616:2020 format. The

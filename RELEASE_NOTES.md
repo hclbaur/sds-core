@@ -2,17 +2,18 @@
 
 ## [2.5.0] - 2025-??-??
 
-In development. This is a compatibility release for sda-core 2.3.0 with internal 
-renaming and refactoring. However, unless you are writing schema parsers, this is
-still likely to be a drop-in replacement for the previous release.
+In development. This is a compatibility release for sda-core 2.3.0 with quite a few of 
+renaming and re-factoring.
 
-- `Renamed` Type to AbstractNodeType, AnyType to AnyNodeType, DataType to ValueNodeType.
+- `Renamed` Type to AbstractNodeType, AnyType to AnyNodeType, DataType to DataNodeType.
 - `Renamed` CharacterType to CharacterNodeType, ComparableType to ComparableNodeType.
-- `Renamed` StringType to StringNodeType, IntegerType to IntegerNodeType, etc.
-- `Renamed` Schema methods that support data type registration.
+- `Renamed` StringType to StringNodeType, IntegerType to IntegerNodeType, etc...
+- `Renamed` Schema methods to register and obtain data (node) type constructors.
 - `Removed` Validator.setTypeName() - use validate(node,type) instead.
 - `Changed` Validator.validate(node) - no longer uses a default or set type.
 - Added Validator.validate(node,type) and validateType(node,type) methods.
+- Closed issue #5 (Review type validation).
+- Closed issue #6 (Validate value against (native) SDS data type).
 
 
 ## Compatibility

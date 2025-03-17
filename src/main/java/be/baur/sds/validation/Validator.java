@@ -18,7 +18,7 @@ import be.baur.sds.AnyNodeType;
 import be.baur.sds.Component;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
-import be.baur.sds.ValueNodeType;
+import be.baur.sds.DataNodeType;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.model.ChoiceGroup;
@@ -93,6 +93,18 @@ public abstract class Validator {
 		return new Error(node, String.format(format, args));
 	}
 
+	
+	/**
+	 * A convenience class to hold a list of validation errors.
+	 */
+	@SuppressWarnings("serial")
+	public static final class Errors extends Results<Node> {
+
+		private boolean add(Error error) {
+			return super.addError(error);
+		}
+	}
+
 
 	/**
 	 * Returns the {@code Schema} associated with this validator.
@@ -102,18 +114,6 @@ public abstract class Validator {
 	 */
 	protected abstract Schema getSchema();
 
-	
-	/**
-	 * A convenience class to hold a list of validation errors.
-	 */
-	@SuppressWarnings("serial")
-	public final class Errors extends Results<Node> {
-
-		private boolean add(Error error) {
-			return super.addError(error);
-		}
-	}
-	
 	
 	/**
 	 * This method validates a data node (and any child nodes) against the schema
@@ -243,7 +243,7 @@ public abstract class Validator {
 		
 		// proceed to validate the content
 		
-		if (! (type instanceof ValueNodeType)) { // we are expecting complex content ONLY
+		if (! (type instanceof DataNodeType)) { // we are expecting complex content ONLY
 			
 			if (node.isLeaf() || ! node.getValue().isEmpty())  // but we got something with a value
 				errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "only complex content", nodename));
@@ -265,7 +265,7 @@ public abstract class Validator {
 			errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
 	
 		// validate the simple content we were expecting
-		errors.add(validateValue(node, (ValueNodeType<?>) type));
+		errors.add(validateValue(node, (DataNodeType<?>) type));
 		return true;
 	}
 
@@ -275,7 +275,7 @@ public abstract class Validator {
 	 * appropriate with respect to this components content type, and any facets that
 	 * may apply. This method returns a validation error, or null otherwise.
 	 */
-	private static Error validateValue(DataNode node, ValueNodeType<?> type) {
+	private static Error validateValue(DataNode node, DataNodeType<?> type) {
 		
 		String value = node.getValue(); // need this a few times times
 		
@@ -293,12 +293,12 @@ public abstract class Validator {
 			if (error != null) return error;
 		}
 		
-		else if (type instanceof ValueNodeType) {
+		else if (type instanceof DataNodeType) {
 			try {
 				// probably a BooleanNodeType then
 				type.valueConstructor().apply(node.getValue());
 			} catch (Exception e) {
-				return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getValueType(), e.getMessage());
+				return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getDataType(), e.getMessage());
 			}
 		}
 			
@@ -322,7 +322,7 @@ public abstract class Validator {
 			T value = (T) type.valueConstructor().apply(node.getValue());
 			length = type.valueLength(value);
 		} catch (Exception e) {
-			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getValueType(), e.getMessage());
+			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getDataType(), e.getMessage());
 		}
 		
 		// Check if the length is within the acceptable range
@@ -351,7 +351,7 @@ public abstract class Validator {
 		try {
 			value = (Comparable<?>) type.valueConstructor().apply(node.getValue());
 		} catch (Exception e) {
-			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getValueType(), e.getMessage());
+			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getDataType(), e.getMessage());
 		}
 		
 		Interval<?> range = type.getInterval(); 

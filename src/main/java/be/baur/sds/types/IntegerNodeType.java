@@ -2,16 +2,12 @@ package be.baur.sds.types;
 
 import java.util.function.Function;
 
+import be.baur.sds.SDS;
+
 /**
  * A <code>IntegerNodeType</code> defines an SDA node with an integer value.
  */
 public final class IntegerNodeType extends ComparableNodeType <Integer> {
-
-	/** The SDS name of this data type. */
-	public static final String NAME = "integer";
-
-	/** A function that constructs an integer value from a string. */
-	public static final Function<String, Integer> VALUE_CONSTRUCTOR = Integer::new;
 
 
 	/**
@@ -26,25 +22,14 @@ public final class IntegerNodeType extends ComparableNodeType <Integer> {
 
 
 	@Override
-	public String getValueType() {
-		return NAME;
+	public String getDataType() {
+		return SDS.INTEGER_TYPE;
 	}
 
 
 	@Override
 	public Function<String, Integer> valueConstructor() {
-		return VALUE_CONSTRUCTOR;
+		return SDS.INTEGER_CONSTRUCTOR;
 	}
-	
-	
-	/**
-	 * Returns an Integer if the supplied string is within the lexical space of this type.
-	 * 
-	 * @param s the string to be converted
-	 * @return an Integer
-	 * @throws NumberFormatException if conversion is not possible
-	 */
-	public static Integer valueOf(String s) {
-		return VALUE_CONSTRUCTOR.apply(s);
-	}
+
 }

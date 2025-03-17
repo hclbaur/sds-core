@@ -14,8 +14,8 @@ import be.baur.sds.serialization.SDSParseException;
 import be.baur.sds.serialization.SDSParser;
 import be.baur.sds.types.BinaryNodeType;
 import be.baur.sds.types.BooleanNodeType;
-import be.baur.sds.types.DateTimeNodeType;
 import be.baur.sds.types.DateNodeType;
+import be.baur.sds.types.DateTimeNodeType;
 import be.baur.sds.types.DecimalNodeType;
 import be.baur.sds.types.IntegerNodeType;
 import be.baur.sds.types.StringNodeType;
@@ -36,68 +36,90 @@ public final class Schema extends AbstractNode {
 
 	
 	/*
-	 * A map that holds constructor functions to produce SDS node types. This allows
-	 * us to keep the factory code generic and SDS extensible with new node types.
+	 * Maps that hold constructor functions to produce SDS data (node) types. This
+	 * allows us to keep the factory code generic and SDS extensible with new or
+	 * custom data types.
 	 */
+	private static Map<String, Function<String, ?>> dtcmap = new HashMap<String, Function<String, ?>>();
 	@SuppressWarnings("rawtypes")
-	private static Map<String, Function<String, ValueNodeType>> constructors = new HashMap<String, Function<String,ValueNodeType>>();
+	private static Map<String, Function<String, DataNodeType>> ntcmap = new HashMap<String, Function<String, DataNodeType>>();
 
 
 	/**
-	 * Registers a function that returns an instance of a specific value node type.
-	 * The type and function must not be null, and the type can be registered only
-	 * once.
+	 * Registers constructor functions for the specified data (node) types. The
+	 * type and functions must not be null, and a type can be registered only once.
 	 * 
-	 * @param type     the data type to register
-	 * @param function a function that returns a {@code ValueNodeType}
-	 * @throws IllegalStateException if the type is already registered
+	 * @param type the data type to register, not null or empty
+	 * @param dtcfun a data type constructor function, not null
+	 * @param ntcfun a {@code DataNodeType} constructor function, not null
+	 * @throws IllegalArgumentException if the type is already registered
 	 */
 	@SuppressWarnings("rawtypes")
-	public static void registerType(String type, Function<String, ValueNodeType> function) {
-		Objects.requireNonNull(type, "type must not be null");
-		Objects.requireNonNull(function, "function must not be null");
-		if (constructors.containsKey(type))
-			throw new IllegalStateException("type " + type + " has already been registered");
-		constructors.put(type, function);
+	public static void registerDataType(String type, Function<String, ?> dtcfun, Function<String, DataNodeType> ntcfun) {
+		Objects.requireNonNull(dtcfun, "data type constructor function must not be null");
+		Objects.requireNonNull(ntcfun, "node type constructor function must not be null");
+		if (type == null || type.isEmpty())
+			throw new IllegalArgumentException("type must not be null or empty");
+		if (dtcmap.containsKey(type) || ntcmap.containsKey(type))
+			throw new IllegalArgumentException("type '" + type + "' has already been registered");
+		dtcmap.put(type, dtcfun);
+		ntcmap.put(type, ntcfun);
 	}
 
 
 	/**
-	 * Returns an instance of a value node type for the specified data type, or null
-	 * if the requested type is unknown (e.g. has not been registered).
+	 * Returns a constructor function for the specified data type, or throws an
+	 * exception if the type is unknown (e.g. has not been registered).
 	 * 
 	 * @param type a data type
-	 * @param type a valid node name
-	 * @return a {@code ValueNodeType}, or null
-	 * @throws IllegalArgumentException if name is not a valid node name
+	 * @return a constructor function
+	 * @throws IllegalArgumentException if the type is not known
 	 */
-	public static ValueNodeType<?> getRegisteredType(String type, String name) {
-		if (type != null && constructors.containsKey(type))
-			return constructors.get(type).apply(name);
-		return null;
+	public static Function<String, ?> dataTypeConstructor(String type) {
+		if (! isDataType(type))
+			throw new IllegalArgumentException("type '" + type + "' is unknown");
+		return dtcmap.get(type);
 	}
 
 
 	/**
-	 * Returns true if the specified data type is registered.
+	 * Returns a constructor function for the specified node type, or throws an
+	 * exception if the type is unknown (e.g. has not been registered).
+	 * 
+	 * @param type a data type
+	 * @return a constructor function
+	 * @throws IllegalArgumentException if the type is not known
+	 */
+	@SuppressWarnings("rawtypes")
+	public static Function<String, DataNodeType> nodeTypeConstructor(String type) {
+		if (! isDataType(type))
+			throw new IllegalArgumentException("type '" + type + "' is unknown");
+		return ntcmap.get(type);
+	}
+
+
+	/**
+	 * Returns true if the argument is a registered data type, and false otherwise.
 	 * 
 	 * @param type a data type
 	 * @return true or false
 	 */
-	public static boolean isRegisteredType(String type) {
-		return type == null ? false : constructors.containsKey(type);
+	public static boolean isDataType(String type) {
+		return type == null ? false : ntcmap.containsKey(type);
 	}
 
 
-	// Register native SDS data types.
+	/*
+	 * Register native SDS data types.
+	 */
 	static {
-		registerType(StringNodeType.NAME, StringNodeType::new );
-		registerType(BinaryNodeType.NAME, BinaryNodeType::new );
-		registerType(IntegerNodeType.NAME, IntegerNodeType::new );
-		registerType(DecimalNodeType.NAME, DecimalNodeType::new );
-		registerType(DateNodeType.NAME, DateNodeType::new );
-		registerType(DateTimeNodeType.NAME, DateTimeNodeType::new );
-		registerType(BooleanNodeType.NAME, BooleanNodeType::new );
+		registerDataType(SDS.STRING_TYPE, SDS.STRING_CONSTRUCTOR, StringNodeType::new );
+		registerDataType(SDS.BINARY_TYPE, SDS.BINARY_CONSTRUCTOR, BinaryNodeType::new );
+		registerDataType(SDS.INTEGER_TYPE, SDS.INTEGER_CONSTRUCTOR, IntegerNodeType::new );
+		registerDataType(SDS.DECIMAL_TYPE, SDS.DECIMAL_CONSTRUCTOR, DecimalNodeType::new );
+		registerDataType(SDS.DATE_TYPE, SDS.DATE_CONSTRUCTOR, DateNodeType::new );
+		registerDataType(SDS.DATETIME_TYPE, SDS.DATETIME_CONSTRUCTOR, DateTimeNodeType::new );
+		registerDataType(SDS.BOOLEAN_TYPE, SDS.BOOLEAN_CONSTRUCTOR, BooleanNodeType::new );
 	}
 
 

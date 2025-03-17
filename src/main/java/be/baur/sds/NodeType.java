@@ -14,9 +14,9 @@ import be.baur.sds.types.StringNodeType;
 
 /**
  * A {@code NodeType} defines an SDA node without a value. For a node that
- * allows simple content, instantiate a subclass of a {@code ValueNodeType}.
+ * allows simple content, instantiate a subclass of a {@code DataNodeType}.
  * 
- * @see ValueNodeType
+ * @see DataNodeType
  **/
 public class NodeType extends AbstractNodeType {
 
@@ -112,8 +112,8 @@ public class NodeType extends AbstractNodeType {
 		// Render the type attribute for a global type reference, or a data type
 		if (getGlobalType() != null)
 			node.add(new DataNode(Attribute.TYPE.tag, getGlobalType()));
-		else if (this instanceof ValueNodeType)
-			node.add(new DataNode(Attribute.TYPE.tag, ((ValueNodeType<?>) this).getValueType()));
+		else if (this instanceof DataNodeType)
+			node.add(new DataNode(Attribute.TYPE.tag, ((DataNodeType<?>) this).getDataType()));
 		
 		// Render the multiplicity if not default
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
@@ -136,8 +136,8 @@ public class NodeType extends AbstractNodeType {
 					node.add(new DataNode(Attribute.VALUE.tag, t.getInterval().toString()));
 			}
 			
-			if (this instanceof ValueNodeType) {
-				ValueNodeType<?> t = (ValueNodeType<?>) this;
+			if (this instanceof DataNodeType) {
+				DataNodeType<?> t = (DataNodeType<?>) this;
 				
 				if (t.getPattern() != null)
 					node.add(new DataNode(Attribute.PATTERN.tag, t.getPattern().toString()));

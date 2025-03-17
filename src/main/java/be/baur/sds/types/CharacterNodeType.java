@@ -2,7 +2,7 @@ package be.baur.sds.types;
 
 import java.util.Objects;
 
-import be.baur.sds.ValueNodeType;
+import be.baur.sds.DataNodeType;
 import be.baur.sds.common.NaturalInterval;
 
 
@@ -13,7 +13,7 @@ import be.baur.sds.common.NaturalInterval;
  * that are not easily validated with a regular expression, like an {@code IBAN}.
  * @param <T>
  */
-public abstract class CharacterNodeType <T> extends ValueNodeType <T> {
+public abstract class CharacterNodeType <T> extends DataNodeType <T> {
 
 	private NaturalInterval length = NaturalInterval.ZERO_TO_MAX; // default allows any length
 

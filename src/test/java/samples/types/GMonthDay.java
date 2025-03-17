@@ -1,6 +1,7 @@
 package samples.types;
 
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -11,10 +12,23 @@ import java.util.regex.Pattern;
 public final class GMonthDay implements Comparable<Object> {
 	
 	private static final int[] maxday = {31,29,31,30,31,30,31,31,30,31,30,31};
-	
+
+
 	public static final GMonthDay MIN_VALUE = new GMonthDay(1,1);
 	public static final GMonthDay MAX_VALUE = new GMonthDay(12,31);
 
+	/** Name of the custom gMonthDay type. */
+	public static final String TYPE = "gMonthDay";
+	
+	/**
+	 * Function to construct a gMonthDay value from a string.
+	 * @throws IllegalArgumentException if the string cannot be converted to a GMonthDay.
+	 */
+	public static final Function<String, GMonthDay> CONSTRUCTOR = s -> {
+		return GMonthDay.parse(s);
+	};
+	
+	
 	private final int month, day;
 
 	

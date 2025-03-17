@@ -2,7 +2,7 @@ package be.baur.sds.types;
 
 import java.util.Objects;
 
-import be.baur.sds.ValueNodeType;
+import be.baur.sds.DataNodeType;
 import be.baur.sds.common.Interval;
 
 /**
@@ -11,7 +11,7 @@ import be.baur.sds.common.Interval;
  * same type. It is used to implement the native integer, decimal and date(time)
  * node types, and can be used to add more exotic ones, like {@code GMonthDay}.
  */
-public abstract class ComparableNodeType <T extends Comparable<? super T>> extends ValueNodeType <T> {
+public abstract class ComparableNodeType <T extends Comparable<? super T>> extends DataNodeType <T> {
 
 	private Interval<?> range = Interval.MIN_TO_MAX; // default is to allow any value
 
