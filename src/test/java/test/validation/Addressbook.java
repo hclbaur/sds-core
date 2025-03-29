@@ -1,14 +1,10 @@
 package test.validation;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Iterator;
 
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.Schema;
 import be.baur.sds.validation.Validator;
 import be.baur.sds.validation.Validator.Errors;
 import test.Test;
@@ -23,13 +19,10 @@ public final class Addressbook {
 		Test t = new Test(s -> {
 			return s;
 		});
-		
 
-		DataNode doc = SDA.parse(new File(Addressbook.class.getResource("/addressbook.sda").getFile()));
 
-		InputStream sds = Addressbook.class.getResourceAsStream("/addressbook.sds");
-		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
-		Validator validator = schema.newValidator();
+		DataNode doc = SDA.parse(Test.getResourceFile("/addressbook.sda"));
+		Validator validator = SDS.parse(Test.getResourceFile("/addressbook.sds")).newValidator();
 
 		// validate against existing type but not what we expect
 		Errors errors = validator.validate(doc, "contact");

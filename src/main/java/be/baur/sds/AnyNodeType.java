@@ -2,8 +2,8 @@ package be.baur.sds;
 
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
-import be.baur.sds.serialization.Attribute;
-import be.baur.sds.serialization.Components;
+import be.baur.sds.parsing.Attribute;
+import be.baur.sds.parsing.Components;
 
 /**
  * This type defines an SDA node with any value and/or child nodes, and any

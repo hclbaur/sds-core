@@ -1,4 +1,4 @@
-package be.baur.sds.serialization;
+package be.baur.sds.parsing;
 
 import be.baur.sda.Node;
 import be.baur.sda.NodeException;

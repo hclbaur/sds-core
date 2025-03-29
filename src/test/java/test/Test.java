@@ -1,5 +1,6 @@
 package test;
 
+import java.io.File;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -76,4 +77,9 @@ public class Test {
 		}
 	}
 	
+	
+	// convenience method to load a resource file
+	public static File getResourceFile(String name) {
+		return new File(Test.class.getResource(name).getFile());
+	}
 }

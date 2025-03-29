@@ -6,7 +6,7 @@ import java.util.function.Function;
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.Schema;
-import be.baur.sds.serialization.SDSParser;
+import be.baur.sds.parsing.SDSParser;
 import samples.types.GMonthDay;
 import samples.types.GMonthDayNodeType;
 import samples.types.IBAN;
@@ -22,8 +22,7 @@ public final class TestSDSParser {
 		
 		/* test parsing SDS from files and formatting back to SDS */
 		System.out.print("contacts ");
-		String sdsfile = TestSDSParser.class.getResource("/contacts.sds").getFile();
-		DataNode sds = SDA.parse(new File(sdsfile));
+		DataNode sds = SDA.parse(Test.getResourceFile("/contacts.sds"));
 		Schema schema = SDSParser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);
@@ -31,8 +30,7 @@ public final class TestSDSParser {
 		}
 		
 		System.out.print("addressbook ");
-		sdsfile = TestSDSParser.class.getResource("/addressbook.sds").getFile();
-		sds = SDA.parse(new File(sdsfile));
+		sds = SDA.parse(Test.getResourceFile("/addressbook.sds"));
 		schema = SDSParser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);

@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.FileReader;
 import java.util.List;
 
 import be.baur.sda.DataNode;
@@ -14,9 +13,7 @@ public class demo {
 
 	public static void main(String[] args) throws Exception {
 		
-		FileReader sds = new FileReader(args[0]);
-		Schema schema = SDS.parse(sds);
-		
+		Schema schema = SDS.parse(new File(args[0]));
 		DataNode root = SDA.parse(new File(args[1]));
 		
 		Validator validator = schema.newValidator();

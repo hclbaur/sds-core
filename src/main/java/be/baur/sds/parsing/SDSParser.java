@@ -1,4 +1,4 @@
-package be.baur.sds.serialization;
+package be.baur.sds.parsing;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -97,7 +97,7 @@ public final class SDSParser implements Parser<Schema> {
 	 * 
 	 * @param sds a node with a schema definition
 	 * @return a schema
-	 * @throws SDSParseException if a schema exception occurs
+	 * @throws SDSParseException if an SDS parse exception occurs
 	 */
 	public static Schema parse(DataNode sds) throws SDSParseException {
 		

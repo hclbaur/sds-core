@@ -1,9 +1,5 @@
 package test.validation;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
@@ -23,30 +19,24 @@ public final class RussianDolls {
 		});
 		
 
-		DataNode doc = SDA.parse(new File(RussianDolls.class.getResource("/russiandolls.sda").getFile()));
-
-		InputStream sds = RussianDolls.class.getResourceAsStream("/russiandolls.sds");
-		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
+		DataNode doc = SDA.parse(Test.getResourceFile("/russiandolls.sda"));
+		Validator validator = SDS.parse(Test.getResourceFile("/russiandolls.sds")).newValidator();
 
 		Errors errors = validator.validate(doc);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
 		t.ts1("S01", errors.isEmpty() ? "" : errors.get(0).toString(), "");
 		
-		doc = SDA.parse(new File(RussianDolls.class.getResource("/russiandolls2.sda").getFile()));
-
-		sds = RussianDolls.class.getResourceAsStream("/russiandolls2.sds");
-		validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
+		doc = SDA.parse(Test.getResourceFile("/russiandolls2.sda"));
+		validator = SDS.parse(Test.getResourceFile("/russiandolls2.sds")).newValidator();
 
 		errors = validator.validate(doc);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
 		t.ts1("S02", errors.isEmpty() ? "" : errors.get(0).toString(), "");
 		
-		doc = SDA.parse(new File(RussianDolls.class.getResource("/russiandolls3.sda").getFile()));
-
-		sds = RussianDolls.class.getResourceAsStream("/russiandolls3.sds");
-		validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
+		doc = SDA.parse(Test.getResourceFile("/russiandolls3.sda"));
+		validator = SDS.parse(Test.getResourceFile("/russiandolls3.sds")).newValidator();
 
 		errors = validator.validate(doc);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
