@@ -25,13 +25,7 @@ public final class SDS {
 	 * Native SDS data types and constructor functions.
 	 */
 	
-	/** Name of the SDS string type. */
-	public static final String STRING_TYPE = "string";
-	
-	/** Function to construct an SDS string value from a string. */
-	public static final Function<String, String> STRING_CONSTRUCTOR = s -> {
-		return s; // strings are immutable so just return the original
-	};
+
 
 
 	/** Name of the SDS binary type. */

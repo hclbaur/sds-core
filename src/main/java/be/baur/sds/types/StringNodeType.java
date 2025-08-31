@@ -2,14 +2,21 @@ package be.baur.sds.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.SDS;
-
 /**
  * A <code>StringNodeType</code> defines an SDA node with a string value. This is
  * the most basic type of all, without restrictions on the value; any string is a
  * valid string, and unlike other node types it is null-able by default.
  */
 public final class StringNodeType extends CharacterNodeType <String> {
+
+	
+	/** Name of the SDS string type. */
+	public static final String TYPE_NAME = "string";
+	
+	/** Function to construct an SDS string value from a string. */
+	public static final Function<String, String> TYPE_CONSTRUCTOR = s -> {
+		return s; // strings are immutable so just return the original
+	};
 
 
 	/**
@@ -25,13 +32,13 @@ public final class StringNodeType extends CharacterNodeType <String> {
 
 	@Override
 	public String getDataType() {
-		return SDS.STRING_TYPE;
+		return TYPE_NAME;
 	}
 	
 	
 	@Override
 	public Function<String, String> valueConstructor() {
-		return SDS.STRING_CONSTRUCTOR;
+		return TYPE_CONSTRUCTOR;
 	}
 	
 	

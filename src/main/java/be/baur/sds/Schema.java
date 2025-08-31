@@ -113,7 +113,7 @@ public final class Schema extends AbstractNode {
 	 * Register native SDS data types.
 	 */
 	static {
-		registerDataType(SDS.STRING_TYPE, SDS.STRING_CONSTRUCTOR, StringNodeType::new );
+		registerDataType(StringNodeType.TYPE_NAME, StringNodeType.TYPE_CONSTRUCTOR, StringNodeType::new );
 		registerDataType(SDS.BINARY_TYPE, SDS.BINARY_CONSTRUCTOR, BinaryNodeType::new );
 		registerDataType(SDS.INTEGER_TYPE, SDS.INTEGER_CONSTRUCTOR, IntegerNodeType::new );
 		registerDataType(SDS.DECIMAL_TYPE, SDS.DECIMAL_CONSTRUCTOR, DecimalNodeType::new );
