@@ -38,16 +38,6 @@ public final class SDS {
 	public static final Function<String, byte[]> BINARY_CONSTRUCTOR = s -> {
 		return Base64.getDecoder().decode(s);
 	};
-
-
-	/** Name of the SDS integer type. */
-	public static final String INTEGER_TYPE = "integer";
-	
-	/**
-	 * Function to construct an SDS integer value from a string.
-	 * @throws NumberFormatException if the string cannot be converted to an integer.
-	 */
-	public static final Function<String, Integer> INTEGER_CONSTRUCTOR = Integer::new;
 	
 
 	/** Name of the SDS decimal type. */
