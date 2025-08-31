@@ -1,15 +1,26 @@
 package be.baur.sds.types;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
-
-import be.baur.sds.SDS;
 
 /**
  * A <code>DateNodeType</code> defines an SDA node with a temporal value (a calendar
  * date without time zone).
  */
 public final class DateNodeType extends ComparableNodeType <LocalDate> {
+
+
+	/** Name of the SDS date type. */
+	public static final String TYPE_NAME = "date";
+
+	/**
+	 * Function to construct an SDS date value from a string.
+	 * @throws DateTimeParseException if the string cannot be converted to a date.
+	 */
+	public static final Function<String, LocalDate> TYPE_CONSTRUCTOR = s -> {
+		return LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE);
+	};
 
 
 	/**
@@ -25,13 +36,13 @@ public final class DateNodeType extends ComparableNodeType <LocalDate> {
 
 	@Override
 	public String getDataType() {
-		return SDS.DATE_TYPE;
+		return TYPE_NAME;
 	}
 	
 
 	@Override
 	public Function<String, LocalDate> valueConstructor() {
-		return SDS.DATE_CONSTRUCTOR;
+		return TYPE_CONSTRUCTOR;
 	}
 
 }

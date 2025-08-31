@@ -116,8 +116,8 @@ public final class Schema extends AbstractNode {
 		registerDataType(StringNodeType.TYPE_NAME, StringNodeType.TYPE_CONSTRUCTOR, StringNodeType::new );
 		registerDataType(BinaryNodeType.TYPE_NAME, BinaryNodeType.TYPE_CONSTRUCTOR, BinaryNodeType::new );
 		registerDataType(IntegerNodeType.TYPE_NAME, IntegerNodeType.TYPE_CONSTRUCTOR, IntegerNodeType::new );
-		registerDataType(SDS.DECIMAL_TYPE, SDS.DECIMAL_CONSTRUCTOR, DecimalNodeType::new );
-		registerDataType(SDS.DATE_TYPE, SDS.DATE_CONSTRUCTOR, DateNodeType::new );
+		registerDataType(DecimalNodeType.TYPE_NAME, DecimalNodeType.TYPE_CONSTRUCTOR, DecimalNodeType::new );
+		registerDataType(DateNodeType.TYPE_NAME, DateNodeType.TYPE_CONSTRUCTOR, DateNodeType::new );
 		registerDataType(SDS.DATETIME_TYPE, SDS.DATETIME_CONSTRUCTOR, DateTimeNodeType::new );
 		registerDataType(SDS.BOOLEAN_TYPE, SDS.BOOLEAN_CONSTRUCTOR, BooleanNodeType::new );
 	}

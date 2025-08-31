@@ -3,7 +3,6 @@ package be.baur.sds;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
@@ -18,35 +17,6 @@ import be.baur.sds.parsing.SDSParser;
 public final class SDS {
 	
 	private SDS() {} // cannot construct this
-
-
-	/*
-	 * Native SDS data types and constructor functions.
-	 */
-	
-
-
-
-	/** Name of the SDS decimal type. */
-	public static final String DECIMAL_TYPE = "decimal";
-	
-	/**
-	 * Function to construct an SDS decimal value from a string.
-	 * @throws NumberFormatException if the string cannot be converted to a number.
-	 */
-	public static final Function<String, Double> DECIMAL_CONSTRUCTOR = Double::new;
-
-
-	/** Name of the SDS date type. */
-	public static final String DATE_TYPE = "date";
-
-	/**
-	 * Function to construct an SDS date value from a string.
-	 * @throws DateTimeParseException if the string cannot be converted to a date.
-	 */
-	public static final Function<String, LocalDate> DATE_CONSTRUCTOR = s -> {
-		return LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE);
-	};
 
 
 	/** Name of the SDS datetime type. */
