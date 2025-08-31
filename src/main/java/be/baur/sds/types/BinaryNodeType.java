@@ -1,8 +1,7 @@
 package be.baur.sds.types;
 
+import java.util.Base64;
 import java.util.function.Function;
-
-import be.baur.sds.SDS;
 
 /**
  * A <code>BinaryNodeType</code> defines an SDA node with a binary value in MIME
@@ -10,6 +9,18 @@ import be.baur.sds.SDS;
  * than characters.
  */
 public final class BinaryNodeType extends CharacterNodeType <byte[]> {
+
+
+	/** Name of the SDS binary type. */
+	public static final String TYPE_NAME = "binary";
+
+	/**
+	 * Function to construct an SDS binary value from a string.
+	 * @throws IllegalArgumentException if the string is not in valid Base64 scheme.
+	 */
+	public static final Function<String, byte[]> TYPE_CONSTRUCTOR = s -> {
+		return Base64.getDecoder().decode(s);
+	};
 
 
 	/**
@@ -25,13 +36,13 @@ public final class BinaryNodeType extends CharacterNodeType <byte[]> {
 
 	@Override
 	public String getDataType() {
-		return SDS.BINARY_TYPE;
+		return TYPE_NAME;
 	}
 	
 	
 	@Override
 	public Function<String, byte[]> valueConstructor() {
-		return SDS.BINARY_CONSTRUCTOR;
+		return TYPE_CONSTRUCTOR;
 	}
 	
 	

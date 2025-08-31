@@ -6,7 +6,6 @@ import java.io.Reader;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 import java.util.function.Function;
 
 import be.baur.sda.io.FileParseException;
@@ -27,18 +26,6 @@ public final class SDS {
 	
 
 
-
-	/** Name of the SDS binary type. */
-	public static final String BINARY_TYPE = "binary";
-
-	/**
-	 * Function to construct an SDS binary value from a string.
-	 * @throws IllegalArgumentException if the string is not in valid Base64 scheme.
-	 */
-	public static final Function<String, byte[]> BINARY_CONSTRUCTOR = s -> {
-		return Base64.getDecoder().decode(s);
-	};
-	
 
 	/** Name of the SDS decimal type. */
 	public static final String DECIMAL_TYPE = "decimal";
