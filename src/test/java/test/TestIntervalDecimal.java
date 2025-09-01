@@ -1,6 +1,6 @@
 package test;
 
-import be.baur.sds.SDS;
+import be.baur.sds.DataType;
 import be.baur.sds.common.Interval;
 
 public final class TestIntervalDecimal {
@@ -9,13 +9,13 @@ public final class TestIntervalDecimal {
 
 		Test t1 = new Test(s -> {
 			try {
-				return Interval.from(s, SDS.DECIMAL_CONSTRUCTOR).toString();
+				return Interval.from(s, DataType.DECIMAL_CONSTRUCTOR).toString();
 			} catch (Exception e) {	return e.getMessage(); }
 		});
 		
 		Test t2 = new Test( (s1,s2) -> {
 			try {
-				return Interval.from(s2, SDS.DECIMAL_CONSTRUCTOR).contains(SDS.DECIMAL_CONSTRUCTOR.apply(s1))+"";
+				return Interval.from(s2, DataType.DECIMAL_CONSTRUCTOR).contains(DataType.DECIMAL_CONSTRUCTOR.apply(s1))+"";
 			} catch (Exception e) { return e.getMessage(); }
 		});
 

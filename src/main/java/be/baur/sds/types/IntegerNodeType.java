@@ -2,7 +2,7 @@ package be.baur.sds.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.SDS;
+import be.baur.sds.DataType;
 
 /**
  * A <code>IntegerNodeType</code> defines an SDA node with an integer value.
@@ -23,13 +23,13 @@ public final class IntegerNodeType extends ComparableNodeType <Integer> {
 
 	@Override
 	public String getDataType() {
-		return SDS.INTEGER_TYPE;
+		return DataType.INTEGER;
 	}
 
 
 	@Override
 	public Function<String, Integer> valueConstructor() {
-		return SDS.INTEGER_CONSTRUCTOR;
+		return DataType.INTEGER_CONSTRUCTOR;
 	}
 
 }

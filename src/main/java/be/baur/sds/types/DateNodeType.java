@@ -3,7 +3,7 @@ package be.baur.sds.types;
 import java.time.LocalDate;
 import java.util.function.Function;
 
-import be.baur.sds.SDS;
+import be.baur.sds.DataType;
 
 /**
  * A <code>DateNodeType</code> defines an SDA node with a temporal value (a calendar
@@ -25,13 +25,13 @@ public final class DateNodeType extends ComparableNodeType <LocalDate> {
 
 	@Override
 	public String getDataType() {
-		return SDS.DATE_TYPE;
+		return DataType.DATE;
 	}
 	
 
 	@Override
 	public Function<String, LocalDate> valueConstructor() {
-		return SDS.DATE_CONSTRUCTOR;
+		return DataType.DATE_CONSTRUCTOR;
 	}
 
 }

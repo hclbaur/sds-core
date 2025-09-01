@@ -2,7 +2,7 @@ package be.baur.sds.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.SDS;
+import be.baur.sds.DataType;
 
 /**
  * A <code>StringNodeType</code> defines an SDA node with a string value. This is
@@ -25,13 +25,13 @@ public final class StringNodeType extends CharacterNodeType <String> {
 
 	@Override
 	public String getDataType() {
-		return SDS.STRING_TYPE;
+		return DataType.STRING;
 	}
 	
 	
 	@Override
 	public Function<String, String> valueConstructor() {
-		return SDS.STRING_CONSTRUCTOR;
+		return DataType.STRING_CONSTRUCTOR;
 	}
 	
 	

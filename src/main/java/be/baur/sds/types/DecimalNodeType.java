@@ -2,7 +2,7 @@ package be.baur.sds.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.SDS;
+import be.baur.sds.DataType;
 
 /**
  * A <code>DecimalNodeType</code> defines an SDA node with a decimal value.
@@ -23,13 +23,13 @@ public final class DecimalNodeType extends ComparableNodeType <Double> {
 
 	@Override
 	public String getDataType() {
-		return SDS.DECIMAL_TYPE;
+		return DataType.DECIMAL;
 	}
 	
 
 	@Override
 	public Function<String, Double> valueConstructor() {
-		return SDS.DECIMAL_CONSTRUCTOR;
+		return DataType.DECIMAL_CONSTRUCTOR;
 	}
 
 }

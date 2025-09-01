@@ -2,8 +2,8 @@ package be.baur.sds.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.SDS;
 import be.baur.sds.DataNodeType;
+import be.baur.sds.DataType;
 
 /**
  * A <code>BooleanNodeType</code> defines an SDA node with a boolean value
@@ -25,13 +25,13 @@ public final class BooleanNodeType extends DataNodeType <Boolean> {
 
 	@Override
 	public String getDataType() {
-		return SDS.BOOLEAN_TYPE;
+		return DataType.BOOLEAN;
 	}
 
 	
 	@Override
 	public Function<String, Boolean> valueConstructor() {
-		return SDS.BOOLEAN_CONSTRUCTOR;
+		return DataType.BOOLEAN_CONSTRUCTOR;
 	}
 
 }

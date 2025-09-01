@@ -3,7 +3,7 @@ package be.baur.sds.types;
 import java.time.ZonedDateTime;
 import java.util.function.Function;
 
-import be.baur.sds.SDS;
+import be.baur.sds.DataType;
 
 /**
  * A <code>DateTimeNodeType</code> defines an SDA node with a temporal value (a
@@ -25,13 +25,13 @@ public final class DateTimeNodeType extends ComparableNodeType <ZonedDateTime> {
 
 	@Override
 	public String getDataType() {
-		return SDS.DATETIME_TYPE;
+		return DataType.DATETIME;
 	}
 
 
 	@Override
 	public Function<String, ZonedDateTime> valueConstructor() {
-		return SDS.DATETIME_CONSTRUCTOR;
+		return DataType.DATETIME_CONSTRUCTOR;
 	}
 
 }

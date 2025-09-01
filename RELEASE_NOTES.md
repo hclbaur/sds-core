@@ -13,6 +13,7 @@ a few renaming and re-factoring.
 - `Removed` Validator.setTypeName() - use validate(node,type) instead.
 - `Changed` Validator.validate(node) - no longer uses a default or set type.
 - Added Validator.validate(node,type) and validateType(node,type) methods.
+- Added DataType class for registration of data types.
 - Added convenience method SDS.parse(File).
 - Closed issue #5 (Review type validation).
 - Closed issue #6 (Validate value against (native) SDS data type).
