@@ -40,7 +40,6 @@ public final class Schema extends AbstractNode {
 	 * allows us to keep the factory code generic and SDS extensible with new or
 	 * custom data types.
 	 */
-	private static Map<String, Function<String, ?>> dtcmap = new HashMap<String, Function<String, ?>>();
 	@SuppressWarnings("rawtypes")
 	private static Map<String, Function<String, DataNodeType>> ntcmap = new HashMap<String, Function<String, DataNodeType>>();
 
@@ -60,25 +59,10 @@ public final class Schema extends AbstractNode {
 		Objects.requireNonNull(ntcfun, "node type constructor function must not be null");
 		if (type == null || type.isEmpty())
 			throw new IllegalArgumentException("type must not be null or empty");
-		if (dtcmap.containsKey(type) || ntcmap.containsKey(type))
+		if (ntcmap.containsKey(type))
 			throw new IllegalArgumentException("type '" + type + "' has already been registered");
-		dtcmap.put(type, dtcfun);
+		DataType.register(type, dtcfun);
 		ntcmap.put(type, ntcfun);
-	}
-
-
-	/**
-	 * Returns a constructor function for the specified data type, or throws an
-	 * exception if the type is unknown (e.g. has not been registered).
-	 * 
-	 * @param type a data type
-	 * @return a constructor function
-	 * @throws IllegalArgumentException if the type is not known
-	 */
-	public static Function<String, ?> dataTypeConstructor(String type) {
-		if (! isDataType(type))
-			throw new IllegalArgumentException("type '" + type + "' is unknown");
-		return dtcmap.get(type);
 	}
 
 

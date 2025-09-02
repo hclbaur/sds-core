@@ -2,7 +2,7 @@ package test;
 
 import java.util.function.BiFunction;
 
-import be.baur.sds.Schema;
+import be.baur.sds.DataType;
 
 public final class TestSDSTypes {
 
@@ -10,7 +10,7 @@ public final class TestSDSTypes {
 		
 		BiFunction<String, String, String> bifun = (value,type) -> {
 			try {
-				return Schema.dataTypeConstructor(type).apply(value).toString();
+				return DataType.getConstructor(type).apply(value).toString();
 			} catch (Exception e) {
 				return e.getLocalizedMessage();
 			}
