@@ -16,6 +16,7 @@ import be.baur.sds.Component;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
 import be.baur.sds.DataNodeType;
+import be.baur.sds.DataType;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.model.ChoiceGroup;
@@ -178,7 +179,7 @@ public final class SDSParser implements Parser<Schema> {
 		// Simple types and references MUST have a content type, complex types MAY have one
 		DataNode type = getAttribute(sds, Attribute.TYPE, isNodeType && complexChildren.isEmpty());
 		boolean isAnyType = (type == null) ? false : type.getValue().equals(AnyNodeType.NAME);
-		boolean isRegType = (type == null) ? false : Schema.isDataType(type.getValue());
+		boolean isRegType = (type == null) ? false : DataType.isRegistered(type.getValue());
 		
 		Component component; // the component to be returned at the end of this method
 		

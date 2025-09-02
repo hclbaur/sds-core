@@ -102,9 +102,22 @@ public final class DataType {
 	};
 
 
+	/*
+	 * Register native SDS data types.
+	 */
 	
 	// Map that holds constructor functions to produce SDS data types
-	private static Map<String, Function<String, ?>> conmap = new HashMap<String, Function<String, ?>>();
+	private static final Map<String, Function<String, ?>> conmap = new HashMap<String, Function<String, ?>>();
+	
+	static {
+		register(DataType.STRING, DataType.STRING_CONSTRUCTOR);
+		register(DataType.BINARY, DataType.BINARY_CONSTRUCTOR);
+		register(DataType.INTEGER, DataType.INTEGER_CONSTRUCTOR);
+		register(DataType.DECIMAL, DataType.DECIMAL_CONSTRUCTOR);
+		register(DataType.DATE, DataType.DATE_CONSTRUCTOR);
+		register(DataType.DATETIME, DataType.DATETIME_CONSTRUCTOR);
+		register(DataType.BOOLEAN, DataType.BOOLEAN_CONSTRUCTOR);
+	}
 
 
 	/**
@@ -140,7 +153,7 @@ public final class DataType {
 	 * @throws IllegalArgumentException if the type is not known
 	 */
 	public static Function<String, ?> getConstructor(String type) {
-		if (! isDataType(type))
+		if (! isRegistered(type))
 			throw new IllegalArgumentException("type '" + type + "' is unknown");
 		return conmap.get(type);
 	}
@@ -152,7 +165,7 @@ public final class DataType {
 	 * @param type a data type
 	 * @return true or false
 	 */
-	public static boolean isDataType(String type) {
+	public static boolean isRegistered(String type) {
 		return type == null ? false : conmap.containsKey(type);
 	}
 

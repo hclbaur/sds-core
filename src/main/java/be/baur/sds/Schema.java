@@ -54,14 +54,14 @@ public final class Schema extends AbstractNode {
 	 * @throws IllegalArgumentException if the type is already registered
 	 */
 	@SuppressWarnings("rawtypes")
-	public static void registerDataType(String type, Function<String, ?> dtcfun, Function<String, DataNodeType> ntcfun) {
-		Objects.requireNonNull(dtcfun, "data type constructor function must not be null");
+	public static void registerDataType(String type, Function<String, DataNodeType> ntcfun) {
+
 		Objects.requireNonNull(ntcfun, "node type constructor function must not be null");
 		if (type == null || type.isEmpty())
 			throw new IllegalArgumentException("type must not be null or empty");
 		if (ntcmap.containsKey(type))
 			throw new IllegalArgumentException("type '" + type + "' has already been registered");
-		DataType.register(type, dtcfun);
+
 		ntcmap.put(type, ntcfun);
 	}
 
@@ -76,7 +76,7 @@ public final class Schema extends AbstractNode {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static Function<String, DataNodeType> nodeTypeConstructor(String type) {
-		if (! isDataType(type))
+		if (! isDataNodeType(type))
 			throw new IllegalArgumentException("type '" + type + "' is unknown");
 		return ntcmap.get(type);
 	}
@@ -88,22 +88,22 @@ public final class Schema extends AbstractNode {
 	 * @param type a data type
 	 * @return true or false
 	 */
-	public static boolean isDataType(String type) {
+	public static boolean isDataNodeType(String type) {
 		return type == null ? false : ntcmap.containsKey(type);
 	}
 
 
 	/*
-	 * Register native SDS data types.
+	 * Register native data node types.
 	 */
 	static {
-		registerDataType(DataType.STRING, DataType.STRING_CONSTRUCTOR, StringNodeType::new );
-		registerDataType(DataType.BINARY, DataType.BINARY_CONSTRUCTOR, BinaryNodeType::new );
-		registerDataType(DataType.INTEGER, DataType.INTEGER_CONSTRUCTOR, IntegerNodeType::new );
-		registerDataType(DataType.DECIMAL, DataType.DECIMAL_CONSTRUCTOR, DecimalNodeType::new );
-		registerDataType(DataType.DATE, DataType.DATE_CONSTRUCTOR, DateNodeType::new );
-		registerDataType(DataType.DATETIME, DataType.DATETIME_CONSTRUCTOR, DateTimeNodeType::new );
-		registerDataType(DataType.BOOLEAN, DataType.BOOLEAN_CONSTRUCTOR, BooleanNodeType::new );
+		registerDataType(DataType.STRING, StringNodeType::new );
+		registerDataType(DataType.BINARY, BinaryNodeType::new );
+		registerDataType(DataType.INTEGER, IntegerNodeType::new );
+		registerDataType(DataType.DECIMAL, DecimalNodeType::new );
+		registerDataType(DataType.DATE, DateNodeType::new );
+		registerDataType(DataType.DATETIME, DateTimeNodeType::new );
+		registerDataType(DataType.BOOLEAN, BooleanNodeType::new );
 	}
 
 

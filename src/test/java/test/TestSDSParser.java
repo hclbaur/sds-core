@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
+import be.baur.sds.DataType;
 import be.baur.sds.Schema;
 import be.baur.sds.parsing.SDSParser;
 import samples.types.GMonthDay;
@@ -17,8 +18,10 @@ public final class TestSDSParser {
 	public static void main(String[] args) throws Exception {
 		
 		/* register custom types */
-		Schema.registerDataType(IBAN.TYPE, IBAN.CONSTRUCTOR, IBANNodeType::new); 
-		Schema.registerDataType(GMonthDay.TYPE, GMonthDay.CONSTRUCTOR, GMonthDayNodeType::new);
+		DataType.register(IBAN.TYPE, IBAN.CONSTRUCTOR); 
+		Schema.registerDataType(IBAN.TYPE, IBANNodeType::new); 
+		DataType.register(GMonthDay.TYPE, GMonthDay.CONSTRUCTOR);
+		Schema.registerDataType(GMonthDay.TYPE, GMonthDayNodeType::new);
 		
 		/* test parsing SDS from files and formatting back to SDS */
 		System.out.print("contacts ");
