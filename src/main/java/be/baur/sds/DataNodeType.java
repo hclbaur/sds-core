@@ -1,14 +1,25 @@
 package be.baur.sds;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+
+import be.baur.sds.types.BinaryNodeType;
+import be.baur.sds.types.BooleanNodeType;
+import be.baur.sds.types.DateNodeType;
+import be.baur.sds.types.DateTimeNodeType;
+import be.baur.sds.types.DecimalNodeType;
+import be.baur.sds.types.IntegerNodeType;
+import be.baur.sds.types.StringNodeType;
 
 
 /**
  * This abstract class defines a generic SDA node type with a value. It is
- * extended by several node types to implement specific value data types:
+ * extended by several node types to implement various data types:
  * {@code StringNodeType}, {@code IntegerNodeType}, {@code BooleanNodeType},
- * etc.
+ * etc. In addition, it has static methods for registration of these types.
  */
 public abstract class DataNodeType <T> extends NodeType {
 
@@ -31,7 +42,7 @@ public abstract class DataNodeType <T> extends NodeType {
 	 * Returns the name of the data type, e.g. "string", "integer", "boolean",
 	 * etc.
 	 * 
-	 * @return a data type, not null
+	 * @return a data type, not null or empty
 	 */
 	public abstract String getDataType();
 
@@ -87,6 +98,79 @@ public abstract class DataNodeType <T> extends NodeType {
 	 */
 	public void setNullable(boolean nullable) {
 		this.nullable = nullable;
+	}
+	
+	
+	/*
+	 * Register native SDS data node types.
+	 */
+	
+	// Map that holds constructor functions to produce SDS data node types
+	@SuppressWarnings("rawtypes")
+	private static Map<String, Function<String, DataNodeType>> conmap = new HashMap<String, Function<String, DataNodeType>>();
+	
+	static {
+		register(DataType.STRING, StringNodeType::new );
+		register(DataType.BINARY, BinaryNodeType::new );
+		register(DataType.INTEGER, IntegerNodeType::new );
+		register(DataType.DECIMAL, DecimalNodeType::new );
+		register(DataType.DATE, DateNodeType::new );
+		register(DataType.DATETIME, DateTimeNodeType::new );
+		register(DataType.BOOLEAN, BooleanNodeType::new );
+	}
+
+
+	/**
+	 * Registers a constructor function for the specified data node type. This
+	 * method returns true if a constructor was registered and false if a
+	 * constructor was already registered for this type. The type and function must
+	 * not be null.
+	 * 
+	 * @param type the data type, not null or empty
+	 * @param func a data node type constructor function, not null
+	 * @return true or false
+	 * @throws IllegalArgumentException if type is null or empty
+	 */
+	@SuppressWarnings("rawtypes")
+	public static boolean register(String type, Function<String, DataNodeType> func) {
+		
+		Objects.requireNonNull(func, "constructor function must not be null");
+		if (type == null || type.isEmpty())
+			throw new IllegalArgumentException("type must not be null or empty");
+		
+		if (! conmap.containsKey(type)) {
+			conmap.put(type, func);
+			return true;
+		}
+		return false;
+	}
+
+
+	/**
+	 * Returns a constructor function for the specified data node type, or throws an
+	 * exception if the type is unknown (e.g. if it has not been registered).
+	 * 
+	 * @param type a data type
+	 * @return a constructor function
+	 * @throws IllegalArgumentException if the type is not known
+	 */
+	@SuppressWarnings("rawtypes")
+	public static Function<String, DataNodeType> getConstructor(String type) {
+		if (! isRegistered(type))
+			throw new IllegalArgumentException("type '" + type + "' is unknown");
+		return conmap.get(type);
+	}
+
+
+	/**
+	 * Returns true if a data node type was registered for this specific data type,
+	 * and false otherwise.
+	 * 
+	 * @param type a data type
+	 * @return true or false
+	 */
+	public static boolean isRegistered(String type) {
+		return type == null ? false : conmap.containsKey(type);
 	}
 
 }
