@@ -30,7 +30,7 @@ public final class DateTimeNodeType extends ComparableNodeType <ZonedDateTime> {
 
 
 	@Override
-	public Function<String, ZonedDateTime> valueConstructor() {
+	public Function<String, ZonedDateTime> getDataTypeConstructor() {
 		return DataType.DATETIME_CONSTRUCTOR;
 	}
 

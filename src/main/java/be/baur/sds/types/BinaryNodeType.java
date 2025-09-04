@@ -30,7 +30,7 @@ public final class BinaryNodeType extends CharacterNodeType <byte[]> {
 	
 	
 	@Override
-	public Function<String, byte[]> valueConstructor() {
+	public Function<String, byte[]> getDataTypeConstructor() {
 		return DataType.BINARY_CONSTRUCTOR;
 	}
 	

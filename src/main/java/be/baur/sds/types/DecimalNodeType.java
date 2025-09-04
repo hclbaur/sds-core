@@ -28,7 +28,7 @@ public final class DecimalNodeType extends ComparableNodeType <Double> {
 	
 
 	@Override
-	public Function<String, Double> valueConstructor() {
+	public Function<String, Double> getDataTypeConstructor() {
 		return DataType.DECIMAL_CONSTRUCTOR;
 	}
 

@@ -437,7 +437,7 @@ public final class SDSParser implements Parser<Schema> {
 			Interval interval;
 			ComparableNodeType comparableType = (ComparableNodeType) dnt;
 			try {	
-				interval = Interval.from(range.getValue(), comparableType.valueConstructor());
+				interval = Interval.from(range.getValue(), comparableType.getDataTypeConstructor());
 			} catch (IllegalArgumentException e) {
 				throw exception(range, 
 					ATTRIBUTE_INVALID, Attribute.VALUE.tag, range.getValue(), e.getMessage());

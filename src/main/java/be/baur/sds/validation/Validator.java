@@ -296,7 +296,7 @@ public abstract class Validator {
 		else if (type instanceof DataNodeType) {
 			try {
 				// probably a BooleanNodeType then
-				type.valueConstructor().apply(node.getValue());
+				type.getDataTypeConstructor().apply(node.getValue());
 			} catch (Exception e) {
 				return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getDataType(), e.getMessage());
 			}
@@ -319,7 +319,7 @@ public abstract class Validator {
 		int length;
 		
 		try {
-			T value = (T) type.valueConstructor().apply(node.getValue());
+			T value = (T) type.getDataTypeConstructor().apply(node.getValue());
 			length = type.valueLength(value);
 		} catch (Exception e) {
 			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getDataType(), e.getMessage());
@@ -349,7 +349,7 @@ public abstract class Validator {
 
 		Comparable<?> value = null;
 		try {
-			value = (Comparable<?>) type.valueConstructor().apply(node.getValue());
+			value = (Comparable<?>) type.getDataTypeConstructor().apply(node.getValue());
 		} catch (Exception e) {
 			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getDataType(), e.getMessage());
 		}

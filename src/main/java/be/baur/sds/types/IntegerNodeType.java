@@ -28,7 +28,7 @@ public final class IntegerNodeType extends ComparableNodeType <Integer> {
 
 
 	@Override
-	public Function<String, Integer> valueConstructor() {
+	public Function<String, Integer> getDataTypeConstructor() {
 		return DataType.INTEGER_CONSTRUCTOR;
 	}
 

@@ -30,7 +30,7 @@ public final class DateNodeType extends ComparableNodeType <LocalDate> {
 	
 
 	@Override
-	public Function<String, LocalDate> valueConstructor() {
+	public Function<String, LocalDate> getDataTypeConstructor() {
 		return DataType.DATE_CONSTRUCTOR;
 	}
 

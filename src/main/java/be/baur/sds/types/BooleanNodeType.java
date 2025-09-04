@@ -30,7 +30,7 @@ public final class BooleanNodeType extends DataNodeType <Boolean> {
 
 	
 	@Override
-	public Function<String, Boolean> valueConstructor() {
+	public Function<String, Boolean> getDataTypeConstructor() {
 		return DataType.BOOLEAN_CONSTRUCTOR;
 	}
 

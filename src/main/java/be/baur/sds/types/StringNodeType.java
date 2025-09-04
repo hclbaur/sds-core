@@ -30,7 +30,7 @@ public final class StringNodeType extends CharacterNodeType <String> {
 	
 	
 	@Override
-	public Function<String, String> valueConstructor() {
+	public Function<String, String> getDataTypeConstructor() {
 		return DataType.STRING_CONSTRUCTOR;
 	}
 	

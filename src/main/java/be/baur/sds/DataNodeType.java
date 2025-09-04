@@ -39,8 +39,8 @@ public abstract class DataNodeType <T> extends NodeType {
 
 
 	/**
-	 * Returns the name of the data type, e.g. "string", "integer", "boolean",
-	 * etc.
+	 * Returns the name of the data type for a node of this type, e.g. "string",
+	 * "integer", "boolean", etc.
 	 * 
 	 * @return a data type, not null or empty
 	 */
@@ -57,12 +57,12 @@ public abstract class DataNodeType <T> extends NodeType {
 	 * 
 	 * @return a constructor function
 	 */
-	public abstract Function<String, T> valueConstructor();
+	public abstract Function<String, T> getDataTypeConstructor();
 
 
 	/**
-	 * Returns the lexical space restriction pattern for the value. This method will
-	 * return a null reference if no pattern has been set.
+	 * Returns the lexical space restriction pattern for the data type. This method
+	 * will return a null reference if no pattern has been set.
 	 * 
 	 * @return a (pre-compiled) pattern, may be null
 	 */
@@ -72,7 +72,7 @@ public abstract class DataNodeType <T> extends NodeType {
 
 	
 	/**
-	 * Sets the lexical space restriction pattern for the value.
+	 * Sets the lexical space restriction pattern for the data type.
 	 * 
 	 * @param pattern a (pre-compiled) pattern, may be null
 	 */
@@ -82,7 +82,7 @@ public abstract class DataNodeType <T> extends NodeType {
 
 	
 	/**
-	 * Returns whether an empty value is allowed (nullable).
+	 * Returns whether an empty value is allowed for this data type (nullable).
 	 * 
 	 * @return true or false
 	 */
@@ -92,7 +92,7 @@ public abstract class DataNodeType <T> extends NodeType {
 
 
 	/**
-	 * Sets whether an empty value is allowed (nullable).
+	 * Sets whether an empty value is allowed for this data type (nullable).
 	 * 
 	 * @param nullable true or false
 	 */

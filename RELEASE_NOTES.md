@@ -9,6 +9,7 @@ a few renaming and re-factoring.
 - `Renamed` CharacterType to CharacterNodeType, ComparableType to ComparableNodeType.
 - `Renamed` StringType to StringNodeType, IntegerType to IntegerNodeType, etc...
 - `Renamed` package be.baur.sds.serialization to be.baur.sds.parsing.
+- `Renamed` DataNodeType.valueConstructuor to getDataTypeConstructor.
 - `Removed` Validator.setTypeName() - use validate(node,type) instead.
 - `Removed` Schema methods to register and obtain data (node) type constructors.
 - `Changed` Validator.validate(node) - no longer uses a default or set type.
