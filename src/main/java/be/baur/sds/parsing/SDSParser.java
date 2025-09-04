@@ -363,8 +363,8 @@ public final class SDSParser implements Parser<Schema> {
 
 	/**
 	 * This method is called from parseComponent() to create a NodeType from an SDS
-	 * type definition, for both simple and complex types. The type parameter is a
-	 * valid data type attribute, or null for complex types with node content only.
+	 * type definition, for both simple and complex types. The type parameter must
+	 * be a valid data type attribute, or null for node types with node content only.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static //<T extends Comparable<? super T>> 
@@ -397,7 +397,7 @@ public final class SDSParser implements Parser<Schema> {
 		/*
 		 * Get a value node type of the requested data type and handle remaining attributes.
 		 */
-		DataNodeType dnt = Schema.nodeTypeConstructor(type.getValue()).apply(name);
+		DataNodeType dnt = DataNodeType.getConstructor(type.getValue()).apply(name);
 		
 		// Set the optional null-ability.
 		DataNode nullable = getAttribute(sds, Attribute.NULLABLE, false);

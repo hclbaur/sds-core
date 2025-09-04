@@ -17,7 +17,7 @@ import be.baur.sds.types.StringNodeType;
 
 /**
  * This abstract class defines a generic SDA node type with a value. It is
- * extended by several node types to implement various data types:
+ * extended by the data node types that implement various data types:
  * {@code StringNodeType}, {@code IntegerNodeType}, {@code BooleanNodeType},
  * etc. In addition, it has static methods for registration of these types.
  */

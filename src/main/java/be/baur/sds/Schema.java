@@ -1,10 +1,7 @@
 package be.baur.sds;
 
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
@@ -12,13 +9,6 @@ import be.baur.sda.Node;
 import be.baur.sda.io.SDAFormatter;
 import be.baur.sds.parsing.SDSParseException;
 import be.baur.sds.parsing.SDSParser;
-import be.baur.sds.types.BinaryNodeType;
-import be.baur.sds.types.BooleanNodeType;
-import be.baur.sds.types.DateNodeType;
-import be.baur.sds.types.DateTimeNodeType;
-import be.baur.sds.types.DecimalNodeType;
-import be.baur.sds.types.IntegerNodeType;
-import be.baur.sds.types.StringNodeType;
 import be.baur.sds.validation.Validator;
 
 /**
@@ -33,78 +23,6 @@ import be.baur.sds.validation.Validator;
 public final class Schema extends AbstractNode {
 
 	public static final String TAG = "schema";
-
-	
-	/*
-	 * Maps that hold constructor functions to produce SDS data (node) types. This
-	 * allows us to keep the factory code generic and SDS extensible with new or
-	 * custom data types.
-	 */
-	@SuppressWarnings("rawtypes")
-	private static Map<String, Function<String, DataNodeType>> ntcmap = new HashMap<String, Function<String, DataNodeType>>();
-
-
-	/**
-	 * Registers constructor functions for the specified data (node) types. The
-	 * type and functions must not be null, and a type can be registered only once.
-	 * 
-	 * @param type the data type to register, not null or empty
-	 * @param dtcfun a data type constructor function, not null
-	 * @param ntcfun a {@code DataNodeType} constructor function, not null
-	 * @throws IllegalArgumentException if the type is already registered
-	 */
-	@SuppressWarnings("rawtypes")
-	public static void registerDataType(String type, Function<String, DataNodeType> ntcfun) {
-
-		Objects.requireNonNull(ntcfun, "node type constructor function must not be null");
-		if (type == null || type.isEmpty())
-			throw new IllegalArgumentException("type must not be null or empty");
-		if (ntcmap.containsKey(type))
-			throw new IllegalArgumentException("type '" + type + "' has already been registered");
-
-		ntcmap.put(type, ntcfun);
-	}
-
-
-	/**
-	 * Returns a constructor function for the specified node type, or throws an
-	 * exception if the type is unknown (e.g. has not been registered).
-	 * 
-	 * @param type a data type
-	 * @return a constructor function
-	 * @throws IllegalArgumentException if the type is not known
-	 */
-	@SuppressWarnings("rawtypes")
-	public static Function<String, DataNodeType> nodeTypeConstructor(String type) {
-		if (! isDataNodeType(type))
-			throw new IllegalArgumentException("type '" + type + "' is unknown");
-		return ntcmap.get(type);
-	}
-
-
-	/**
-	 * Returns true if the argument is a registered data type, and false otherwise.
-	 * 
-	 * @param type a data type
-	 * @return true or false
-	 */
-	public static boolean isDataNodeType(String type) {
-		return type == null ? false : ntcmap.containsKey(type);
-	}
-
-
-	/*
-	 * Register native data node types.
-	 */
-	static {
-		registerDataType(DataType.STRING, StringNodeType::new );
-		registerDataType(DataType.BINARY, BinaryNodeType::new );
-		registerDataType(DataType.INTEGER, IntegerNodeType::new );
-		registerDataType(DataType.DECIMAL, DecimalNodeType::new );
-		registerDataType(DataType.DATE, DateNodeType::new );
-		registerDataType(DataType.DATETIME, DateTimeNodeType::new );
-		registerDataType(DataType.BOOLEAN, BooleanNodeType::new );
-	}
 
 
 	/**
