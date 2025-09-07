@@ -1,9 +1,8 @@
 # Release Notes
 
-## [2.5.0] - 2025-??-??
+## [2.5.0] - 2025-09-07
 
-In development. This is a compatibility release for sda-core 2.3.0 with quite 
-a few renaming and re-factoring.
+A compatibility release for sda-core 2.3.0 with quite some renaming and re-factoring.
 
 - `Renamed` Type to AbstractNodeType, AnyType to AnyNodeType, DataType to DataNodeType.
 - `Renamed` CharacterType to CharacterNodeType, ComparableType to ComparableNodeType.

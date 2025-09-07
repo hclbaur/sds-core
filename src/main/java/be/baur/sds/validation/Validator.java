@@ -55,7 +55,6 @@ import be.baur.sds.types.ComparableNodeType;
  * the associated schema and validated type is not changed by the application.
  * 
  * @see Schema#newValidator
- * @see #setTypeName
  */
 public abstract class Validator {
 
@@ -135,10 +134,8 @@ public abstract class Validator {
 
 	/**
 	 * This method validates a data node (and any child nodes) against the schema
-	 * associated with this validator and returns a list of errors (which will be
-	 * empty if the node is valid).
-	 * <p>
-	 * The supplied node will be validated against the type that is specified.
+	 * associated with this validator against the specified type. It returns a list
+	 * of errors (which will be empty if the node is valid).
 	 * 
 	 * @param node the node to be validated, not null
 	 * @param type the name of the global type, not null or empty

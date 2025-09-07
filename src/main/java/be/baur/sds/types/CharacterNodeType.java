@@ -11,7 +11,6 @@ import be.baur.sds.common.NaturalInterval;
  * characters, and has a minimum and maximum length. It is used to implement the
  * native string and binary node types, and can be used to add specialized types
  * that are not easily validated with a regular expression, like an {@code IBAN}.
- * @param <T>
  */
 public abstract class CharacterNodeType <T> extends DataNodeType <T> {
 
