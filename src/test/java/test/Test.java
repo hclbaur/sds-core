@@ -1,5 +1,6 @@
 package test;
 
+import java.io.File;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -54,8 +55,12 @@ public class Test {
 	
 	BiFunction<String, String, String> bifunction;
 	
+	Test(BiFunction<String, String, String> bifunction, String prefix) {
+		this.bifunction = bifunction; this.prefix = prefix;
+	}
+	
 	Test(BiFunction<String, String, String> bifunction) {
-		this.bifunction = bifunction;
+		this(bifunction, "");
 	}
 	
 	public void ts2(String scenario, String input1, String input2, String expected) {
@@ -72,4 +77,9 @@ public class Test {
 		}
 	}
 	
+	
+	// convenience method to load a resource file
+	public static File getResourceFile(String name) {
+		return new File(Test.class.getResource(name).getFile());
+	}
 }

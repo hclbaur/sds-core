@@ -1,10 +1,12 @@
 package be.baur.sds;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 
-import be.baur.sds.serialization.SDSParseException;
-import be.baur.sds.serialization.SDSParser;
+import be.baur.sda.io.FileParseException;
+import be.baur.sds.parsing.SDSParseException;
+import be.baur.sds.parsing.SDSParser;
 
 /**
  * This class defines static constants and utility methods.
@@ -13,6 +15,11 @@ public final class SDS {
 	
 	private SDS() {} // cannot construct this
 
+
+	/*
+	 * Parser related fields and methods
+	 */
+	
 	private static SDSParser PARSER = new SDSParser(); // singleton parser
 
 	/**
@@ -28,8 +35,22 @@ public final class SDS {
 	public static Schema parse(Reader input) throws IOException, SDSParseException {
 		return PARSER.parse(input);
 	}
-	
-	
+
+
+	/**
+	 * Creates a schema from an input file in SDS format (assuming UTF-8 encoding),
+	 * using the default SDS parser.
+	 * 
+	 * @param file an input file
+	 * @return a schema
+	 * @throws IOException        if an I/O operation failed
+	 * @throws FileParseException if an SDS parsing error occurs
+	 */
+	public static Schema parse(File file) throws IOException, FileParseException {
+		return PARSER.parse(file);
+	}
+
+
 //	/** Convenience method that throws an exception if the argument is null.
 //	 * 
 //	 * @param obj the argument to check

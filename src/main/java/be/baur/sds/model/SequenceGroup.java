@@ -3,7 +3,7 @@
  */
 package be.baur.sds.model;
 
-import be.baur.sds.serialization.Components;
+import be.baur.sds.parsing.Components;
 
 /**
  * A sequence group defines two or more interdependent nodes or content

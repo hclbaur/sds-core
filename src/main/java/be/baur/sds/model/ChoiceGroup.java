@@ -7,10 +7,10 @@ import java.util.Optional;
 
 import be.baur.sda.Node;
 import be.baur.sds.Component;
-import be.baur.sds.serialization.Components;
+import be.baur.sds.parsing.Components;
 
 /**
- * A {@code ChoiceGroup} defines two (or more) mutually exclusive nodes or
+ * A choice group defines two (or more) mutually exclusive nodes or
  * content models, for example:
  * 
  * <pre>

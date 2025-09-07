@@ -5,12 +5,14 @@ import java.util.Optional;
 import be.baur.sda.Node;
 import be.baur.sda.DataNode;
 import be.baur.sds.Component;
-import be.baur.sds.serialization.Attribute;
+import be.baur.sds.parsing.Attribute;
 
 /**
- * The abstract superclass of all model groups. <br>
- * See also {@link SequenceGroup}, {@link ChoiceGroup} and
- * {@link UnorderedGroup}.
+ * This is the abstract superclass of all model groups.
+ * 
+ * @see SequenceGroup
+ * @see ChoiceGroup
+ * @see UnorderedGroup
  */
 public abstract class ModelGroup extends Component {
 

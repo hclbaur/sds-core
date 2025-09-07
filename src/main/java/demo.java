@@ -1,4 +1,4 @@
-import java.io.FileReader;
+import java.io.File;
 import java.util.List;
 
 import be.baur.sda.DataNode;
@@ -13,11 +13,8 @@ public class demo {
 
 	public static void main(String[] args) throws Exception {
 		
-		FileReader sds = new FileReader(args[0]);
-		Schema schema = SDS.parse(sds);
-		
-		FileReader sda = new FileReader(args[1]);
-		DataNode root = SDA.parse(sda);
+		Schema schema = SDS.parse(new File(args[0]));
+		DataNode root = SDA.parse(new File(args[1]));
 		
 		Validator validator = schema.newValidator();
 		Errors errors = validator.validate(root);
@@ -26,10 +23,10 @@ public class demo {
 			return;
 		}
 
-		for (Node contact : root.find("contact")) {
+		for (Node contact : root.getAll("contact")) {
 			
 			DataNode name = contact.get("firstname");
-			List<DataNode> numbers = contact.find("phonenumber");
+			List<DataNode> numbers = contact.getAll("phonenumber");
 			
 			System.out.println(name.getValue() + " has " + numbers.size() + " phone number(s).");
 			

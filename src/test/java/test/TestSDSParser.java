@@ -1,31 +1,32 @@
 package test;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
+import java.io.File;
 import java.util.function.Function;
 
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
+import be.baur.sds.DataNodeType;
+import be.baur.sds.DataType;
 import be.baur.sds.Schema;
-import be.baur.sds.serialization.SDSParser;
-import samples.types.GMonthDayType;
-import samples.types.IBANType;
+import be.baur.sds.parsing.SDSParser;
+import samples.types.GMonthDay;
+import samples.types.GMonthDayNodeType;
+import samples.types.IBAN;
+import samples.types.IBANNodeType;
 
 public final class TestSDSParser {
 
 	public static void main(String[] args) throws Exception {
 		
 		/* register custom types */
-		Schema.registerDataType(IBANType.NAME, IBANType::new); 
-		Schema.registerDataType(GMonthDayType.NAME, GMonthDayType::new);
+		DataType.register(IBAN.TYPE_NAME, IBAN.CONSTRUCTOR); 
+		DataNodeType.register(IBAN.TYPE_NAME, IBANNodeType::new); 
+		DataType.register(GMonthDay.TYPE_NAME, GMonthDay.CONSTRUCTOR);
+		DataNodeType.register(GMonthDay.TYPE_NAME, GMonthDayNodeType::new);
 		
 		/* test parsing SDS from files and formatting back to SDS */
 		System.out.print("contacts ");
-		InputStream input = TestSDSParser.class.getResourceAsStream("/contacts.sds");
-		DataNode sds = SDA.parse(new InputStreamReader(input,"UTF-8"));
+		DataNode sds = SDA.parse(Test.getResourceFile("/contacts.sds"));
 		Schema schema = SDSParser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);
@@ -33,8 +34,7 @@ public final class TestSDSParser {
 		}
 		
 		System.out.print("addressbook ");
-		input = TestSDSParser.class.getResourceAsStream("/addressbook.sds");
-		sds = SDA.parse(new InputStreamReader(input,"UTF-8"));
+		sds = SDA.parse(Test.getResourceFile("/addressbook.sds"));
 		schema = SDSParser.parse(sds);
 		if (! sds.toString().equals(schema.toString())) {
 			System.out.println("\nEXPECTED: " + sds);
@@ -42,9 +42,7 @@ public final class TestSDSParser {
 		}
 		
 		/* test writing a schema to an output file */
-		OutputStreamWriter output = 
-			new OutputStreamWriter(new FileOutputStream("c:/temp/test.sds"), "UTF-8");
-		SDA.format(output, schema.toSDA()); output.close();
+		SDA.format(new File("c:/temp/test.sds"), sds);
 		
 		/* verify a schema */
 		schema.verify();
@@ -52,7 +50,7 @@ public final class TestSDSParser {
 		
 		Function<String, String> strfun = str -> {
 			try {
-				return SDSParser.parse( SDA.parse(new StringReader(str)) ).toString();
+				return SDSParser.parse( SDA.parse(str) ).toString();
 			} catch (Exception e) {
 				return e.getLocalizedMessage();
 			}

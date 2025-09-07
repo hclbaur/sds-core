@@ -1,6 +1,33 @@
 # Release Notes
 
-## [2.4.0] - 2024-05-10
+## [2.5.0] - 2025-09-07
+
+A compatibility release for sda-core 2.3.0 with quite some renaming and re-factoring.
+
+- `Renamed` Type to AbstractNodeType, AnyType to AnyNodeType, DataType to DataNodeType.
+- `Renamed` CharacterType to CharacterNodeType, ComparableType to ComparableNodeType.
+- `Renamed` StringType to StringNodeType, IntegerType to IntegerNodeType, etc...
+- `Renamed` package be.baur.sds.serialization to be.baur.sds.parsing.
+- `Renamed` DataNodeType.valueConstructuor to getDataTypeConstructor.
+- `Removed` Validator.setTypeName() - use validate(node,type) instead.
+- `Removed` Schema methods to register and obtain data (node) type constructors.
+- `Changed` Validator.validate(node) - no longer uses a default or set type.
+- Added Validator.validate(node,type) and validateType(node,type) methods.
+- Added DataType class to register and obtain data type constructors.
+- Added DataNodeType methods to register and obtain node type constructors.
+- Added convenience method SDS.parse(File).
+- Closed issue #5 (Review type validation).
+- Closed issue #6 (Validate value against (native) SDS data type).
+- Closed issue #7 (Add SDS.parse convenience method(s)).
+
+
+## Compatibility
+
+- Requires Java 8 and sda-core 2.3.0.
+
+## Previous releases
+
+### [2.4.0] - 2024-05-10
 
 This release add support for user defined data types. The internals 
 of the library have been changed quite a bit but the impact on most
@@ -19,13 +46,7 @@ of the library have been changed quite a bit but the impact on most
 - Added GMonthDay custom type example and tests.
 - Added IBAN custom type example and tests.
 
-## Compatibility
-
-- Requires at least Java 8 and sda-core 2.2.0.
-
-## Previous releases
-
-### [2.3.0] - 2024-03-23
+### [2.3.0] - 2024-03-23 (requires at least SDA v2.2.0)
 
 This started out as a compatibility release for sda-core 2.2.x, 
 until I decided to change the SDS syntax and disallow a type 
@@ -47,7 +68,7 @@ a schema no longer has a "default type", whatever that was.
 - Added Validator.setTypeName().
 - Added docs/SPECIFICATION.
 
-### [2.2.0] - 2023-10-04
+### [2.2.0] - 2023-10-04 (requires at least SDA v2.1.0)
 
 This is a compatibility release for sda-core 2.1.x with minor changes.
 

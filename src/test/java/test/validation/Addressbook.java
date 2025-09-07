@@ -1,13 +1,10 @@
 package test.validation;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Iterator;
 
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
-import be.baur.sds.Schema;
 import be.baur.sds.validation.Validator;
 import be.baur.sds.validation.Validator.Errors;
 import test.Test;
@@ -22,20 +19,17 @@ public final class Addressbook {
 		Test t = new Test(s -> {
 			return s;
 		});
-		
-		InputStream sda = Addressbook.class.getResourceAsStream("/addressbook.sda");
-		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
 
-		InputStream sds = Addressbook.class.getResourceAsStream("/addressbook.sds");
-		Schema schema = SDS.parse(new InputStreamReader(sds, "UTF-8"));
-		Validator validator = schema.newValidator();
 
-		validator.setTypeName("contact"); // set to existing type but not what we expect
-		Errors errors = validator.validate(document);
+		DataNode doc = SDA.parse(Test.getResourceFile("/addressbook.sda"));
+		Validator validator = SDS.parse(Test.getResourceFile("/addressbook.sds")).newValidator();
+
+		// validate against existing type but not what we expect
+		Errors errors = validator.validate(doc, "contact");
 		t.ts1("F01", errors.get(0) + "", "/addressbook: got 'addressbook', but 'contact' was expected");
 		
-		validator.setTypeName(null); // try again with any matching type
-		errors = validator.validate(document);
+		// try again with any matching type
+		errors = validator.validate(doc);
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<?> e = errors.iterator();
 		
@@ -59,13 +53,24 @@ public final class Addressbook {
 		t.ts1("F18", e.next() + "", "/addressbook/contact[7]/bank: value 'NL64 ABNC 0417 1643 01' is invalid for type IBAN: invalid checksum");
 		t.ts1("F19", e.hasNext() + "", "false");
 		
-		validator.setTypeName("contact"); // now validate an actual contact (the first one)
-		errors = validator.validate(document.get("contact"));
+		// now validate an actual contact (the first one)
+		errors = validator.validate(doc.get("contact"));
 		e = errors.iterator();
 
 		t.ts1("F20", e.next() + "", "/addressbook/contact[1]/person/about: only complex content is expected for node 'about'");
 		t.ts1("F21", e.next() + "", "/addressbook/contact[1]/address/housenumber: got 'housenumber', but 'streetname' or 'postalcode' was expected");
 		t.ts1("F22", e.next() + "", "/addressbook/contact[1]/email[2]: 'email' was not expected in 'contact'");
 		t.ts1("F23", e.hasNext() + "", "false");
+		
+		// and finally try to validate the owner node (type only)
+		errors = validator.validate(doc.get("owner")); // error, no such global type
+		errors.addAll(validator.validate(doc.get("owner"), "contact")); // error, expecting contact node
+		errors.addAll(validator.validateType(doc.get("owner"), "contact")); /// OK, owner is of type contact
+		e = errors.iterator();
+
+		t.ts1("F24", e.next() + "", "/addressbook/owner: no declaration for 'owner' found");
+		t.ts1("F25", e.next() + "", "/addressbook/owner: got 'owner', but 'contact' was expected");
+		t.ts1("F26", e.hasNext() + "", "false");
+		
 	}
 }

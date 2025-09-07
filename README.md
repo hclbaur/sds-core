@@ -41,7 +41,8 @@ There is a lot more to be said about SDS than this, and I will do so in the [tut
 
 Please read up on [SDA](https://github.com/hclbaur/sda-core#what-is-sda), run the demo, then come back here for the SDS demo.
 
-For the SDS demo, get `demo.jar` and `addressbook.sds`  from the latest [release](https://github.com/hclbaur/sds-core/releases/latest) and copy them to where you ran the SDA demo. Assuming the java executable is in your path, run the demo like this:
+For the SDS demo, get `demo.zip` from the latest [release](https://github.com/hclbaur/sds-core/releases/latest) and unzip it where you ran the SDA demo. Assuming the java executable is in your path, 
+run the demo like this:
 
 	java -jar demo.jar addressbook.sds addressbook.sda
 	

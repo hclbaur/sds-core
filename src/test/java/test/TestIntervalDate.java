@@ -2,8 +2,8 @@ package test;
 
 import java.time.LocalDate;
 
+import be.baur.sds.DataType;
 import be.baur.sds.common.Interval;
-import be.baur.sds.types.DateType;
 
 public final class TestIntervalDate {
 
@@ -11,13 +11,13 @@ public final class TestIntervalDate {
 
 		Test t1 = new Test(s -> {
 			try {
-				return Interval.from(s, DateType.VALUE_CONSTRUCTOR).toString();
+				return Interval.from(s, DataType.DATE_CONSTRUCTOR).toString();
 			} catch (Exception e) { return e.getMessage(); }
 		});
 		
 		Test t2 = new Test( (s1,s2) -> {
 			try {
-				return Interval.from(s2, DateType.VALUE_CONSTRUCTOR).contains(DateType.valueOf(s1))+"";
+				return Interval.from(s2, DataType.DATE_CONSTRUCTOR).contains(DataType.DATE_CONSTRUCTOR.apply(s1))+"";
 			} catch (Exception e) { return e.getMessage(); }
 		});
 		

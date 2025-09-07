@@ -25,6 +25,9 @@ public final class TestAll {
 		System.out.print("\nSDSParser   : ");
 		test.TestSDSParser.main(args);
 		
+		System.out.print("\nSDSTypes    : ");
+		test.TestSDSTypes.main(args);
+		
 		System.out.print("\nContacts    : ");
 		test.validation.Contacts.main(args);
 		

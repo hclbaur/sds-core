@@ -1,7 +1,5 @@
 package test.validation;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Iterator;
 
 import be.baur.sda.DataNode;
@@ -21,14 +19,12 @@ public final class Groups {
 		Test t = new Test(s -> {
 			return s;
 		});
+
 		
-		InputStream sda = Groups.class.getResourceAsStream("/mgtest.sda");
-		DataNode document = SDA.parse(new InputStreamReader(sda, "UTF-8"));
+		DataNode doc = SDA.parse(Test.getResourceFile("/mgtest.sda"));
+		Validator validator = SDS.parse(Test.getResourceFile("/groups.sds")).newValidator();
 
-		InputStream sds = Groups.class.getResourceAsStream("/groups.sds");
-		Validator validator = SDS.parse(new InputStreamReader(sds, "UTF-8")).newValidator();
-
-		Errors errors = validator.validate(document);
+		Errors errors = validator.validate(doc);
 		//for (Error error : errors) System.out.println(error.toString());
 		Iterator<?> e = errors.iterator();
 		
