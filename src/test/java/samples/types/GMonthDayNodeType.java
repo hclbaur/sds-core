@@ -26,12 +26,12 @@ public final class GMonthDayNodeType extends ComparableNodeType <GMonthDay> {
 	
 	@Override
 	public String getDataType() {
-		return GMonthDay.TYPE;
+		return GMonthDay.TYPE_NAME;
 	}
 
 	
 	@Override
-	public Function<String, GMonthDay> valueConstructor() {
+	public Function<String, GMonthDay> getDataTypeConstructor() {
 		return GMonthDay.CONSTRUCTOR;
 	}
 

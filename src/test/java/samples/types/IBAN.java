@@ -27,7 +27,7 @@ public final class IBAN {
 	
 
 	/** Name of the custom IBAN type. */
-	public static final String TYPE = "IBAN";
+	public static final String TYPE_NAME = "IBAN";
 	
 	/**
 	 * Function to construct a IBAN value from a string.

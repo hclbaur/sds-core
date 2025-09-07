@@ -27,12 +27,12 @@ public final class IBANNodeType extends CharacterNodeType <IBAN> {
 
 	@Override
 	public String getDataType() {
-		return IBAN.TYPE;
+		return IBAN.TYPE_NAME;
 	}
 	
 	
 	@Override
-	public Function<String, IBAN> valueConstructor() {
+	public Function<String, IBAN> getDataTypeConstructor() {
 		return IBAN.CONSTRUCTOR;
 	}
 	

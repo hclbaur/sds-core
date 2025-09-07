@@ -18,7 +18,7 @@ public final class GMonthDay implements Comparable<Object> {
 	public static final GMonthDay MAX_VALUE = new GMonthDay(12,31);
 
 	/** Name of the custom gMonthDay type. */
-	public static final String TYPE = "gMonthDay";
+	public static final String TYPE_NAME = "gMonthDay";
 	
 	/**
 	 * Function to construct a gMonthDay value from a string.
