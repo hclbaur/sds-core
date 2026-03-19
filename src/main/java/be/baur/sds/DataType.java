@@ -54,7 +54,7 @@ public final class DataType {
 	 * function throws a {@code NumberFormatException} if the string cannot be
 	 * converted to an integer.
 	 */
-	public static final Function<String, Integer> INTEGER_CONSTRUCTOR = Integer::new;
+	public static final Function<String, Integer> INTEGER_CONSTRUCTOR = Integer::valueOf;
 	
 
 	/** Name of the SDS decimal data type. */
@@ -65,7 +65,7 @@ public final class DataType {
 	 * function throws a {@code NumberFormatException} if the string cannot be
 	 * converted to a number.
 	 */
-	public static final Function<String, Double> DECIMAL_CONSTRUCTOR = Double::new;
+	public static final Function<String, Double> DECIMAL_CONSTRUCTOR = Double::valueOf;
 
 
 	/** Name of the SDS date data type. */

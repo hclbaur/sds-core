@@ -1,6 +1,16 @@
 # Release Notes
 
-## [2.5.0] - 2025-09-07
+## [2.6.0] - in development
+
+- As of this release, Java 11 is required.
+
+## Compatibility
+
+- Requires Java 11 and sda-core 2.4.0.
+
+## Previous releases
+
+### [2.5.0] - 2025-09-07 (requires sda-core 2.3.0)
 
 A compatibility release for sda-core 2.3.0 with quite some renaming and re-factoring.
 
@@ -19,13 +29,6 @@ A compatibility release for sda-core 2.3.0 with quite some renaming and re-facto
 - Closed issue #5 (Review type validation).
 - Closed issue #6 (Validate value against (native) SDS data type).
 - Closed issue #7 (Add SDS.parse convenience method(s)).
-
-
-## Compatibility
-
-- Requires Java 8 and sda-core 2.3.0.
-
-## Previous releases
 
 ### [2.4.0] - 2024-05-10
 
@@ -46,7 +49,7 @@ of the library have been changed quite a bit but the impact on most
 - Added GMonthDay custom type example and tests.
 - Added IBAN custom type example and tests.
 
-### [2.3.0] - 2024-03-23 (requires at least SDA v2.2.0)
+### [2.3.0] - 2024-03-23 (requires sda-core 2.2.0)
 
 This started out as a compatibility release for sda-core 2.2.x, 
 until I decided to change the SDS syntax and disallow a type 
@@ -68,7 +71,7 @@ a schema no longer has a "default type", whatever that was.
 - Added Validator.setTypeName().
 - Added docs/SPECIFICATION.
 
-### [2.2.0] - 2023-10-04 (requires at least SDA v2.1.0)
+### [2.2.0] - 2023-10-04 (requires sda-core 2.1.0)
 
 This is a compatibility release for sda-core 2.1.x with minor changes.
 
@@ -84,7 +87,7 @@ This release introduces a few refactoring changes with limited impact.
 - `Removed` (Natural)Interval constructors, added factory methods.
 - `Removed` AbstractStringType.minLength() and maxLength().
 
-### [2.0.0] - 2022-10-09 (requires at least SDA v2.0.0)
+### [2.0.0] - 2022-10-09 (requires sda-core 2.0.0)
 
 This release includes full SDS 2 schema support, for specification and 
 validation of SDA documents, syntax version 2. You will have to update 
@@ -104,7 +107,7 @@ been writing an SDS parser, there will be little impact when upgrading.
 - `Removed` SimpleType and ComplexType (replaced with NodeType).
 - `Removed` Attribute.NAME (there is no *name* attribute in SDS 2).
 
-### [1.2.4] - 2022-08-12 (requires at least SDA v1.6.2)
+### [1.2.4] - 2022-08-12 (requires sda-core 1.6.2)
 - `Removed` references to SimpleNode/ComplexNode classes.
 - `Changed` Parser.parse() to throw IOException, SyntaxException, 
 SchemaException (was Exception).
@@ -118,12 +121,12 @@ SchemaException (was Exception).
 - Added demo and documentation in markdown.
 - `Removed` documentation in ODT format.
 
-### [1.2.1] - 2021-08-01 (requires at least SDA v1.6.0)
+### [1.2.1] - 2021-08-01 (requires sda-core 1.6.0)
 - Added support for self-referencing types.
 - Added validation of unordered groups.
 - Fixed validation of sequence groups.
 
-### [1.2.0] - 2021-04-27 (requires at least SDA v1.5.1)
+### [1.2.0] - 2021-04-27 (requires sda-core 1.5.1)
 - Added Parser interface with verify().
 - Added Validator interface.
 - Fixed interval range validation.
@@ -132,12 +135,12 @@ SchemaException (was Exception).
 - Tag 'multiplicity' renamed to 'occurs'.
 - Interval limiting fields renamed to min/max.
 
-### [1.1.1] - 2021-03-24 (requires at least SDA v1.5.0)
+### [1.1.1] - 2021-03-24 (requires sda-core 1.5.0)
 - Improved validation error messages.
 
-### [1.1.0] - 2021-03-02 (requires at least SDA v1.4.2)
+### [1.1.0] - 2021-03-02 (requires sda-core 1.4.2)
 - Added SDA Validator.
 - Finalized SDS Parser.
 
-### [1.0.0] - 2020-10-06 (requires at least SDA v1.4.1)
+### [1.0.0] - 2020-10-06 (requires sda-core 1.4.1)
 - First attempt at parsing SDS input.

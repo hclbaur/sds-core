@@ -1,0 +1,92 @@
+name: Build and (optionally) deploy
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+    tags:
+      - "[0-9]*.[0-9]*.[0-9]*" 
+      - "[0-9]*.[0-9]*.[0-9]*.[0-9]*"
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+
+  get-version:
+    runs-on: ubuntu-latest
+    outputs:
+      project_version: ${{ steps.getver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Version
+        id: getver
+        run: |
+          VERSION=$(mvn -B help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Fail if version is empty
+        if: steps.getver.outputs.version == ''
+        run: |
+          echo "::error title=Maven Error:: project version could not be determined."
+          exit 1
+
+
+  build:
+    needs: get-version
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: maven-build
+        path: target/
+    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+    #- name: Update dependency graph
+    #  uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+
+
+  publish:
+    needs: [ get-version, build ]
+    runs-on: ubuntu-latest
+    # publish if tagged or development snapshot
+    if: >
+      (github.event_name == 'push' && github.ref_type == 'tag') ||
+      (github.ref_name == 'develop' && contains(needs.get-version.outputs.project_version, '-SNAPSHOT'))
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        server-id: github
+
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: maven-build
+        path: target/
+
+    - name: Publish to GitHub Packages
+      run: mvn -B deploy -DskipTests
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
