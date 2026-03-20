@@ -25,7 +25,7 @@ public final class RussianDolls {
 		Errors errors = validator.validate(doc);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
-		t.ts1("S01", errors.isEmpty() ? "" : errors.get(0).toString(), "");
+		t.s("S01", errors.isEmpty() ? "" : errors.get(0).toString(), "");
 		
 		doc = SDA.parse(Test.getResourceFile("/russiandolls2.sda"));
 		validator = SDS.parse(Test.getResourceFile("/russiandolls2.sds")).newValidator();
@@ -33,7 +33,7 @@ public final class RussianDolls {
 		errors = validator.validate(doc);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
-		t.ts1("S02", errors.isEmpty() ? "" : errors.get(0).toString(), "");
+		t.s("S02", errors.isEmpty() ? "" : errors.get(0).toString(), "");
 		
 		doc = SDA.parse(Test.getResourceFile("/russiandolls3.sda"));
 		validator = SDS.parse(Test.getResourceFile("/russiandolls3.sds")).newValidator();
@@ -41,6 +41,6 @@ public final class RussianDolls {
 		errors = validator.validate(doc);
 		//for (be.baur.sds.validation.Error error : errors) System.out.println(error.toString());
 
-		t.ts1("S03", errors.isEmpty() ? "" : errors.get(0).toString(), "");
+		t.s("S03", errors.isEmpty() ? "" : errors.get(0).toString(), "");
 	}
 }

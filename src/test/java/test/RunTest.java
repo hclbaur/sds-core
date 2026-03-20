@@ -1,6 +1,12 @@
 package test;
 
-public final class TestAll {
+import junit.framework.TestCase;
+
+public final class RunTest extends TestCase {
+
+    public void testAll() throws Exception  {
+        RunTest.main(new String[]{});
+    }
 
 	public static void main(String[] args) throws Exception {
 

@@ -4,11 +4,11 @@ import java.util.Date;
 import java.util.function.Consumer;
 
 /** A convenience class with testing methods that accept Lambda expressions */
-public final class UnitTestPerformance<T> {
+public final class TestPerf<T> {
 
 	private Consumer<T> consumer;
 	
-	public UnitTestPerformance(Consumer<T> consumer) {
+	public TestPerf(Consumer<T> consumer) {
 		this.consumer = consumer;
 	}
 	
