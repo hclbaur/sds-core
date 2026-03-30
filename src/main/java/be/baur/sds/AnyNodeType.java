@@ -81,7 +81,7 @@ public final class AnyNodeType extends AbstractNodeType {
 	@Override
 	public DataNode toSDA() {
 
-		final DataNode node = new DataNode(Components.NODE.tag);
+		final var node = new DataNode(Components.NODE.tag);
 		
 		// Set the name only if explicitly named
 		if (named) node.setValue(getTypeName());

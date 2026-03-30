@@ -2,6 +2,7 @@
 
 ## [2.6.0] - in development
 
+- A compatibility release for sda-core 2.4.0.
 - As of this release, Java 11 is required.
 
 ## Compatibility

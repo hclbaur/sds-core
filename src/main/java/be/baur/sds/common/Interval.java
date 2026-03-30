@@ -29,8 +29,7 @@ import java.util.regex.Pattern;
  * 
  * See also {@link NaturalInterval}.
  */
-@SuppressWarnings("rawtypes")
-public final class Interval <T extends Comparable> {
+public final class Interval<T extends Comparable<? super T>> {
 
 	/** Interval types */
 	public final static int CLOSED 		= 	0b00;
@@ -39,7 +38,7 @@ public final class Interval <T extends Comparable> {
 	public final static int OPEN 		= 	0b11;
 	
 	/** All values in the range minus infinity to infinity, e.g. {@code (*..*)}. */
-	public static final Interval<Comparable> MIN_TO_MAX = new Interval<>(null, null, OPEN);
+	public static final Interval<?> MIN_TO_MAX = new Interval<>(null, null, OPEN);
 	
 	// Private pre-compiled pattern to match an interval notation
 	private static final String LB="\\[\\(";
@@ -66,7 +65,6 @@ public final class Interval <T extends Comparable> {
 	 * @param type the interval type
 	 * @throws IllegalArgumentException if the lower exceeds the upper limit
 	 */
-	@SuppressWarnings("unchecked")
 	private Interval(T min, T max, int type) {
 
 		if (type < CLOSED || type > OPEN)
@@ -94,10 +92,13 @@ public final class Interval <T extends Comparable> {
 	 * @return an Interval
 	 * @throws IllegalArgumentException for an invalid interval
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends Comparable> Interval<T> from(T min, T max, int type) {
+	public static <T extends Comparable<? super T>> Interval<T> from(T min, T max, int type) {
 		
-		if (min == null && max == null) return (Interval<T>) MIN_TO_MAX;
+		if (min == null && max == null) {
+			@SuppressWarnings("unchecked")
+			var interval = (Interval<T>) MIN_TO_MAX; // safe
+			return interval;
+		}
 		return new Interval<T>(min, max, type);
 	}
 
@@ -115,11 +116,11 @@ public final class Interval <T extends Comparable> {
 	 * @return an Interval
 	 * @throws IllegalArgumentException if the specified interval is invalid
 	 */
-	public static <T extends Comparable> Interval<T> from(String interval, Function<String, T> func) {
+	public static <T extends Comparable<? super T>> Interval<T> from(String interval, Function<String, T> func) {
 		/*
-		 * This function used to accept a class and use reflection to create a value from a string:
+		 * This function used to accept a class and use reflection to create a value:
 		 * value = class.getConstructor(String.class).newInstance(string);
-		 * Now it uses a functional interface, so it no longer depends on a string constructor.
+		 * Now it uses a functional interface, and no longer depends on a string constructor.
 		 */
 		T min = null, max = null; // null means unbounded, or * in interval notation
 		
@@ -175,8 +176,7 @@ public final class Interval <T extends Comparable> {
 	 * @param value the value to be evaluated, not null
 	 * @return -1, 0 or 1
 	 */
-	@SuppressWarnings({ "unchecked", "hiding" })
-	public <T extends Comparable> int contains(T value) {
+	public int contains(T value) {
 		
 		Objects.requireNonNull(value, "value must not be null");
 		
@@ -201,9 +201,15 @@ public final class Interval <T extends Comparable> {
 	@Override
 	public String toString() {
 		
-		if (min == max && min != null) return min.toString(); // fixed value
+		if (min == max && min != null)
+			return min.toString(); // degenerate interval
 		
-		return ((type & LEFT_OPEN) > 0 ? "(" : "[") + (min == null ? "*" : min)
-			+ ".." + (max == null ? "*" : max) + ((type & RIGHT_OPEN) > 0 ? ")" : "]");
+		return 
+			((type & LEFT_OPEN) > 0 ? "(" : "[") 
+			+ (min == null ? "*" : min.toString())
+			+ ".." 
+			+ (max == null ? "*" : max.toString()) 
+			+ ((type & RIGHT_OPEN) > 0 ? ")" : "]")
+		;
 	}
 }

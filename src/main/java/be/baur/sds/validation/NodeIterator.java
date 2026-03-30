@@ -9,7 +9,7 @@ import be.baur.sda.Node;
  * This non-public class provides a Node iterator with a revert() method to deal
  * with a specific validation issue.
  */
-class NodeIterator<T extends Node> implements Iterator<T> {
+class NodeIterator<T extends Node<T>> implements Iterator<T> {
 
     private T saved = null;  // reference to the most recently returned element
     private boolean reverted = false; // whether we are in reverted state

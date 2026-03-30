@@ -11,7 +11,7 @@ import be.baur.sds.common.Interval;
  * same type. It is used to implement the native integer, decimal and date(time)
  * node types, and can be used to add more exotic ones, like {@code GMonthDay}.
  */
-public abstract class ComparableNodeType <T extends Comparable<? super T>> extends DataNodeType <T> {
+public abstract class ComparableNodeType<T extends Comparable<? super T>> extends DataNodeType<T> {
 
 	private Interval<?> range = Interval.MIN_TO_MAX; // default is to allow any value
 
@@ -33,8 +33,9 @@ public abstract class ComparableNodeType <T extends Comparable<? super T>> exten
 	 * 
 	 * @return an interval, never null
 	 */
-	public Interval<?> getInterval() {
-		return range;
+	@SuppressWarnings("unchecked")
+	public Interval<T> getInterval() {
+		return (Interval<T>) range; // not sure if safe...
 	}
 
 
@@ -43,7 +44,7 @@ public abstract class ComparableNodeType <T extends Comparable<? super T>> exten
 	 * 
 	 * @param range an interval, not null
 	 */
-	public void setInterval(Interval<T> range) {
+	public void setInterval(Interval<?> range) {
 		this.range = Objects.requireNonNull(range, "range must not be null");
 	}
 

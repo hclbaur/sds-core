@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
-import be.baur.sda.Node;
 import be.baur.sda.io.SDAFormatter;
 import be.baur.sds.parsing.SDSParseException;
 import be.baur.sds.parsing.SDSParser;
@@ -20,7 +19,7 @@ import be.baur.sds.validation.Validator;
  * @see Component
  * @see SDSParser
  */
-public final class Schema extends AbstractNode {
+public final class Schema extends AbstractNode<Component> {
 
 	public static final String TAG = "schema";
 
@@ -34,7 +33,7 @@ public final class Schema extends AbstractNode {
 	 */
 	public NodeType getGlobalType(String name) {
 		Objects.requireNonNull(name, "name must not be null");
-		return get(t -> t instanceof NodeType && ((NodeType) t).getTypeName().equals(name));
+		return (NodeType) get(t -> t instanceof NodeType && ((NodeType) t).getTypeName().equals(name));
 	}
 
 
@@ -47,11 +46,11 @@ public final class Schema extends AbstractNode {
 	 */
 	public DataNode toSDA() {
 		
-		final DataNode node = new DataNode(TAG); 
+		final var node = new DataNode(TAG); 
 		node.add(null); // just in case we have no child nodes
 
-		for (Node component : nodes()) // render all components
-			node.add(((Component) component).toSDA());
+		for (var component : nodes()) // render all components
+			node.add( component.toSDA() );
 
 		return node;
 	}

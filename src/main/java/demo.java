@@ -1,8 +1,6 @@
 import java.io.File;
-import java.util.List;
 
 import be.baur.sda.DataNode;
-import be.baur.sda.Node;
 import be.baur.sda.SDA;
 import be.baur.sds.SDS;
 import be.baur.sds.Schema;
@@ -23,14 +21,14 @@ public class demo {
 			return;
 		}
 
-		for (Node contact : root.getAll("contact")) {
+		for (var contact : root.getAll("contact")) {
 			
-			DataNode name = contact.get("firstname");
-			List<DataNode> numbers = contact.getAll("phonenumber");
+			var name = contact.get("firstname");
+			var numbers = contact.getAll("phonenumber");
 			
 			System.out.println(name.getValue() + " has " + numbers.size() + " phone number(s).");
 			
-			int i = 0; 	for (DataNode number : numbers) {
+			int i = 0; 	for (var number : numbers) {
 				System.out.println("  Number " + ++i + ": " + number.getValue());
 			}
 		}

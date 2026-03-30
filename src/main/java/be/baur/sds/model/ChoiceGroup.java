@@ -5,7 +5,6 @@ package be.baur.sds.model;
 
 import java.util.Optional;
 
-import be.baur.sda.Node;
 import be.baur.sds.Component;
 import be.baur.sds.parsing.Components;
 
@@ -59,10 +58,11 @@ public final class ChoiceGroup extends ModelGroup {
 	@Override
 	public int minOccurs() {
 		
-		Optional<Node> opt = this.nodes().stream()
-			.filter(n -> (n instanceof Component) && ((Component) n).minOccurs() == 0)
-			.findFirst(); // if a choice contains at least one optional component, it is optional.
-		if (opt.isPresent()) return 0;
+		Optional<Component> opt = this.nodes().stream()
+			.filter(n -> n.minOccurs() == 0) // find mandatory child components
+			.findFirst(); // if a choice contains an optional component, it is optional
+		if (opt.isPresent())
+			return 0;
 		return super.minOccurs();
 	}
 }

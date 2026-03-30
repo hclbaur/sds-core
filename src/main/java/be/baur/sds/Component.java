@@ -15,7 +15,7 @@ import be.baur.sds.model.ModelGroup;
  * @see AbstractNodeType
  * @see ModelGroup
  */
-public abstract class Component extends AbstractNode {
+public abstract class Component extends AbstractNode<Component> {
 
 	private String globalTypeName = null; // name of the global type that this component refers to.
 	private NaturalInterval multiplicity = NaturalInterval.EXACTLY_ONE; // default is mandatory and singular.

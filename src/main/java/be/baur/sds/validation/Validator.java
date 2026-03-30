@@ -2,7 +2,6 @@ package be.baur.sds.validation;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -16,9 +15,9 @@ import be.baur.sda.util.Results;
 import be.baur.sds.AbstractNodeType;
 import be.baur.sds.AnyNodeType;
 import be.baur.sds.Component;
+import be.baur.sds.DataNodeType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
-import be.baur.sds.DataNodeType;
 import be.baur.sds.common.Interval;
 import be.baur.sds.common.NaturalInterval;
 import be.baur.sds.model.ChoiceGroup;
@@ -75,9 +74,9 @@ public abstract class Validator {
 	
 
 	/** A private class to hold a validation error */
-	private static final class Error extends Result<Node> {
+	private static final class Error extends Result<Node<?>> {
 
-		public Error(Node node, String message) {
+		public Error(Node<?> node, String message) {
 			super(false, node, message);
 		}
 
@@ -88,7 +87,7 @@ public abstract class Validator {
 	}
 
 	/** A private method to create a validation error */
-	private static Error error(Node node, String format, Object... args) {
+	private static Error error(Node<?> node, String format, Object... args) {
 		return new Error(node, String.format(format, args));
 	}
 
@@ -97,7 +96,7 @@ public abstract class Validator {
 	 * A convenience class to hold a list of validation errors.
 	 */
 	@SuppressWarnings("serial")
-	public static final class Errors extends Results<Node> {
+	public static final class Errors extends Results<Node<?>> {
 
 		private boolean add(Error error) {
 			return super.addError(error);
@@ -341,17 +340,18 @@ public abstract class Validator {
 	/**
 	 * Asserts that the node value is valid by creating an instance, and check
 	 * whether it is within the allowed interval.
+	 * @param <T>
 	 */
-	private static Error validateComparableValue(DataNode node, ComparableNodeType<?> type) {
+	private static <T extends Comparable<? super T>> Error validateComparableValue(DataNode node, ComparableNodeType<T> type) {
 
-		Comparable<?> value = null;
+		T value;
 		try {
-			value = (Comparable<?>) type.getDataTypeConstructor().apply(node.getValue());
+			value = type.getDataTypeConstructor().apply(node.getValue());
 		} catch (Exception e) {
 			return error(node, INVALID_VALUE_FOR_TYPE, node.getValue(), type.getDataType(), e.getMessage());
 		}
 		
-		Interval<?> range = type.getInterval(); 
+		Interval<T> range = type.getInterval(); 
 		int contains = range.contains(value);
 		if (contains < 0) {
 			if (value.equals(range.min)) 
@@ -385,14 +385,14 @@ public abstract class Validator {
 	 */
 	private static Error validateComplexContent(DataNode node, NodeType type, Errors errors) {
 		
-		NodeIterator<DataNode> inode = new NodeIterator<DataNode>(node.nodes()); // iterator for child nodes
-		DataNode childnode = inode.hasNext() ? inode.next() : null; // first child node (or none)
+		var inode = new NodeIterator<DataNode>(node.nodes()); // iterator for child nodes
+		var childnode = inode.hasNext() ? inode.next() : null; // first child node (or none)
 		
 		//System.out.println("validateComplex: matching children of " + node.getName()+"{}");
-		Iterator<Node> icomp = type.nodes().iterator();
+		var icomp = type.nodes().iterator();
 		while (icomp.hasNext()) {
 			
-			Component childcomp = (Component) icomp.next(); 
+			var childcomp = icomp.next(); 
 			int curmatches = 0;  // number of matches so far for this child component
 			int maxmatches = childcomp.maxOccurs(); // maximum number of matches allowed
 			
@@ -470,9 +470,8 @@ public abstract class Validator {
 	private static boolean matchChoice(NodeIterator<DataNode> inode, DataNode node, ChoiceGroup choice, Errors errors) {
 
 		//System.out.println("matchChoice: matching children of " + choice.getName()+"{}");
-		for (Node child : choice.nodes()) {
-			
-			Component component = (Component) child; 
+		for (var component : choice.nodes()) {
+			 
 			boolean match;
 			//System.out.println("matchChoice: matching " + ((node instanceof SimpleNode) ? node : node.getName() + "{}") + " to " + component.getName());
 			if (component instanceof ModelGroup)
@@ -500,15 +499,15 @@ public abstract class Validator {
 	private static boolean matchSequence(NodeIterator<DataNode> inode, DataNode node, SequenceGroup group, Errors errors) {
 
 		boolean invoked = false; // overall match for this group, initially false
-		final DataNode parent = node.getParent(); // save the parent of the node(s) for later use
+		final var parent = node.getParent(); // save the parent of the node(s) for later use
 		
 		//System.out.println("matchSequence: matching children of " + group.getName()+"{}");
 		boolean match = false;
-		Iterator<Node> icomp = group.nodes().iterator();
+		var icomp = group.nodes().iterator();
 		
 		while (icomp.hasNext()) { // main / outer component loop
 			
-			Component component = (Component) icomp.next();
+			var component = icomp.next();
 			int curmatches = 0; // number of matches so far for this component
 			int maxmatches = component.maxOccurs();  // maximum number of matches allowed
 			
@@ -599,18 +598,18 @@ public abstract class Validator {
 		
 		// make a list (set) of components to be matched (by definition at least two)
 		// we remove components during iteration, so we use a concurrent write list. 
-		List<Component> components =  new CopyOnWriteArrayList<>(group.nodes());
+		var components =  new CopyOnWriteArrayList<Component>(group.nodes());
 
 		node_loop:
 		while (node != null) { // while there are still nodes
 
 			boolean matchinlist = false;
 			Component component = null;
-			Iterator<Component> icomp = components.iterator();
+			var icomp = components.iterator();
 				
 			while (icomp.hasNext()) { // outer component loop (while the list is not empty)
 			
-				component = (Component) icomp.next(); 
+				component = icomp.next(); 
 				int curmatches = 0; // number of matches so far for this component
 				int maxmatches = component.maxOccurs();  // maximum number of matches allowed
 				
@@ -637,7 +636,7 @@ public abstract class Validator {
 							node = inode.next();
 							continue; // inner loop
 						}
-						components.remove((Node) component);
+						components.remove(component);
 						if (curmatches < component.minOccurs())
 							errors.add(missingNodeError(parent, component));
 						break node_loop; // all the way down}
@@ -653,7 +652,7 @@ public abstract class Validator {
 				 * once, we remove it from the list before we resume the outer loop to match the
 				 * next component.
 				 */
-				if (curmatches > 0) components.remove((Node) component);
+				if (curmatches > 0) components.remove(component);
 				
 			} // outer component loop
 			
@@ -686,7 +685,7 @@ public abstract class Validator {
 			 * anymore (and an error was already reported).
 			 */
 			if (invoked) {
-				List<Component> required = 
+				var required = 
 					components.stream().filter(n -> n.minOccurs() > 0)
 					.collect(Collectors.toCollection(ArrayList<Component>::new));
 				if (! required.isEmpty()) {
@@ -694,7 +693,7 @@ public abstract class Validator {
 						node.getName(), quoteNames(expectedTypes(required)) );
 					errors.add(error);
 					node = inode.hasNext() ? inode.next() : null; // get the next node
-					if (node == null) components.remove((Node) component);
+					if (node == null) components.remove(component);
 					continue; // resume node loop
 				}
 			}
@@ -719,7 +718,7 @@ public abstract class Validator {
 		 * that there are no more required components and add an error otherwise.
 		 */
 		if (invoked) {
-			List<Component> required = 
+			var required = 
 				components.stream().filter(n -> n.minOccurs() > 0)
 				.collect(Collectors.toCollection(ArrayList<Component>::new));
 			if (! required.isEmpty()) {
@@ -778,8 +777,8 @@ public abstract class Validator {
 		 * follow (in any order).
 		 */
 		if (group instanceof ChoiceGroup || group instanceof UnorderedGroup) {
-			List<AbstractNodeType> result = group.nodes().stream()
-				.flatMap(n -> expectedTypes( (Component) n ).stream())
+			var result = group.nodes().stream()
+				.flatMap(c -> expectedTypes(c).stream())
 				.collect(Collectors.toCollection(ArrayList<AbstractNodeType>::new));
 			return result;
 		}
@@ -791,10 +790,10 @@ public abstract class Validator {
 		 * mandatory component.
 		 */
 		if (group instanceof SequenceGroup) {
-			List<AbstractNodeType> result = new ArrayList<>();
-			for (Node n : group.nodes()) {
-				for (AbstractNodeType t : expectedTypes((Component) n)) result.add(t); // correct?
-				if (((Component) n).minOccurs() > 0) break;
+			var result = new ArrayList<AbstractNodeType>();
+			for (var component : group.nodes()) {
+				for (AbstractNodeType t : expectedTypes(component)) result.add(t); // correct?
+				if (component.minOccurs() > 0) break;
 			}
 			return result;
 		}

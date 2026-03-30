@@ -1,6 +1,6 @@
 package be.baur.sds.parsing;
 
-import be.baur.sda.Node;
+import be.baur.sda.DataNode;
 import be.baur.sda.NodeException;
 
 /**
@@ -18,7 +18,7 @@ public final class SDSParseException extends NodeException {
 	 * @param node    the node where the error was found
 	 * @param message an error message
 	 */
-	public SDSParseException(Node node, String message) {
+	public SDSParseException(DataNode node, String message) {
 		super(node, message);
 	}
 
@@ -29,7 +29,7 @@ public final class SDSParseException extends NodeException {
 	 * @param node  the node where the exception occurred
 	 * @param cause the exception causing this exception
 	 */
-	public SDSParseException(Node node, Throwable cause) {
+	public SDSParseException(DataNode node, Throwable cause) {
 		super(node, cause.getMessage()); initCause(cause);
 	} 
 }

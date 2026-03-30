@@ -2,7 +2,6 @@ package be.baur.sds.model;
 
 import java.util.Optional;
 
-import be.baur.sda.Node;
 import be.baur.sda.DataNode;
 import be.baur.sds.Component;
 import be.baur.sds.parsing.Attribute;
@@ -43,10 +42,11 @@ public abstract class ModelGroup extends Component {
 	@Override
 	public int minOccurs() {
 		
-		Optional<Node> man = this.nodes().stream()
-			.filter(n -> (n instanceof Component) && ((Component) n).minOccurs() > 0)
-			.findFirst(); // if a group contains no mandatory components, it is optional.
-		if (man.isPresent()) return super.minOccurs();
+		Optional<Component> man = this.nodes().stream()
+			.filter(n -> n.minOccurs() > 0) // find mandatory child components
+			.findFirst();
+		if (man.isPresent()) // if a group has no mandatory components, it is optional
+			return super.minOccurs();
 		return 0;
 	}
 	
@@ -54,22 +54,23 @@ public abstract class ModelGroup extends Component {
 	@Override
 	public final DataNode toSDA() {
 		
-		final DataNode node = new DataNode(getName()); // group, choice or unordered
+		final var node = new DataNode(getName()); // group, choice or unordered
 
 		// maybe someday we will support named groups, but not today
 		
 //		if (getGlobalType() == null || ! getName().equals(getGlobalType()))
 //			node.setValue(getName());
 //	
-//		if (getGlobalType() != null) // Render the type attribute if we have one.
+//		if (getGlobalType() != null) // render the type attribute if we have one.
 //			node.add(new DataNode(Attribute.TYPE.tag, getGlobalType()));
 	
-		// Render the multiplicity if not default.
+		// Render the multiplicity if not default
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
 			node.add(new DataNode(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
-		//if (getGlobalType() == null) // Render children, unless we are a type reference.
-		for (Node child : nodes()) node.add(((Component) child).toSDA());
+		//if (getGlobalType() == null) // render children, unless we are a type reference
+		for (var component : nodes())
+			node.add( component.toSDA() );
 
 		return node;
 	}
