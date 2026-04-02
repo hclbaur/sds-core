@@ -252,12 +252,12 @@ public abstract class Validator {
 		
 		// we are expecting simple content
 		if (! node.isLeaf()) {
-			if (type.isLeaf()) // no complex content is expected
+			if (! type.isParent()) // no complex content is expected
 				errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "no complex content", nodename));
 			else // validate complex content if we have it
 				errors.add(validateComplexContent(node, (NodeType) type, errors));
 		} 
-		else if (! type.isLeaf()) // report missing complex content
+		else if (type.isParent()) // report missing complex content
 			errors.add(error(node, CONTENT_EXPECTED_FOR_NODE, "complex content", nodename));
 	
 		// validate the simple content we were expecting

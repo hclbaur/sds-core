@@ -84,17 +84,6 @@ public class NodeType extends AbstractNodeType {
 		return globalType.nodes(); // should not cause NPE
 	}
 
-	@Override /* handle type reference */
-	public final boolean isLeaf() {
-
-		if (getGlobalType() == null)
-			return super.isLeaf();
-		if (globalType == null) { // not bound yet, so get it from the schema root
-			Node<?> schema = root(); // returns no component !
-			globalType = (NodeType) schema.get(t -> ((NodeType) t).getTypeName().equals(getGlobalType()));
-		}
-		return globalType.isLeaf(); // should not cause NPE
-	}
 
 	@Override /* handle type reference */
 	public final boolean isParent() {
