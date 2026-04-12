@@ -1,4 +1,4 @@
-package be.baur.sds.parsing;
+package be.baur.sds.parser;
 
 import be.baur.sda.DataNode;
 import be.baur.sda.NodeException;

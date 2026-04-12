@@ -1,4 +1,4 @@
-package be.baur.sds.parsing;
+package be.baur.sds.parser;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -8,8 +8,8 @@ import java.util.regex.PatternSyntaxException;
 import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
+import be.baur.sda.io.ParseException;
 import be.baur.sda.io.Parser;
-import be.baur.sda.io.SDAParseException;
 import be.baur.sds.AnyNodeType;
 import be.baur.sds.Component;
 import be.baur.sds.DataNodeType;
@@ -84,7 +84,7 @@ public final class SDSParser implements Parser<Schema> {
 		DataNode sds = null;
 		try {
 			sds = SDA.parse(input);
-		} catch (SDAParseException e) {
+		} catch (ParseException e) {
 			throw new SDSParseException(null, e);
 		}
 		return parse(sds);
@@ -198,7 +198,7 @@ public final class SDSParser implements Parser<Schema> {
 					throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
 				
 				String name = sds.getValue();  // a name is optional, but if there is one it must be valid
-				if (! name.isEmpty() && ! SDA.isName(name))
+				if (! name.isEmpty() && ! SDA.isNodeName(name))
 					throw exception(sds, NODE_NAME_INVALID, name);
 				
 				component = new AnyNodeType(name);
@@ -351,7 +351,7 @@ public final class SDSParser implements Parser<Schema> {
 		// if a valid name is specified (different or equal to the type name) we set it
 		String name = sds.getValue();
 		if (! name.isEmpty()) {
-			if (! SDA.isName(name))	throw exception(sds, NODE_NAME_INVALID, name);
+			if (! SDA.isNodeName(name))	throw exception(sds, NODE_NAME_INVALID, name);
 
 			((NodeType) refComp).setTypeName(name);  // references to model groups not yet supported
 		}
@@ -377,7 +377,7 @@ public final class SDSParser implements Parser<Schema> {
 
 		String name = sds.getValue(); // a name is required and should be valid
 		if (name.isEmpty())	throw exception(sds, NAME_IS_EXPECTED);
-		if (! SDA.isName(name)) throw exception(sds, NODE_NAME_INVALID, name);
+		if (! SDA.isNodeName(name)) throw exception(sds, NODE_NAME_INVALID, name);
 		
 		/*
 		 * If type is null, it is a complex type without a data type, so data type

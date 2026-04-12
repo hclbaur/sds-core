@@ -6,8 +6,8 @@ import java.util.Objects;
 import be.baur.sda.AbstractNode;
 import be.baur.sda.DataNode;
 import be.baur.sda.io.SDAFormatter;
-import be.baur.sds.parsing.SDSParseException;
-import be.baur.sds.parsing.SDSParser;
+import be.baur.sds.parser.SDSParseException;
+import be.baur.sds.parser.SDSParser;
 import be.baur.sds.validation.Validator;
 
 /**
@@ -47,7 +47,7 @@ public final class Schema extends AbstractNode<Component> {
 	public DataNode toSDA() {
 		
 		final var node = new DataNode(TAG); 
-		node.add(null); // just in case we have no child nodes
+		node.expand(); // just in case we have no child nodes
 
 		for (var component : nodes()) // render all components
 			node.add( component.toSDA() );

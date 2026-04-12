@@ -1,4 +1,4 @@
-package be.baur.sds.parsing;
+package be.baur.sds.parser;
 
 /**
  * Components allowed by the SDS syntax. The lower-case name of a component

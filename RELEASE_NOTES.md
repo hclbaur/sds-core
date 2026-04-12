@@ -2,7 +2,9 @@
 
 ## [2.6.0] - in development
 
-- A compatibility release for sda-core 2.4.0.
+This is primarily a compatibility release for sda-core 2.4.0 with some renaming.
+
+- `Renamed` package be.baur.sds.parsing to be.baur.sds.parser.
 - As of this release, Java 11 is required.
 
 ## Compatibility

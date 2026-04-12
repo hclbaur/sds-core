@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.Reader;
 
 import be.baur.sda.io.FileParseException;
-import be.baur.sds.parsing.SDSParseException;
-import be.baur.sds.parsing.SDSParser;
+import be.baur.sds.parser.SDSParseException;
+import be.baur.sds.parser.SDSParser;
 
 /**
  * This class defines static constants and utility methods.

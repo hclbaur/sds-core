@@ -6,7 +6,7 @@ package be.baur.sds.model;
 import java.util.Optional;
 
 import be.baur.sds.Component;
-import be.baur.sds.parsing.Components;
+import be.baur.sds.parser.Components;
 
 /**
  * A choice group defines two (or more) mutually exclusive nodes or

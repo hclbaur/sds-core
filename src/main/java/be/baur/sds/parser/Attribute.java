@@ -1,4 +1,4 @@
-package be.baur.sds.parsing;
+package be.baur.sds.parser;
 
 /**
  * Attributes allowed by the SDS syntax. The lower-case name of an attribute

@@ -2,8 +2,8 @@ package be.baur.sds;
 
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
-import be.baur.sds.parsing.Attribute;
-import be.baur.sds.parsing.Components;
+import be.baur.sds.parser.Attribute;
+import be.baur.sds.parser.Components;
 
 /**
  * This type defines an SDA node with any value and/or child nodes, and any
@@ -61,7 +61,7 @@ public final class AnyNodeType extends AbstractNodeType {
 		if (name == null || name.isEmpty()) {
 			named = false; return;
 		}
-		if (! SDA.isName(name)) 
+		if (! SDA.isNodeName(name)) 
 			throw new IllegalArgumentException("invalid type name (" + name + ")");
 		super.setTypeName(name);
 		named = true;

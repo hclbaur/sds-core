@@ -8,7 +8,7 @@ import be.baur.sda.SDA;
 import be.baur.sds.DataNodeType;
 import be.baur.sds.DataType;
 import be.baur.sds.Schema;
-import be.baur.sds.parsing.SDSParser;
+import be.baur.sds.parser.SDSParser;
 import samples.types.GMonthDay;
 import samples.types.GMonthDayNodeType;
 import samples.types.IBAN;

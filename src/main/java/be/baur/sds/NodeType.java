@@ -5,8 +5,8 @@ import java.util.List;
 import be.baur.sda.DataNode;
 import be.baur.sda.Node;
 import be.baur.sda.SDA;
-import be.baur.sds.parsing.Attribute;
-import be.baur.sds.parsing.Components;
+import be.baur.sds.parser.Attribute;
+import be.baur.sds.parser.Components;
 import be.baur.sds.types.CharacterNodeType;
 import be.baur.sds.types.ComparableNodeType;
 import be.baur.sds.types.StringNodeType;
@@ -55,7 +55,7 @@ public class NodeType extends AbstractNodeType {
 	 */
 	@Override
 	public final void setTypeName(String name) {
-		if (! SDA.isName(name)) 
+		if (! SDA.isNodeName(name)) 
 			throw new IllegalArgumentException("invalid node name (" + name + ")");
 		super.setTypeName(name);
 	}
