@@ -172,7 +172,6 @@ public final class Interval<T extends Comparable<? super T>> {
 	 * the lower limit, and 1 if it exceeds the upper limit. The value must not be
 	 * null.
 	 * 
-	 * @param <T>   a value type
 	 * @param value the value to be evaluated, not null
 	 * @return -1, 0 or 1
 	 */
