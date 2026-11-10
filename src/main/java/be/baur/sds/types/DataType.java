@@ -1,4 +1,4 @@
-package be.baur.sds;
+package be.baur.sds.types;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;

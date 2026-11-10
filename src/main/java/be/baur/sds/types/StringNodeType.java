@@ -2,8 +2,6 @@ package be.baur.sds.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.DataType;
-
 /**
  * A <code>StringNodeType</code> defines an SDA node with a string value. This is
  * the most basic type of all, without restrictions on the value; any string is a

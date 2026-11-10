@@ -4,6 +4,7 @@
 
 This is primarily a compatibility release for sda-core 2.4.0 with some renaming.
 
+- `Moved` be.baur.sds.DataType to be.baur.sds.types.
 - `Renamed` package be.baur.sds.parsing to be.baur.sds.parser.
 - As of this release, Java 11 is required.
 

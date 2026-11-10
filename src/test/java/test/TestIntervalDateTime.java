@@ -2,8 +2,8 @@ package test;
 
 import java.time.Instant;
 
-import be.baur.sds.DataType;
 import be.baur.sds.common.Interval;
+import be.baur.sds.types.DataType;
 
 public final class TestIntervalDateTime {
 

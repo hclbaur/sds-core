@@ -2,7 +2,7 @@ package test;
 
 import java.util.function.BiFunction;
 
-import be.baur.sds.DataType;
+import be.baur.sds.types.DataType;
 
 public final class TestSDSTypes {
 

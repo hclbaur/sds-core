@@ -6,9 +6,9 @@ import java.util.function.Function;
 import be.baur.sda.DataNode;
 import be.baur.sda.SDA;
 import be.baur.sds.DataNodeType;
-import be.baur.sds.DataType;
 import be.baur.sds.Schema;
 import be.baur.sds.parser.SDSParser;
+import be.baur.sds.types.DataType;
 import samples.types.GMonthDay;
 import samples.types.GMonthDayNodeType;
 import samples.types.IBAN;
@@ -42,7 +42,7 @@ public final class TestSDSParser {
 		}
 		
 		/* test writing a schema to an output file */
-		SDA.format(new File("/tmp/test.sds"), sds);
+		SDA.format(new File("/temp/test.sds"), sds);
 		
 		/* verify a schema */
 		schema.verify();

@@ -2,8 +2,6 @@ package be.baur.sds.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.DataType;
-
 /**
  * A <code>DecimalNodeType</code> defines an SDA node with a decimal value.
  */

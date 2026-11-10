@@ -2,8 +2,6 @@ package be.baur.sds.types;
 
 import java.util.function.Function;
 
-import be.baur.sds.DataType;
-
 /**
  * A <code>BinaryNodeType</code> defines an SDA node with a binary value in MIME
  * base64 encoding. Note that its length is counted in number of bytes rather

@@ -3,8 +3,6 @@ package be.baur.sds.types;
 import java.time.ZonedDateTime;
 import java.util.function.Function;
 
-import be.baur.sds.DataType;
-
 /**
  * A <code>DateTimeNodeType</code> defines an SDA node with a temporal value (a
  * date and time including the time zone).

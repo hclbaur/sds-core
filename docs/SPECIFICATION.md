@@ -12,7 +12,6 @@
 		- [DataNodeType](#datanodetypet)
 		- [AnyNodeType](#anynodetype)
 		- [Schema](#schema)
-		- [DataType](#datatype)
 	- [Model groups](#model-groups)
 		- [ModelGroup](#modelgroup)
 		- [SequenceGroup](#sequencegroup)
@@ -226,7 +225,6 @@ be.baur.sds.Component
 ## Main classes
 
 ### `Component`
-Source: `src/main/java/be/baur/sds/Component.java`
 
 Base abstraction for every SDS schema component. It represents a reusable building block in the schema tree and holds shared behavior such as:
 - global type references
@@ -237,14 +235,12 @@ Base abstraction for every SDS schema component. It represents a reusable buildi
 `Component` is the common base class for both node types and model groups.
 
 ### `AbstractNodeType`
-Source: `src/main/java/be/baur/sds/AbstractNodeType.java`
 
 Abstract base class for all node-type definitions. It extends `Component` and adds a `typeName` property, which identifies the node name associated with the type.
 
 This class acts as the shared root for named node definitions and centralizes the concept of a type name.
 
 ### `NodeType`
-Source: `src/main/java/be/baur/sds/NodeType.java`
 
 Represents a named SDS node definition that does not itself carry a primitive value. It is the general-purpose complex node type used for:
 - nested child-node structures
@@ -254,7 +250,6 @@ Represents a named SDS node definition that does not itself carry a primitive va
 It includes logic for resolving type references and rendering the corresponding SDS representation.
 
 ### `DataNodeType<T>`
-Source: `src/main/java/be/baur/sds/DataNodeType.java`
 
 Abstract class for typed, value-bearing node definitions such as strings, integers, booleans, dates, and more. It extends `NodeType` and adds:
 - the underlying data type name
@@ -266,7 +261,6 @@ Abstract class for typed, value-bearing node definitions such as strings, intege
 This class also maintains a registry of built-in SDS data types and their constructors.
 
 ### `AnyNodeType`
-Source: `src/main/java/be/baur/sds/AnyNodeType.java`
 
 Special node type used for unconstrained content. It is intended for nodes whose value and/or child nodes are unrestricted, except for an optional fixed name.
 
@@ -278,7 +272,6 @@ It supports:
 This is the wildcard node type in SDS.
 
 ### `Schema`
-Source: `src/main/java/be/baur/sds/Schema.java`
 
 Top-level container for a schema definition. A `Schema` is not a `Component`; instead, it stores the global set of component definitions that define the valid SDA structure.
 
@@ -288,24 +281,10 @@ It provides:
 - string rendering
 - creation of validators for validating incoming SDA content
 
-### `DataType`
-Source: `src/main/java/be/baur/sds/DataType.java`
-
-Utility class that defines built-in SDS data type names and constructor functions. It is not part of the inheritance tree, but it is essential for runtime conversion and registration logic used by `DataNodeType`.
-
-Built-in types include:
-- `string`
-- `binary`
-- `integer`
-- `decimal`
-- `date`
-- `datetime`
-- `boolean`
 
 ## Model groups
 
 ### `ModelGroup`
-Source: `src/main/java/be/baur/sds/model/ModelGroup.java`
 
 Abstract base class for composite schema group constructs. Model groups define how multiple child components relate to each other:
 - in sequence
@@ -315,21 +294,18 @@ Abstract base class for composite schema group constructs. Model groups define h
 It overrides occurrence behavior to account for optional child components and renders the group to SDA form.
 
 ### `SequenceGroup`
-Source: `src/main/java/be/baur/sds/model/SequenceGroup.java`
 
 A sequence group means the contained components must appear in a defined order. It is a specialized `ModelGroup` used for ordered content.
 
 This expresses dependency and ordering among child components.
 
 ### `ChoiceGroup`
-Source: `src/main/java/be/baur/sds/model/ChoiceGroup.java`
 
 A choice group defines mutually exclusive alternatives. The contained components are alternatives, and only one may be selected depending on the instance.
 
 It contains custom logic for effective minimum-occurrence semantics: if at least one alternative is optional, the group can be empty.
 
 ### `UnorderedGroup`
-Source: `src/main/java/be/baur/sds/model/UnorderedGroup.java`
 
 An unordered group allows multiple child components to appear in any order. It is useful when order is irrelevant semantically but all components are still required as a set.
 

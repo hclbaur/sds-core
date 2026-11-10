@@ -302,7 +302,7 @@ For example: “42”, “-.27315”, “+0.314159”, “6.022E23”, or “-1.
 
 This is a type representing a Gregorian calendar date, intended for practical use. Its lexical space is the familiar “YYYY-MM-DD” notation. It supports neither negative dates (B.C.) nor dates beyond the year 9999. Also, it lacks a time zone, which – without knowing the time - is of limited use anyway.
 
-For example, when I tell you I am born on “1968-02-28”, it goes without saying that for some people on this planet it may have been the 27<sup>th</sup>, or the 29<sup>th</sup> of February depending on the time I was born, which – by the way – I do not know. Adding a time zone hardly narrows it down, much like my father always says he was “at the pub” when my mother gave birth.
+For example, when I tell you I am born on “1968-02-28”, it goes without saying that for some people on this planet it may have been the 27<sup>th</sup>, or the 29<sup>th</sup> of February depending on the time I was born, which – by the way – I do not know. Adding a time zone hardly narrows it down, much like my father always said he was “at the pub” when my mother gave birth.
 
 #### datetime
 

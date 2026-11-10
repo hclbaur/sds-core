@@ -3,8 +3,6 @@ package be.baur.sds.types;
 import java.time.LocalDate;
 import java.util.function.Function;
 
-import be.baur.sds.DataType;
-
 /**
  * A <code>DateNodeType</code> defines an SDA node with a temporal value (a calendar
  * date without time zone).

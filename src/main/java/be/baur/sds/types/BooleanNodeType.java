@@ -3,7 +3,6 @@ package be.baur.sds.types;
 import java.util.function.Function;
 
 import be.baur.sds.DataNodeType;
-import be.baur.sds.DataType;
 
 /**
  * A <code>BooleanNodeType</code> defines an SDA node with a boolean value

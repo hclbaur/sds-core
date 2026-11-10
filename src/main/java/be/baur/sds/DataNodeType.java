@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import be.baur.sds.types.BinaryNodeType;
 import be.baur.sds.types.BooleanNodeType;
+import be.baur.sds.types.DataType;
 import be.baur.sds.types.DateNodeType;
 import be.baur.sds.types.DateTimeNodeType;
 import be.baur.sds.types.DecimalNodeType;

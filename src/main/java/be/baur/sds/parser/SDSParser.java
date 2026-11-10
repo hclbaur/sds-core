@@ -13,7 +13,6 @@ import be.baur.sda.io.Parser;
 import be.baur.sds.AnyNodeType;
 import be.baur.sds.Component;
 import be.baur.sds.DataNodeType;
-import be.baur.sds.DataType;
 import be.baur.sds.NodeType;
 import be.baur.sds.Schema;
 import be.baur.sds.common.Interval;
@@ -24,6 +23,7 @@ import be.baur.sds.model.SequenceGroup;
 import be.baur.sds.model.UnorderedGroup;
 import be.baur.sds.types.CharacterNodeType;
 import be.baur.sds.types.ComparableNodeType;
+import be.baur.sds.types.DataType;
 
 
 /**
