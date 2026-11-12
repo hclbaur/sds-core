@@ -17,6 +17,7 @@
 	- [Group mentality](/docs/TUTORIAL.md#group-mentality)
 	- [The choice is yours](/docs/TUTORIAL.md#the-choice-is-yours)
 	- [Order! Order!](/docs/TUTORIAL.md#order-order)
+	- [Name That Thing](/docs/TUTORIAL.md#name-that-thing)
 - [Conclusion](/docs/TUTORIAL.md#conclusion)
 
 
@@ -41,6 +42,7 @@ What does SDA schema (SDS for short) look like? Well, it looks like SDA; because
 The good thing about this approach is that you don’t have to learn another “language” to read SDS, and I don't have to write a parser from scratch to process it (ok, that's the real reason).
 
 The downside is (at least in the case of SDS) that I am limited by the syntax of SDA, which rules out a few design options. Some things would be easier if SDA supported namespaces (but I decided not to go there, bummer).
+
 
 ### First contact
 
@@ -85,9 +87,10 @@ The final observation we make is that both name and phone number are of type `st
 
 And that is all. Well, it's not of course. It never is. But conceptually, this is the gist of it. The remainder of this document will re-iterate and discuss this, and more, in pain-staking detail (rest assured).
 
+
 ### Re:mix
 
-Have another look at the type defintion of a contact:
+Have a look at the type defintion of a contact:
 
 	… 
 		node "contact" {
@@ -119,7 +122,7 @@ To accomplish this, just add a type attribute specifying that the contact node h
 
 ### Dolls, salami and blinds
 
-Have another look at the schema we started with:
+Let's take another look at the schema we started with:
 
 	schema {
 		node "addressbook" {
@@ -151,9 +154,9 @@ Applying this pattern to the address book schema, here is what that looks like:
 		}
 	}
 
-As you can see, we moved the definition of the contact to the main section and made a type reference in the 'addressbook' node. The name of the defined node will default to the name of the type ('contact').
+As you can see, we moved the definition of the contact to the main section and made a type reference in the 'addressbook' node. The name of the defined node will default to the name of the type ('contact'), but you can give it any other valid name.
 
-What we achieved is re-usability of the contact definition. Granted, in this example that is not a real issue, but just to make my point, I modified the address book so I can store my own contact details in an 'owner' node:
+What we achieved is re-usability of the contact definition as a *global type*. Granted, in this example that is not a real issue, but just to make my point, I modified the address book so I can store my own contact details in an 'owner' node:
 
 	…
 		node "addressbook" {
@@ -188,6 +191,17 @@ We could take this even further, by moving out simple types to the main section 
 	}
 
 In general, this has little benefit for a simple type, unless it is customized and re-used a lot. For instance, the phone number could be restricted to allow only sensible values, and act as a super-type for say, a home number or a mobile number.
+
+Global types can be referenced from anywhere in the schema, but only if declared in the schema root (hence the 'global' part). Other than that there are little restrictions; references can be circular or self-referencing:
+
+	schema {
+		node "doll" {
+			node { type "doll" occurs "0..1" }
+		}
+		...
+	}
+
+which describes a doll in a doll in a doll, possibly ad infinitum or stack overflow.
 
 
 ### Finding the root
@@ -270,6 +284,7 @@ Having said that, you can use certain attributes called *facets* (covered later)
 The value space is the set of distinct and valid values for a particular type. The lexical space is the set of valid *representations* of that value. An example will help to clarify this: 42 is a single value from the value space of a number. However, it may be represented as “42”, or “42.0”, or as “forty-two”, or “the answer to life, the universe and everything”.
 
 With that in mind, we will shortly review the SDS types listed at the beginning of this chapter, except the string type which has no restrictions in either space.
+
 
 #### binary
 
@@ -408,6 +423,7 @@ Now, about strings. These can be empty practically by definition, but if that is
 
 Note that the concept of nullability applies to simple content only.
 
+
 ### Anything goes
 
 Before we leave the subject of types and restrictions, there is one more special “type” we need to discuss. So far, schema has enabled us to specify exactly what our data looks like and what type of information we expect. But suppose we want to define a structure that can have any content, which we have no prior knowledge about?
@@ -462,9 +478,11 @@ then any number of nodes, of any name and any type may follow the phone number (
 
 Note that - since there are no content restrictions - none of the *facets* discussed earlier apply to the "any" type.
 
+
 ## Model citizens
 
 So far, we saw only one way to build a content model; by defining nodes within other nodes and making them optional or mandatory, and possibly repetitive. Although this will get you a long way, some patterns are cumbersome or even impossible to express without more advanced features. These *model* *groups* will be the subject of this chapter.
+
 
 ### Group mentality
 
@@ -494,6 +512,7 @@ It would be nice if we could express that, admittedly, the middle name is option
 	}
 
 Since the group is optional you can omit both the middle and the last name. But once there is a middle name, the group is “invoked”, and because the last name  is mandatory within it, you cannot omit it. You can supply a last name without the middle one though, because that one is optional within the group.
+
 
 ### The choice is yours
 
@@ -539,6 +558,7 @@ Here is another example, which in addition uses a `group` to combine two nodes i
 	}
 
 In other words, a location is either a set of coordinates, or an address (this is assuming we have declared an address type somewhere).
+
 
 ### Order! Order!
 
@@ -597,8 +617,46 @@ because that breaks up the repeating 'firstname' node.
 And with that, we have reached the end of this chapter, and almost the end of this document.
 
 
+### Name That Thing
+
+Earlier in this tutorial, we discussed reuseable global types. You will be delighted to learn that similar reusability can be achieved with model groups, allowing for content definitions that would otherwise be cumbersome or even impossible. 
+
+A named group is defined in the schema root and can be referenced from other types or model groups. This, for instance, defines a group for use in entities that require the same set of audit fields, but have different properties (or structures) otherwise:
+
+schema {
+
+	group "auditrecord" {
+		node "createdBy" { type "string" }
+		node "createdAt" { type "datetime" }
+	}
+
+	node "order" {
+		...
+		node "expectedDelivery" { type "date" }
+		node "orderStatus" { 
+			type "string" pattern "pending|confirmed|shipped|cancelled" 
+		}
+		...
+		group { type "auditrecord" }
+	}
+
+	node "invoice" {
+		...
+		node "paymentDue" { type "date" }
+		node "invoiceStatus" { 
+			type "string" pattern "unpaid|partially_paid|fully_paid" 
+		}
+		...
+		group { type "auditrecord" }
+	}
+}
+
+
+Note that a named group can be a `choice` or an `unordered` sequence as well. They are similar to global types in the way they are defined and referenced, but a named group reuses a sequence or choice of nodes whereas a global type reuses an entire structure.
+
+
 ## Conclusion
 
-This is the second release of the SDS specification. Like SDA, it is simple, yet powerful, and not going to take over the world any time soon. Some useful features are still absent, because I could not make them “fit”, or because I wasn't prepared to go there. Yet. 
+This is the second release of the SDS specification. Like SDA it is simple, yet powerful, and not going to take over the world any time soon. If it is still lacking some particular useful feature, it is because I could not make that “fit” or because I wasn't prepared to go there. Yet. 
 
 For now this will have to do.
