@@ -192,7 +192,7 @@ We could take this even further, by moving out simple types to the main section 
 
 In general, this has little benefit for a simple type, unless it is customized and re-used a lot. For instance, the phone number could be restricted to allow only sensible values, and act as a super-type for say, a home number or a mobile number.
 
-Global types can be referenced from anywhere in the schema, but only if declared in the schema root (hence the 'global' part). Other than that there are little restrictions; references can be circular or self-referencing:
+Global types can be referenced from anywhere in the schema, but only if declared in the schema root (hence the 'global' part). Other than that there are little restrictions; references can be circular or even self-referencing:
 
 	schema {
 		node "doll" {
@@ -201,7 +201,7 @@ Global types can be referenced from anywhere in the schema, but only if declared
 		...
 	}
 
-which describes a doll in a doll in a doll, possibly ad infinitum or stack overflow.
+which describes a doll in a doll in a doll, possibly ad infinitum.
 
 
 ### Finding the root

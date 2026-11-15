@@ -54,6 +54,8 @@ public final class SDSParser implements Parser<Schema> {
 	private static final String A_NODE_IS_EXPECTED = "a '%s' node is expected";
 	private static final String A_NODE_MUST_HAVE = "a '%s' node must have %s";
 
+	private static final String COMPONENT_NAME_UNEXPECTED = "component name '%s' is not expected";
+	private static final String COMPONENT_NAME_EXPECTED = "a name is expected for component '%s'";
 	private static final String COMPONENT_NOT_ALLOWED = "component '%s' is not allowed here";
 	private static final String COMPONENT_INCOMPLETE = "component '%s' is incomplete";
 	private static final String COMPONENT_UNKNOWN = "component '%s' is unknown";
@@ -67,8 +69,6 @@ public final class SDSParser implements Parser<Schema> {
 
 	private static final String TYPE_IS_UNKNOWN = "type '%s' is unknown";
 	private static final String NODE_NAME_INVALID = "'%s' is not a valid node name";
-	private static final String NAME_NOT_EXPECTED = "name '%s' is not expected";
-	private static final String NAME_IS_EXPECTED = "a name is expected";
 
 
 	/**
@@ -105,7 +105,7 @@ public final class SDSParser implements Parser<Schema> {
 			throw exception(sds, A_NODE_IS_EXPECTED, Schema.TAG);
 
 		if (! sds.isParent()) // a schema must have components
-			throw exception(sds, A_NODE_MUST_HAVE, sds.getName(), "content");
+			throw exception(sds, A_NODE_MUST_HAVE, sds.getName(), "components");
 		
 //		// a schema must not have attributes, except for an optional type reference
 //		List<Node> alist = sds.find(n -> n.isLeaf() && ! n.getName().equals(Attribute.TYPE.tag));
@@ -119,20 +119,26 @@ public final class SDSParser implements Parser<Schema> {
 				throw exception(a, ATTRIBUTE_UNKNOWN, a.getName());
 			throw exception(a, ATTRIBUTE_NOT_ALLOWED, a.getName());
 		}
-		
-		// build the schema
-		Schema schema = new Schema();
 
-		// parse global types, and add them to the schema (if all is in order).
+		// parse all components, and add them to the schema
+		Schema schema = new Schema();
+		
 		for (var node : sds.getAll(n -> ! n.isLeaf())) {
 			
-			if (Components.get(node.getName()) == null) // component is unknown
+			if (Components.get(node.getName()) == null) // component is unknown (fail fast)
 				throw exception(node, COMPONENT_UNKNOWN, node.getName());
 			
-			if (! node.getName().equals(Components.NODE.tag)) // only node definitions are allowed here
-				throw exception(node, COMPONENT_NOT_ALLOWED, node.getName());
+			/*
+			 * Model groups in the schema root should always have a name (identity), so they
+			 * can be referenced later. This still allows for anonymous node type references
+			 * and "any" types for backwards compatibility. However, unnamed node type
+			 * references make no sense, and unnamed any types seem strange as well, so we
+			 * should probably disallow them in the future.
+			 */
+			if (! node.getName().equals(Components.NODE.tag) && node.getValue().isEmpty())
+				throw exception(node, COMPONENT_NAME_EXPECTED, node.getName());
 			
-			// global types must not have a multiplicity attribute
+			// global components must not have a multiplicity attribute, ever!
 			getAttribute(node, Attribute.OCCURS, null);
 			
 			schema.add(parseComponent(node, false));
@@ -156,7 +162,9 @@ public final class SDSParser implements Parser<Schema> {
 		 * every possible component.
 		 */
 
-		if (Components.get(sds.getName()) == null) // component must have a known name tag
+		// Components must have a known name tag. This check was done in parse() already, 
+		// but we repeat it because this method is called recursively and from other methods.
+		if (Components.get(sds.getName()) == null)
 			throw exception(sds, COMPONENT_UNKNOWN, sds.getName());
 
 		if (! sds.isParent()) // components must have attributes and/or child components
@@ -167,29 +175,35 @@ public final class SDSParser implements Parser<Schema> {
 				throw exception(node, ATTRIBUTE_UNKNOWN, node.getName());
 		
 		/*
-		 * A component is either a node type (simple and/or complex), a model group, an
-		 * any type, or a type reference. If there are no child nodes with complex
-		 * content, it must be a simple type or a reference, which looks like a simple
-		 * type but refers to a global type.
+		 * A component can be many things, and this method will handle them all:
+		 * - a node type with or without data type, with or without child components
+		 * - an "any type": a node type with data type "any" and without child components
+		 * - a node type reference, referring to a global type and without child components
+		 * - a model group (sequence, unordered or choice) with child components
+		 * - a model group reference, referring to a global model group and without child components
 		 */
 		boolean isNodeType = sds.getName().equals(Components.NODE.tag); // will be false for a model group
-		var complexChildren = sds.getAll(n -> ! n.isLeaf()); // list of complex children (if any)
+		var childComponents = sds.getAll(n -> ! n.isLeaf()); // list of complex children (if any)
 		
-		// Simple types and references MUST have a content type, complex types MAY have one
-		final var type = getAttribute(sds, Attribute.TYPE, isNodeType && complexChildren.isEmpty());
+		// simple types, any types and references MUST have a content type, complex types MAY have one
+		final var type = getAttribute(sds, Attribute.TYPE, childComponents.isEmpty());
 		boolean isAnyType = (type == null) ? false : type.getValue().equals(AnyNodeType.NAME);
-		boolean isRegType = (type == null) ? false : DataType.isRegistered(type.getValue());
+		boolean isDataType = (type == null) ? false : DataType.isRegistered(type.getValue());
 		
 		Component component; // the component to be returned at the end of this method
 		
-		if (! isNodeType) { // component is a model group
-			component = parseModelGroup(sds);
-		} 
-		else {  // component is a node type (of any kind)
+		if (! isNodeType) { // component is a model group or a reference to one
+
+			if (childComponents.isEmpty())
+				component = parseModelGroupReference(sds, type);
+			else
+				component = parseModelGroup(sds);
+		}
+		else {  // component is a node type (of any kind) or a reference to one
 			
 			if (isAnyType) { // an any type cannot have components or attributes (except TYPE and OCCURS)
 				
-				if (! complexChildren.isEmpty())
+				if (! childComponents.isEmpty())
 					throw exception(sds, ATTRIBUTE_INVALID, Attribute.TYPE.tag, AnyNodeType.NAME, "node defines content");
 				
 				var alist = sds.getAll(n -> n.isLeaf() && 
@@ -204,7 +218,7 @@ public final class SDSParser implements Parser<Schema> {
 				component = new AnyNodeType(name);
 			}
 			
-			else if (isRegType || type == null) // a known data type or complex type
+			else if (isDataType || type == null) // a known data type or a complex type
 				component = parseNodeType(sds, type);
 			
 			else // component must be a type reference
@@ -212,7 +226,7 @@ public final class SDSParser implements Parser<Schema> {
 		}
 
 		
-		// We have a component, so set the (optional) multiplicity
+		// we have a component, so set the (optional) multiplicity
 		var occurs = getAttribute(sds, Attribute.OCCURS, false);
 		try {
 			if (occurs != null)
@@ -221,12 +235,75 @@ public final class SDSParser implements Parser<Schema> {
 			throw exception(occurs, ATTRIBUTE_INVALID, Attribute.OCCURS.tag, occurs.getValue(), e.getMessage());
 		}
 		
-		// And finally, recursively parse and add any child components
+		// and finally, recursively parse and add any child components
 		if (! shallow) // unless this is a shallow parse
-			for (var node : complexChildren)
+			for (var node : childComponents)
 				component.add(parseComponent(node, false));
 
 		return component;
+	}
+
+	
+	/**
+	 * This method is called by parseComponent() to parse a node representing a
+	 * model group reference in SDS syntax. For example, a choice group reference:
+	 * 
+	 * <pre>
+	 * choice {
+	 *     type "named_choice" occurs "0..1"
+	 * }
+	 * </pre>
+	 * 
+	 * where "named_choice" is a previously defined global model group. Unlike a
+	 * model group a reference has no child components.
+	 * 
+	 * @param sds  a schema node
+	 * @param type
+	 * @returns a {@link SequenceGroup}, {@link ChoiceGroup} or
+	 *          {@link UnorderedGroup},
+	 */
+	private static ModelGroup parseModelGroupReference(DataNode sds, DataNode type) throws SDSParseException {
+		/*
+		 * A model group reference is not a real component, but just a convenient
+		 * shorthand way to refer to a global named model group in SDS notation. When we
+		 * encounter one, we create a component from the named group it refers to. We
+		 * also set the global type name, so that when rendering back to SDS, we can
+		 * recreate the correct reference.
+		 * 
+		 * Preconditions: the caller (parseComponentType) has already verified that this
+		 * node has a valid tag, no child components, only attributes with valid tags,
+		 * and that there is a type attribute (e.g. type is not null). 
+		 * Postcondition: the caller will set the multiplicity on the returned type.
+		 */	
+
+		// model group references should not have attributes other than TYPE and OCCURS
+		var alist = sds.getAll( n -> n.isLeaf() && 
+			! ( n.getName().equals(Attribute.TYPE.tag) || n.getName().equals(Attribute.OCCURS.tag)) 
+		);
+				
+		if (! alist.isEmpty())
+			throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
+
+		// model group references are not allowed to have names
+		String name = sds.getValue();
+		if (! name.isEmpty())
+			throw exception(sds, COMPONENT_NAME_UNEXPECTED, name);
+
+//		// in a model group, there must be at least two components
+//		if (sds.getAll(n -> ! n.isLeaf()).size() < 2)
+//			throw exception(sds, COMPONENT_INCOMPLETE, sds.getName());
+
+		ModelGroup mgroup;
+
+		switch (Components.get(sds.getName())) {
+			case GROUP		: mgroup = new SequenceGroup(); break;
+			case CHOICE		: mgroup = new ChoiceGroup(); break;
+			case UNORDERED	: mgroup = new UnorderedGroup(); break;
+			default: // we should never get here, unless we screwed up pretty bad
+				throw new RuntimeException("Model group '" + sds.getName() + "' not implemented!");
+		}
+		
+		return mgroup;
 	}
 
 
@@ -267,7 +344,7 @@ public final class SDSParser implements Parser<Schema> {
 		// model groups are not allowed to have names (maybe in the future)
 		String name = sds.getValue();
 		if (! name.isEmpty())
-			throw exception(sds, NAME_NOT_EXPECTED, name);
+			throw exception(sds, COMPONENT_NAME_UNEXPECTED, name);
 
 		// in a model group, there must be at least two components
 		if (sds.getAll(n -> ! n.isLeaf()).size() < 2)
@@ -310,13 +387,6 @@ public final class SDSParser implements Parser<Schema> {
 		 * and that there is a type attribute (e.g. type is not null).
 		 * Postcondition: the caller will set the multiplicity on the returned type.
 		 */
-		
-//		// References should not have attributes other than type and occurs.
-//		List<Node> alist = sds.find(n -> n.isLeaf() && ! ( n.getName().equals(Attribute.TYPE.tag) 
-//			||  n.getName().equals(Attribute.OCCURS.tag) ));
-//		
-//		if (! alist.isEmpty())
-//			throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
 		
 		var root = sds.root();
 		if (root.equals(sds)) // if we are the root ourself, we bail out right away
@@ -376,7 +446,7 @@ public final class SDSParser implements Parser<Schema> {
 		 */
 
 		String name = sds.getValue(); // a name is required and should be valid
-		if (name.isEmpty())	throw exception(sds, NAME_IS_EXPECTED);
+		if (name.isEmpty())	throw exception(sds, COMPONENT_NAME_EXPECTED,sds.getName());
 		if (! SDA.isNodeName(name)) throw exception(sds, NODE_NAME_INVALID, name);
 		
 		/*
