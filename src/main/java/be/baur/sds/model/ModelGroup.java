@@ -1,10 +1,12 @@
 package be.baur.sds.model;
 
 import java.util.Optional;
+import java.util.Set;
 
 import be.baur.sda.DataNode;
 import be.baur.sds.Component;
 import be.baur.sds.parser.Attribute;
+import be.baur.sds.parser.Components;
 
 /**
  * This is the abstract superclass of all model groups.
@@ -15,7 +17,9 @@ import be.baur.sds.parser.Attribute;
  */
 public abstract class ModelGroup extends Component {
 
-	
+	public static final Set<String> TAGS // all known model group tags to date
+		= Set.of(Components.GROUP.tag, Components.CHOICE.tag, Components.UNORDERED.tag);
+
 	/**
 	 * Returns the effective minimum number of times that a group must occur within
 	 * its context. Even when the formal multiplicity states that it is mandatory,

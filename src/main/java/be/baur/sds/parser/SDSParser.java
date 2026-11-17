@@ -68,6 +68,7 @@ public final class SDSParser implements Parser<Schema> {
 	private static final String ATTRIBUTE_INVALID = "%s '%s' is invalid; %s";
 
 	private static final String TYPE_IS_UNKNOWN = "type '%s' is unknown";
+	private static final String GROUP_IS_UNKNOWN = "named group '%s' is unknown";
 	private static final String NODE_NAME_INVALID = "'%s' is not a valid node name";
 
 
@@ -135,7 +136,7 @@ public final class SDSParser implements Parser<Schema> {
 			 * references make no sense, and unnamed any types seem strange as well, so we
 			 * should probably disallow them in the future.
 			 */
-			if (! node.getName().equals(Components.NODE.tag) && node.getValue().isEmpty())
+			if (ModelGroup.TAGS.contains(node.getName()) && node.getValue().isEmpty())
 				throw exception(node, COMPONENT_NAME_EXPECTED, node.getName());
 			
 			// global components must not have a multiplicity attribute, ever!
@@ -178,9 +179,9 @@ public final class SDSParser implements Parser<Schema> {
 		 * A component can be many things, and this method will handle them all:
 		 * - a node type with or without data type, with or without child components
 		 * - an "any type": a node type with data type "any" and without child components
-		 * - a node type reference, referring to a global type and without child components
+		 * - a type reference, referring to a global type and without child components
 		 * - a model group (sequence, unordered or choice) with child components
-		 * - a model group reference, referring to a global model group and without child components
+		 * - a group reference, referring to a global model group and without child components
 		 */
 		boolean isNodeType = sds.getName().equals(Components.NODE.tag); // will be false for a model group
 		var childComponents = sds.getAll(n -> ! n.isLeaf()); // list of complex children (if any)
@@ -195,7 +196,7 @@ public final class SDSParser implements Parser<Schema> {
 		if (! isNodeType) { // component is a model group or a reference to one
 
 			if (childComponents.isEmpty())
-				component = parseModelGroupReference(sds, type);
+				component = parseGroupReference(sds, type);
 			else
 				component = parseModelGroup(sds);
 		}
@@ -241,69 +242,6 @@ public final class SDSParser implements Parser<Schema> {
 				component.add(parseComponent(node, false));
 
 		return component;
-	}
-
-	
-	/**
-	 * This method is called by parseComponent() to parse a node representing a
-	 * model group reference in SDS syntax. For example, a choice group reference:
-	 * 
-	 * <pre>
-	 * choice {
-	 *     type "named_choice" occurs "0..1"
-	 * }
-	 * </pre>
-	 * 
-	 * where "named_choice" is a previously defined global model group. Unlike a
-	 * model group a reference has no child components.
-	 * 
-	 * @param sds  a schema node
-	 * @param type
-	 * @returns a {@link SequenceGroup}, {@link ChoiceGroup} or
-	 *          {@link UnorderedGroup},
-	 */
-	private static ModelGroup parseModelGroupReference(DataNode sds, DataNode type) throws SDSParseException {
-		/*
-		 * A model group reference is not a real component, but just a convenient
-		 * shorthand way to refer to a global named model group in SDS notation. When we
-		 * encounter one, we create a component from the named group it refers to. We
-		 * also set the global type name, so that when rendering back to SDS, we can
-		 * recreate the correct reference.
-		 * 
-		 * Preconditions: the caller (parseComponentType) has already verified that this
-		 * node has a valid tag, no child components, only attributes with valid tags,
-		 * and that there is a type attribute (e.g. type is not null). 
-		 * Postcondition: the caller will set the multiplicity on the returned type.
-		 */	
-
-		// model group references should not have attributes other than TYPE and OCCURS
-		var alist = sds.getAll( n -> n.isLeaf() && 
-			! ( n.getName().equals(Attribute.TYPE.tag) || n.getName().equals(Attribute.OCCURS.tag)) 
-		);
-				
-		if (! alist.isEmpty())
-			throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
-
-		// model group references are not allowed to have names
-		String name = sds.getValue();
-		if (! name.isEmpty())
-			throw exception(sds, COMPONENT_NAME_UNEXPECTED, name);
-
-//		// in a model group, there must be at least two components
-//		if (sds.getAll(n -> ! n.isLeaf()).size() < 2)
-//			throw exception(sds, COMPONENT_INCOMPLETE, sds.getName());
-
-		ModelGroup mgroup;
-
-		switch (Components.get(sds.getName())) {
-			case GROUP		: mgroup = new SequenceGroup(); break;
-			case CHOICE		: mgroup = new ChoiceGroup(); break;
-			case UNORDERED	: mgroup = new UnorderedGroup(); break;
-			default: // we should never get here, unless we screwed up pretty bad
-				throw new RuntimeException("Model group '" + sds.getName() + "' not implemented!");
-		}
-		
-		return mgroup;
 	}
 
 
@@ -365,6 +303,73 @@ public final class SDSParser implements Parser<Schema> {
 
 
 	/**
+	 * This method is called by parseComponent() to parse a node representing a
+	 * model group reference in SDS syntax. For example, a choice group reference:
+	 * 
+	 * <pre>
+	 * choice {
+	 *     type "named_choice" occurs "0..1"
+	 * }
+	 * </pre>
+	 * 
+	 * where "named_choice" is a previously defined global model group. Unlike a
+	 * model group a reference has no child components.
+	 * 
+	 * @param sds  a schema node
+	 * @param type
+	 * @returns a {@link SequenceGroup}, {@link ChoiceGroup} or
+	 *          {@link UnorderedGroup},
+	 */
+	private static ModelGroup parseGroupReference(DataNode sds, DataNode type) throws SDSParseException {
+		/*
+		 * A model group reference is not a real component, but just a convenient
+		 * shorthand way to refer to a global named model group in SDS notation. When we
+		 * encounter one, we create a component from the named group it refers to. We
+		 * also set the global type name, so that when rendering back to SDS, we can
+		 * recreate the correct reference.
+		 * 
+		 * Preconditions: the caller (parseComponent) has already verified that this
+		 * node has a valid tag, no child components, only attributes with valid tags,
+		 * and that there is a type attribute (e.g. type is not null). Postcondition:
+		 * the caller will set the multiplicity on the returned type.
+		 */	
+
+		// group references are not allowed to have names
+		String name = sds.getValue();
+		if (! name.isEmpty())
+			throw exception(sds, COMPONENT_NAME_UNEXPECTED, name);
+
+		// group references should not have attributes other than TYPE and OCCURS
+		var alist = sds.getAll( n -> n.isLeaf() && 
+			! ( n.getName().equals(Attribute.TYPE.tag) || n.getName().equals(Attribute.OCCURS.tag)) 
+		);	
+		if (! alist.isEmpty())
+			throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
+		
+		// search the schema root for the referenced (named) model group
+		DataNode root = schemaRoot(sds), refGroup = null;
+		for (var grp : root.getAll(n -> ! n.isLeaf() && ModelGroup.TAGS.contains(n.getName()))) {
+			if ( grp.getValue().equals(type.getValue()) ) refGroup = grp;
+		}
+
+		if (refGroup == null)
+			throw exception(type, GROUP_IS_UNKNOWN, type.getValue());
+		
+		/*
+		 * If we get here, we can parse the referenced group into a new component, but
+		 * this poses a problem for self- and circular referencing types. If we keep on
+		 * adding groups that reference themselves or each other, we will ultimately run
+		 * into a stack overflow. In order to support recursive references, we do not
+		 * parse any child nodes in this component, but use a late binding technique to
+		 * return them when they are referenced. For details see NodeType.nodes(). ???
+		 */
+		Component refComp = parseComponent(refGroup, true);
+		refComp.setGlobalType(type.getValue());
+		return refComp;
+	}
+
+
+	/**
 	 * A reference refers to a previously defined global type. If the name is
 	 * omitted, it is assumed to be equal to the name of the referenced type. In
 	 * terms of SDS, the difference is this:<br>
@@ -381,11 +386,12 @@ public final class SDSParser implements Parser<Schema> {
 		 * refer to a global type in SDS notation. When we encounter one, we create a
 		 * component from the global type it refers to and set its name (if explicitly
 		 * named). We also set the global type on this component, so that when rendering
-		 * back to SDS, we can recreate the correct reference. 
-		 * Preconditions: the caller (parseComponentType) has already verified that this 
+		 * back to SDS, we can recreate the correct reference.
+		 * 
+		 * Preconditions: the caller (parseComponent) has already verified that this
 		 * node has a valid tag, no child components, only attributes with valid tags,
-		 * and that there is a type attribute (e.g. type is not null).
-		 * Postcondition: the caller will set the multiplicity on the returned type.
+		 * and that there is a type attribute (e.g. type is not null). Postcondition:
+		 * the caller will set the multiplicity on the returned type.
 		 */
 		
 		var root = sds.root();
@@ -565,4 +571,25 @@ public final class SDSParser implements Parser<Schema> {
 	private static SDSParseException exception(DataNode node, String format, Object... args) {
 		return new SDSParseException(node, String.format(format, args));
 	}
+	
+	
+	/**
+	 * Returns the first ancestor node with tag {@link Schema#TAG}, or throws an
+	 * assertion error if no such node is found. We cannot use node.root() because
+	 * the schema node may be part of a larger structure.
+	 * 
+	 * @param node a node in a schema hierarchy
+	 * @return the schema node, never null
+	 */
+	static DataNode schemaRoot(DataNode node) {
+		
+	    while ((node = node.getParent()) != null
+	            && !Schema.TAG.equals(node.getName()));
+	    
+	    if (node == null) //should never happen; the schema node is the root of a schema hierarchy
+	        throw new AssertionError("Bug: no schema node found in the hierarchy of " + node);
+
+	    return node;
+	}
+	
 }
