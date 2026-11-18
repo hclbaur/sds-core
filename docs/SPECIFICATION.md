@@ -144,8 +144,8 @@ classDiagram
     }
 
     class Component {
-        +getGlobalType()
-        +setGlobalType()
+        +getReference()
+        +setReference()
         +getMultiplicity()
         +setMultiplicity()
         +minOccurs()

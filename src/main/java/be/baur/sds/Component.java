@@ -17,7 +17,7 @@ import be.baur.sds.model.ModelGroup;
  */
 public abstract class Component extends AbstractNode<Component> {
 
-	private String globalTypeName = null; // name of the global type that this component refers to.
+	private String reference = null; // name of the global type that this component refers to.
 	private NaturalInterval multiplicity = NaturalInterval.EXACTLY_ONE; // default is mandatory and singular.
 
 	
@@ -28,8 +28,8 @@ public abstract class Component extends AbstractNode<Component> {
 	 * 
 	 * @return the referenced type name, may be null
 	 */
-	public String getGlobalType() {
-		return globalTypeName;
+	public String getReference() {
+		return reference;
 	}
 
 	
@@ -38,10 +38,10 @@ public abstract class Component extends AbstractNode<Component> {
 	 * defined in the root section of the schema. This method cannot be used to
 	 * clear or reset an existing reference as this is likely to cause a problem.
 	 * 
-	 * @param globaltype the referenced global type name, not null
+	 * @param reference the referenced global type name, not null
 	 */
-	public void setGlobalType(String globaltype) {
-		this.globalTypeName = Objects.requireNonNull(globaltype, "globaltype must not be null");
+	public void setReference(String reference) {
+		this.reference = Objects.requireNonNull(reference, "globaltype must not be null");
 	}
 
 	

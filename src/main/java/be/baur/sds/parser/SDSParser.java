@@ -315,12 +315,12 @@ public final class SDSParser implements Parser<Schema> {
 	 * where "named_choice" is a previously defined global model group. Unlike a
 	 * model group a reference has no child components.
 	 * 
-	 * @param sds  a schema node
+	 * @param grp  a schema node
 	 * @param type
 	 * @returns a {@link SequenceGroup}, {@link ChoiceGroup} or
 	 *          {@link UnorderedGroup},
 	 */
-	private static ModelGroup parseGroupReference(DataNode sds, DataNode type) throws SDSParseException {
+	private static Component parseGroupReference(DataNode grp, DataNode type) throws SDSParseException {
 		/*
 		 * A model group reference is not a real component, but just a convenient
 		 * shorthand way to refer to a global named model group in SDS notation. When we
@@ -335,21 +335,21 @@ public final class SDSParser implements Parser<Schema> {
 		 */	
 
 		// group references are not allowed to have names
-		String name = sds.getValue();
+		String name = grp.getValue();
 		if (! name.isEmpty())
-			throw exception(sds, COMPONENT_NAME_UNEXPECTED, name);
+			throw exception(grp, COMPONENT_NAME_UNEXPECTED, name);
 
 		// group references should not have attributes other than TYPE and OCCURS
-		var alist = sds.getAll( n -> n.isLeaf() && 
+		var alist = grp.getAll( n -> n.isLeaf() && 
 			! ( n.getName().equals(Attribute.TYPE.tag) || n.getName().equals(Attribute.OCCURS.tag)) 
 		);	
 		if (! alist.isEmpty())
-			throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
+			throw exception(grp, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
 		
 		// search the schema root for the referenced (named) model group
-		DataNode root = schemaRoot(sds), refGroup = null;
-		for (var grp : root.getAll(n -> ! n.isLeaf() && ModelGroup.TAGS.contains(n.getName()))) {
-			if ( grp.getValue().equals(type.getValue()) ) refGroup = grp;
+		DataNode root = schemaRoot(grp), refGroup = null;
+		for (var g : root.getAll(n -> ! n.isLeaf() && ModelGroup.TAGS.contains(n.getName()))) {
+			if ( g.getValue().equals(type.getValue()) ) refGroup = g;
 		}
 
 		if (refGroup == null)
@@ -357,14 +357,14 @@ public final class SDSParser implements Parser<Schema> {
 		
 		/*
 		 * If we get here, we can parse the referenced group into a new component, but
-		 * this poses a problem for self- and circular referencing types. If we keep on
-		 * adding groups that reference themselves or each other, we will ultimately run
-		 * into a stack overflow. In order to support recursive references, we do not
-		 * parse any child nodes in this component, but use a late binding technique to
-		 * return them when they are referenced. For details see NodeType.nodes(). ???
+		 * this poses a problem for circular references. If we keep on adding groups
+		 * that reference themselves or each other, we will ultimately run into a stack
+		 * overflow. In order to support recursive references, we do not parse any child
+		 * nodes in this component, but use a late binding technique to return them when
+		 * they are referenced. For details see ModelGroup.nodes() and isParent().
 		 */
 		Component refComp = parseComponent(refGroup, true);
-		refComp.setGlobalType(type.getValue());
+		refComp.setReference(type.getValue());
 		return refComp;
 	}
 
@@ -422,7 +422,7 @@ public final class SDSParser implements Parser<Schema> {
 		 * return them when they are referenced. For details see NodeType.nodes().
 		 */
 		Component refComp = parseComponent(refNode, true);
-		refComp.setGlobalType(type.getValue());  // set the type we were created from
+		refComp.setReference(type.getValue());  // set the type we were created from
 		
 		// if a valid name is specified (different or equal to the type name) we set it
 		String name = sds.getValue();

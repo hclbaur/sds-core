@@ -75,11 +75,11 @@ public class NodeType extends AbstractNodeType {
 	@Override /* handle type reference */
 	public final List<Component> nodes() {
 
-		if (getGlobalType() == null)
+		if (getReference() == null)
 			return super.nodes();
 		if (globalType == null) { // not bound yet, so get it from the schema root
 			Node<?> schema = root(); // returns no component !
-			globalType = (NodeType) schema.get(t -> ((NodeType) t).getTypeName().equals(getGlobalType()));
+			globalType = (NodeType) schema.get(t -> ((NodeType) t).getTypeName().equals(getReference()));
 		}
 		return globalType.nodes(); // should not cause NPE
 	}
@@ -88,12 +88,12 @@ public class NodeType extends AbstractNodeType {
 	@Override /* handle type reference */
 	public final boolean isParent() {
 
-		if (getGlobalType() == null) {
+		if (getReference() == null) {
 			return super.isParent();
 		}
 		if (globalType == null) { // not bound yet, so get it from the schema root
 			Node<?> schema = root(); // returns no component !
-			globalType = (NodeType) schema.get(t -> ((NodeType) t).getTypeName().equals(getGlobalType()));
+			globalType = (NodeType) schema.get(t -> ((NodeType) t).getTypeName().equals(getReference()));
 		}
 
 		return globalType.isParent(); // should not cause NPE
@@ -106,13 +106,13 @@ public class NodeType extends AbstractNodeType {
 		final var node = new DataNode(Components.NODE.tag);
 		
 		// Omit the name for a reference with the same name as the referenced type
-		if (! ( getGlobalType() != null && getTypeName().equals(getGlobalType()) )) {
+		if (! ( getReference() != null && getTypeName().equals(getReference()) )) {
 			node.setValue(getTypeName());
 		}
 	
 		// Render the type attribute for a global type reference, or a data type
-		if (getGlobalType() != null)
-			node.add(new DataNode(Attribute.TYPE.tag, getGlobalType()));
+		if (getReference() != null)
+			node.add(new DataNode(Attribute.TYPE.tag, getReference()));
 		else if (this instanceof DataNodeType)
 			node.add(new DataNode(Attribute.TYPE.tag, ((DataNodeType<?>) this).getDataType()));
 		
@@ -121,7 +121,7 @@ public class NodeType extends AbstractNodeType {
 			node.add(new DataNode(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
 		// facets are rendered ONLY if we are not a type reference!
-		if (getGlobalType() == null) {
+		if (getReference() == null) {
 
 			final boolean isCharType = (this instanceof CharacterNodeType);
 
@@ -150,7 +150,7 @@ public class NodeType extends AbstractNodeType {
 		}
 		
 		// Finally, render any children, unless we are a type reference
-		if (isParent() && getGlobalType() == null)
+		if (isParent() && getReference() == null)
 			for (Component child : nodes()) node.add( child.toSDA() );
 		
 		return node;
