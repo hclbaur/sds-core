@@ -54,9 +54,9 @@ public final class SDSParser implements Parser<Schema> {
 	private static final String A_NODE_IS_EXPECTED = "a '%s' node is expected";
 	private static final String A_NODE_MUST_HAVE = "a '%s' node must have %s";
 
-	private static final String COMPONENT_NAME_UNEXPECTED = "component name '%s' is not expected";
+	//private static final String COMPONENT_NAME_UNEXPECTED = "component name '%s' is not expected";
 	private static final String COMPONENT_NAME_EXPECTED = "a name is expected for component '%s'";
-	private static final String COMPONENT_NOT_ALLOWED = "component '%s' is not allowed here";
+	//private static final String COMPONENT_NOT_ALLOWED = "component '%s' is not allowed here";
 	private static final String COMPONENT_INCOMPLETE = "component '%s' is incomplete";
 	private static final String COMPONENT_UNKNOWN = "component '%s' is unknown";
 
@@ -67,8 +67,10 @@ public final class SDSParser implements Parser<Schema> {
 	private static final String ATTRIBUTE_EMPTY = "attribute '%s' is empty";
 	private static final String ATTRIBUTE_INVALID = "%s '%s' is invalid; %s";
 
-	private static final String TYPE_IS_UNKNOWN = "type '%s' is unknown";
 	private static final String GROUP_IS_UNKNOWN = "named group '%s' is unknown";
+	private static final String GROUP_NAME_NOT_ALLOWED = "a group name ('%s') is not allowed here";
+	
+	private static final String TYPE_IS_UNKNOWN = "type '%s' is unknown";
 	private static final String NODE_NAME_INVALID = "'%s' is not a valid node name";
 
 
@@ -251,51 +253,48 @@ public final class SDSParser implements Parser<Schema> {
 	 * 
 	 * <pre>
 	 * choice {
+	 *     occurs "0..1"
 	 *     node "firstname" { type "string" }
 	 *     node "lastname" { type "string" }
 	 * }
 	 * </pre>
 	 * 
-	 * @param sds a schema node
+	 * @param grp a schema node
 	 * @returns a {@link SequenceGroup}, {@link ChoiceGroup} or
 	 *          {@link UnorderedGroup},
 	 */
-	private static ModelGroup parseModelGroup(DataNode sds) throws SDSParseException {
+	private static ModelGroup parseModelGroup(DataNode grp) throws SDSParseException {
 		/*
 		 * Preconditions: the caller (parseComponent) has already verified that this
 		 * component has a valid tag, attributes with valid tags only, and one or more
 		 * child components.
-		 * Postcondition: the caller will set the multiplicity on the returned type.
+		 * Postcondition: the caller will set the multiplicity on the returned group
+		 * and recursively parse and add all child components.
 		 */
 
-		// Model groups should not have attributes other than OCCURS (maybe TYPE in the future).
-//		Optional<Node> attribute = sds.getNodes().find(n -> n.isLeaf()).stream()
-//			.filter(n -> ! (/* n.getName().equals(Attribute.TYPE.tag) 
-//				|| */ n.getName().equals(Attribute.OCCURS.tag)) ).findFirst();
+		Boolean inSchemaRoot = (grp.getParent() == schemaRoot(grp));
 		
-		var alist = sds.getAll(n -> n.isLeaf() && ! ( /* n.getName().equals(Attribute.TYPE.tag) || */ 
-			n.getName().equals(Attribute.OCCURS.tag)) );
-				
-		if (! alist.isEmpty())
-			throw exception(sds, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
+		// model groups are not allowed to have names (except in the schema root)
+		if (! inSchemaRoot && ! grp.getValue().isEmpty())
+			throw exception(grp, GROUP_NAME_NOT_ALLOWED, grp.getValue());
 
-		// model groups are not allowed to have names (maybe in the future)
-		String name = sds.getValue();
-		if (! name.isEmpty())
-			throw exception(sds, COMPONENT_NAME_UNEXPECTED, name);
+		// model groups should not have attributes other than OCCURS
+		var alist = grp.getAll(n -> n.isLeaf() && ! n.getName().equals(Attribute.OCCURS.tag));
+		if (! alist.isEmpty())
+			throw exception(grp, ATTRIBUTE_NOT_ALLOWED, alist.get(0).getName());
 
 		// in a model group, there must be at least two components
-		if (sds.getAll(n -> ! n.isLeaf()).size() < 2)
-			throw exception(sds, COMPONENT_INCOMPLETE, sds.getName());
+		if (grp.getAll(n -> ! n.isLeaf()).size() < 2)
+			throw exception(grp, COMPONENT_INCOMPLETE, grp.getName());
 
 		ModelGroup mgroup;
 
-		switch (Components.get(sds.getName())) {
+		switch (Components.get(grp.getName())) {
 			case GROUP		: mgroup = new SequenceGroup(); break;
 			case CHOICE		: mgroup = new ChoiceGroup(); break;
 			case UNORDERED	: mgroup = new UnorderedGroup(); break;
 			default: // we should never get here, unless we screwed up pretty bad
-				throw new RuntimeException("Model group '" + sds.getName() + "' not implemented!");
+				throw new AssertionError("Model group '" + grp.getName() + "' not implemented?");
 		}
 		
 		return mgroup;
@@ -337,7 +336,7 @@ public final class SDSParser implements Parser<Schema> {
 		// group references are not allowed to have names
 		String name = grp.getValue();
 		if (! name.isEmpty())
-			throw exception(grp, COMPONENT_NAME_UNEXPECTED, name);
+			throw exception(grp, GROUP_NAME_NOT_ALLOWED, name);
 
 		// group references should not have attributes other than TYPE and OCCURS
 		var alist = grp.getAll( n -> n.isLeaf() && 
@@ -587,7 +586,7 @@ public final class SDSParser implements Parser<Schema> {
 	            && !Schema.TAG.equals(node.getName()));
 	    
 	    if (node == null) //should never happen; the schema node is the root of a schema hierarchy
-	        throw new AssertionError("Bug: no schema node found in the hierarchy of " + node);
+	        throw new AssertionError("No schema node found in the hierarchy of: " + node);
 
 	    return node;
 	}
