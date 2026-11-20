@@ -297,6 +297,7 @@ public final class SDSParser implements Parser<Schema> {
 				throw new AssertionError("Model group '" + grp.getName() + "' not implemented?");
 		}
 		
+		mgroup.setGroupName(grp.getValue()); // will be empty for anonymous groups
 		return mgroup;
 	}
 

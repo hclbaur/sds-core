@@ -1,6 +1,5 @@
 package be.baur.sds.model;
 
-import java.util.Optional;
 import java.util.Set;
 
 import be.baur.sda.DataNode;
@@ -19,6 +18,29 @@ public abstract class ModelGroup extends Component {
 
 	public static final Set<String> TAGS // all known model group tags to date
 		= Set.of(Components.GROUP.tag, Components.CHOICE.tag, Components.UNORDERED.tag);
+
+	
+	private String groupName = ""; // the name of this group (default empty string for anonymous group)
+
+	/**
+	 * Returns the name of this group, or an empty string if it is an anonymous group.
+	 * 
+	 * @return the group name, never null, maybe empty
+	 */
+	final public String getGroupName() {
+		return groupName;
+	}
+
+
+	/**
+	 * Sets the name of the name of this group.
+	 * 
+	 * @param name the group name
+	 */
+	final public void setGroupName(String name) {
+		groupName = name;
+	}
+
 
 	/**
 	 * Returns the effective minimum number of times that a group must occur within
@@ -46,12 +68,9 @@ public abstract class ModelGroup extends Component {
 	@Override
 	public int minOccurs() {
 		
-		Optional<Component> man = this.nodes().stream()
-			.filter(n -> n.minOccurs() > 0) // find mandatory child components
-			.findFirst();
-		if (man.isPresent()) // if a group has no mandatory components, it is optional
-			return super.minOccurs();
-		return 0;
+		if (this.get(n -> n.minOccurs() > 0) == null)
+			return 0; // if a group has no mandatory components, it is optional
+		return super.minOccurs(); // otherwise return the formal multiplicity
 	}
 	
 
@@ -59,22 +78,22 @@ public abstract class ModelGroup extends Component {
 	public final DataNode toSDA() {
 		
 		final var node = new DataNode(getName()); // group, choice or unordered
-
-		// maybe someday we will support named groups, but not today
 		
-//		if (getGlobalType() == null || ! getName().equals(getGlobalType()))
-//			node.setValue(getName());
-//	
-//		if (getGlobalType() != null) // render the type attribute if we have one.
-//			node.add(new DataNode(Attribute.TYPE.tag, getGlobalType()));
+		node.setValue(getGroupName()); // render the group name (empty for anonymous groups)
+
+		// render the type attribute for a group reference
+		String reference = getReference();
+		if (reference != null)
+			node.add(new DataNode(Attribute.TYPE.tag, reference));
 	
-		// Render the multiplicity if not default
+		// render the multiplicity if not default
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
 			node.add(new DataNode(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
-		//if (getGlobalType() == null) // render children, unless we are a type reference
-		for (var component : nodes())
-			node.add( component.toSDA() );
+		// render children, unless we are a group reference
+		if (reference == null)
+			for (var component : nodes())
+				node.add(component.toSDA());
 
 		return node;
 	}

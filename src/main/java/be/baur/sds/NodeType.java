@@ -105,18 +105,18 @@ public class NodeType extends AbstractNodeType {
 		
 		final var node = new DataNode(Components.NODE.tag);
 		
-		// Omit the name for a reference with the same name as the referenced type
+		// omit the name for a reference with the same name as the referenced type
 		if (! ( getReference() != null && getTypeName().equals(getReference()) )) {
 			node.setValue(getTypeName());
 		}
 	
-		// Render the type attribute for a global type reference, or a data type
+		// render the type attribute for a global type reference, or a data type
 		if (getReference() != null)
 			node.add(new DataNode(Attribute.TYPE.tag, getReference()));
 		else if (this instanceof DataNodeType)
 			node.add(new DataNode(Attribute.TYPE.tag, ((DataNodeType<?>) this).getDataType()));
 		
-		// Render the multiplicity if not default
+		// render the multiplicity if not default
 		if (getMultiplicity().min != 1 || getMultiplicity().max != 1) 
 			node.add(new DataNode(Attribute.OCCURS.tag, getMultiplicity().toString()));
 		
@@ -149,7 +149,7 @@ public class NodeType extends AbstractNodeType {
 			}
 		}
 		
-		// Finally, render any children, unless we are a type reference
+		// finally, render any children, unless we are a type reference
 		if (isParent() && getReference() == null)
 			for (Component child : nodes()) node.add( child.toSDA() );
 		
