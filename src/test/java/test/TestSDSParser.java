@@ -94,9 +94,10 @@ public final class TestSDSParser {
 		t.s("S32", "schema { node \"august\" { type \"gMonthDay\" value \"[--08-01..--09-01)\" } }", null);
 		
 		// test named model groups
-		t.s("S33", "schema { group \"g\" { node \"a\" { type \"string\" } node \"b\" { type \"string\" } } }", null);
-		t.s("S34", "schema { choice \"c\" { node \"a\" { type \"string\" } node \"b\" { type \"string\" } } }", null);
-		t.s("S35", "schema { unordered \"u\" { node \"a\" { type \"string\" } node \"b\" { type \"string\" } } }", null);
+		String grp = " node \"a\" { type \"string\" } node \"b\" { type \"string\" } ";
+		t.s("S33", "schema { group \"g\" {" + grp + "} }", null);
+		t.s("S34", "schema { choice \"c\" {" + grp + "} }", null);
+		t.s("S35", "schema { unordered \"c\" {" + grp + "} }", null);
 		
 		t.checkFailures();
 		
@@ -114,14 +115,11 @@ public final class TestSDSParser {
 
 		t.s("F10", "schema{ node{ name \"x\" occurs \"1\" node{ name \"x\" type \"string\" } } }", "/schema/node: attribute 'occurs' is not allowed here");
 		t.s("F11", "schema{ node \"x\" { choice{ } } }", "/schema/node/choice: component 'choice' is incomplete");
-		t.s("F12", "schema{ choice{ } }", "/schema/choice: a name is expected for component 'choice'");	
-		t.s("F13", "schema{ choice \"c\" { } }", "/schema/choice: component 'choice' is incomplete");
-		t.s("F14", "schema{ choice \"c\" { type \"t\" } }", "/schema/choice: a group name ('c') is not allowed here");
-		t.s("F15", "schema{ name \"mobile\" }", "/schema/name: attribute 'name' is unknown");
-		t.s("F16", "schema{ node{ type \"phone\" } }", "/schema/node/type: type 'phone' is unknown");
-		t.s("F17", "schema{ node \"mobile\" { type \"phone\" } }", "/schema/node/type: type 'phone' is unknown");
-		t.s("F18", "schema{ node \"phone\" { type \"string\" } node{ type \"phone\" nullable \"false\"} }", "/schema/node[2]: attribute 'nullable' is not allowed here");
-		t.s("F19", "schema{ note{ } }", "/schema/note: component 'note' is unknown");
+		t.s("F12", "schema{ name \"mobile\" }", "/schema/name: attribute 'name' is unknown");
+		t.s("F13", "schema{ node{ type \"phone\" } }", "/schema/node/type: type 'phone' is unknown");
+		t.s("F14", "schema{ node \"mobile\" { type \"phone\" } }", "/schema/node/type: type 'phone' is unknown");
+		t.s("F15", "schema{ node \"phone\" { type \"string\" } node{ type \"phone\" nullable \"false\"} }", "/schema/node[2]: attribute 'nullable' is not allowed here");
+		t.s("F16", "schema{ note{ } }", "/schema/note: component 'note' is unknown");
 		
 		t.s("F20", "schema{ node{ } }", "/schema/node: component 'node' is incomplete");
 		t.s("F21", "schema{ node \"x\" { note{} } }", "/schema/node/note: component 'note' is unknown");
@@ -157,7 +155,13 @@ public final class TestSDSParser {
 		t.s("F52", "schema{ node \"123\" { type \"string\" } }", "/schema/node: '123' is not a valid node name");
 		t.s("F53", "schema{ node \"phone\" { type \"string\" } node \"123\" { type \"phone\" } }", "/schema/node[2]: '123' is not a valid node name");
 		t.s("F54", "schema { node \"x\" { type \"any\" node \"y\" { type \"string\" } } }", "/schema/node: type 'any' is invalid; node defines content");
-	
+
+		t.s("F55", "schema{ unordered{ } }", "/schema/unordered: a name is expected for component 'unordered'");	
+		t.s("F56", "schema{ choice \"c\" { } }", "/schema/choice: component 'choice' is incomplete");
+		t.s("F57", "schema{ group \"g\" { type \"t\" } }", "/schema/group: a group reference is not allowed here");
+		t.s("F58", "schema{ group \"g\" {" + grp + "} group \"r\" { type \"g\" } }", "/schema/group[2]: a group reference is not allowed here");
+		t.s("F59", "schema{ group \"g\" {" + grp + "} group { type \"g\" } }", "/schema/group[2]: a group name ('r') is not allowed here");
+		
 		t.checkFailures();
 		
 		// test performance
