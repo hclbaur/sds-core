@@ -67,7 +67,7 @@ public final class SDSParser implements Parser<Schema> {
 	private static final String ATTRIBUTE_EMPTY = "attribute '%s' is empty";
 	private static final String ATTRIBUTE_INVALID = "%s '%s' is invalid; %s";
 
-	private static final String GROUP_IS_UNKNOWN = "named group '%s' is unknown";
+	private static final String GROUP_IS_UNKNOWN = "named %s '%s' is unknown";
 	private static final String GROUP_NAME_NOT_ALLOWED = "a group name ('%s') is not allowed here";
 	private static final String GROUP_REFERENCE_NOT_ALLOWED = "a group reference is not allowed here";
 	
@@ -186,7 +186,7 @@ public final class SDSParser implements Parser<Schema> {
 		boolean isNodeType = sds.getName().equals(Components.NODE.tag); // will be false for a model group
 		var childComponents = sds.getAll(n -> ! n.isLeaf()); // list of complex children (if any)
 		
-		// simple types, any types and references MUST have a content type, complex types MAY have one
+		// simple types, any types and references MUST have a type attribute, complex types MAY have one
 		final var type = getAttribute(sds, Attribute.TYPE, childComponents.isEmpty());
 		boolean isAnyType = (type == null) ? false : type.getValue().equals(AnyNodeType.NAME);
 		boolean isDataType = (type == null) ? false : DataType.isRegistered(type.getValue());
@@ -349,7 +349,7 @@ public final class SDSParser implements Parser<Schema> {
 		}
 
 		if (refGroup == null)
-			throw exception(type, GROUP_IS_UNKNOWN, type.getValue());
+			throw exception(type, GROUP_IS_UNKNOWN, grp.getName(), type.getValue());
 		
 		/*
 		 * If we get here, we can parse the referenced group into a new component, but

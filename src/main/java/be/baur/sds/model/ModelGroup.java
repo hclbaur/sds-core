@@ -79,8 +79,11 @@ public abstract class ModelGroup extends Component {
 		
 		final var node = new DataNode(getName()); // group, choice or unordered
 		
-		node.setValue(getGroupName()); // render the group name (empty for anonymous groups)
-
+		// omit the name for a reference with the same name as the referenced group
+		if (! ( getReference() != null && getGroupName().equals(getReference()) )) {
+			node.setValue(getGroupName());
+		}
+		
 		// render the type attribute for a group reference
 		String reference = getReference();
 		if (reference != null)

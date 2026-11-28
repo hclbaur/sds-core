@@ -98,6 +98,7 @@ public final class TestSDSParser {
 		t.s("S33", "schema { group \"g\" {" + grp + "} }", null);
 		t.s("S34", "schema { choice \"c\" {" + grp + "} }", null);
 		t.s("S35", "schema { unordered \"c\" {" + grp + "} }", null);
+		t.s("S36", "schema { group \"g\" {" + grp + "} node \"c\" { type \"string\" group { type \"g\" } } }", null);
 		
 		t.checkFailures();
 		
@@ -156,11 +157,13 @@ public final class TestSDSParser {
 		t.s("F53", "schema{ node \"phone\" { type \"string\" } node \"123\" { type \"phone\" } }", "/schema/node[2]: '123' is not a valid node name");
 		t.s("F54", "schema { node \"x\" { type \"any\" node \"y\" { type \"string\" } } }", "/schema/node: type 'any' is invalid; node defines content");
 
-		t.s("F55", "schema{ unordered{ } }", "/schema/unordered: a name is expected for component 'unordered'");	
+		t.s("F55", "schema{ unordered { } }", "/schema/unordered: a name is expected for component 'unordered'");	
 		t.s("F56", "schema{ choice \"c\" { } }", "/schema/choice: component 'choice' is incomplete");
 		t.s("F57", "schema{ group \"g\" { type \"t\" } }", "/schema/group: a group reference is not allowed here");
-		t.s("F58", "schema{ group \"g\" {" + grp + "} group \"r\" { type \"g\" } }", "/schema/group[2]: a group reference is not allowed here");
-		t.s("F59", "schema{ group \"g\" {" + grp + "} group { type \"g\" } }", "/schema/group[2]: a group name ('r') is not allowed here");
+
+		t.s("F60", "schema{ unordered \"g\" { length \"\" } }", "/schema/group: a group reference is not allowed here");
+		t.s("S61", "schema { group \"g\" {" + grp + "} node \"c\" { type \"string\" group { type \"t\" } } }", "/schema/node/group/type: named group 't' is unknown");
+		t.s("S62", "schema { group \"g\" {" + grp + "} node \"c\" { type \"string\" choice { type \"g\" } } }", "/schema/node/choice/type: named choice 'g' is unknown");
 		
 		t.checkFailures();
 		
