@@ -184,22 +184,29 @@ public final class SDSParser implements Parser<Schema> {
 		 * - a group reference, referring to a global model group and without child components
 		 */
 		boolean isNodeType = sds.getName().equals(Components.NODE.tag); // will be false for a model group
-		var childComponents = sds.getAll(n -> ! n.isLeaf()); // list of complex children (if any)
-		
-		// simple types, any types and references MUST have a type attribute, complex types MAY have one
-		final var type = getAttribute(sds, Attribute.TYPE, childComponents.isEmpty());
-		boolean isAnyType = (type == null) ? false : type.getValue().equals(AnyNodeType.NAME);
-		boolean isDataType = (type == null) ? false : DataType.isRegistered(type.getValue());
-		
+		var childComponents = sds.getAll(n -> ! n.isLeaf()); // list of child components (skip attributes)
 		Component component; // the component to be returned at the end of this method
 		
 		if (! isNodeType) { // component is a model group or a reference to one
-			if (childComponents.isEmpty())
+			
+			// type reference is forbidden in root, elsewhere it can be legitimate (in a reference)
+			var type = getAttribute(sds, Attribute.TYPE, sds.getParent() == root ? null : false);	
+			
+			if (childComponents.isEmpty() && type != null) { // it is definitely a group reference
 				component = parseGroupReference(sds, type, root);
-			else
+			}
+			else { // a model group, or a reference with child components (which is invalid)
+				if (type != null) // in either case we do not allow a type attribute 
+					throw exception(sds, ATTRIBUTE_NOT_ALLOWED, Attribute.TYPE.tag);
 				component = parseModelGroup(sds, root);
+			}
 		}
 		else {  // component is a node type (of any kind) or a reference to one
+			
+			var type = getAttribute(sds, Attribute.TYPE, childComponents.isEmpty());
+			boolean isAnyType = (type == null) ? false : type.getValue().equals(AnyNodeType.NAME);
+			boolean isDataType = (type == null) ? false : DataType.isRegistered(type.getValue());
+			
 			if (isAnyType) { // an any type cannot have components or attributes (except TYPE and OCCURS)
 				
 				if (! childComponents.isEmpty())
@@ -399,7 +406,9 @@ public final class SDSParser implements Parser<Schema> {
 		for (var cnode : root.getAll(n -> ! n.isLeaf() && n.getName().equals(Components.NODE.tag))) {
 			if ( cnode.getValue().equals(type.getValue()) ) refNode = cnode;
 		}
-		if (refNode == null || refNode.equals(sds)) // referenced type not found or
+		//if (refNode == sds) // self-referencing type ??
+		//	System.err.println("WARNING: self-referencing type '" + type.getValue() + "' in " + sds);
+		if (refNode == null || refNode == sds) // referenced type not found or self-referencing
 			throw exception(type, TYPE_IS_UNKNOWN, type.getValue());
 		
 		// the reference is valid, but it should not have attributes other than type and occurs

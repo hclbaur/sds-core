@@ -140,16 +140,17 @@ public final class TestSDSParser {
 		t.s("F34", "schema{ node \"c\" { choice{ node \"x\" { type \"string\" } } } }", "/schema/node/choice: component 'choice' is incomplete");
 		t.s("F35", "schema{ node \"c\" { choice{ name \"x\" } } }", "/schema/node/choice/name: attribute 'name' is unknown");
 		t.s("F36", "schema{ node \"c\" { choice \"c\" { node{} } } }", "/schema/node/choice: a group name ('c') is not allowed here");		
-		t.s("F37", "schema{ node \"c\" { choice{ nullable \"true\" } } }", "/schema/node/choice: attribute 'type' is missing");
+		t.s("F37", "schema{ node \"c\" { choice{ nullable \"true\" } } }", "/schema/node/choice: attribute 'nullable' is not allowed here");
 		
 		t.s("F40", "schema{ node \"c\" { choice{ type \"c\" nullable \"true\" } } }", "/schema/node/choice: attribute 'nullable' is not allowed here");
-		t.s("F41", "schema{ node \"c\" { choice{ type \"t\" nullable \"true\" } } }", "/schema/node/choice: attribute 'nullable' is not allowed here");
-		t.s("F42", "schema{ node \"x\" { type \"string\" length \"\" } }", "/schema/node/length: attribute 'length' is empty");
-		t.s("F43", "schema{ node \"x\"{ type \"binary\" length \"-1\" } }", "/schema/node/length: length '-1' is invalid; negative values are not allowed");
-		t.s("F44", "schema{ node \"x\" { type \"boolean\" length \"5\" } }", "/schema/node: attribute 'length' is not allowed here");
-		t.s("F45", "schema{ node \"x\" { type \"boolean\" nullable \"maybe\" } }", "/schema/node/nullable: nullable 'maybe' is invalid; must be 'true' or 'false'");
-		t.s("F46", "schema{ node \"x\" { type \"integer\" value \"\" } }", "/schema/node/value: attribute 'value' is empty");
-		t.s("F47", "schema{ node \"x\" { type \"decimal\" value \"[1..-1]\" } }", "/schema/node/value: value '[1..-1]' is invalid; lower limit exceeds upper limit");
+		t.s("F41", "schema{ node \"c\" { choice{ type \"t\" } } }", "/schema/node/choice/type: named choice 't' is unknown");
+		t.s("F42", "schema{ node \"c\" { choice{ type \"t\"" + grp + "} } }", "/schema/node/choice: attribute 'type' is not allowed here");
+		t.s("F43", "schema{ node \"x\" { type \"string\" length \"\" } }", "/schema/node/length: attribute 'length' is empty");
+		t.s("F44", "schema{ node \"x\"{ type \"binary\" length \"-1\" } }", "/schema/node/length: length '-1' is invalid; negative values are not allowed");
+		t.s("F45", "schema{ node \"x\" { type \"boolean\" length \"5\" } }", "/schema/node: attribute 'length' is not allowed here");
+		t.s("F46", "schema{ node \"x\" { type \"boolean\" nullable \"maybe\" } }", "/schema/node/nullable: nullable 'maybe' is invalid; must be 'true' or 'false'");
+		t.s("F47", "schema{ node \"x\" { type \"integer\" value \"\" } }", "/schema/node/value: attribute 'value' is empty");
+		t.s("F48", "schema{ node \"x\" { type \"decimal\" value \"[1..-1]\" } }", "/schema/node/value: value '[1..-1]' is invalid; lower limit exceeds upper limit");
 		
 		t.s("F50", "schema{ node \"x\" { type \"boolean\" value \"5\" } }", "/schema/node: attribute 'value' is not allowed here");
 		t.s("F51", "schema{ node { type \"any\" nullable \"true\" } }", "/schema/node: attribute 'nullable' is not allowed here");
@@ -159,9 +160,9 @@ public final class TestSDSParser {
 
 		t.s("F55", "schema{ unordered { } }", "/schema/unordered: a name is expected for component 'unordered'");	
 		t.s("F56", "schema{ choice \"c\" { } }", "/schema/choice: component 'choice' is incomplete");
-		t.s("F57", "schema{ group \"g\" { type \"t\" } }", "/schema/group: a group reference is not allowed here");
+		t.s("F57", "schema{ group \"g\" { type \"t\" } }", "/schema/group: attribute 'type' is not allowed here");
 
-		t.s("F60", "schema{ unordered \"g\" { length \"\" } }", "/schema/group: a group reference is not allowed here");
+		t.s("F60", "schema{ unordered \"g\" { length \"\" } }", "/schema/unordered: attribute 'length' is not allowed here");
 		t.s("S61", "schema { group \"g\" {" + grp + "} node \"c\" { type \"string\" group { type \"t\" } } }", "/schema/node/group/type: named group 't' is unknown");
 		t.s("S62", "schema { group \"g\" {" + grp + "} node \"c\" { type \"string\" choice { type \"g\" } } }", "/schema/node/choice/type: named choice 'g' is unknown");
 		
